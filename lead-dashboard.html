@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lead Intelligence — R&R Collective</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=IBM+Plex+Mono:wght@300;400;500&family=Barlow+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:            #08080A;
+      --surface:       #0D0D10;
+      --raised:        #121216;
+      --border-faint:  #141418;
+      --border:        #1C1C22;
+      --border-strong: #262630;
+      --text:          #DDDDE6;
+      --text-dim:      #6E6E7A;
+      --text-ghost:    #36363F;
+      --text-phantom:  #1E1E26;
+      --amber:         #C49A2A;
+      --amber-mid:     #9A7820;
+      --amber-glow:    rgba(196,154,42,0.06);
+      --amber-tint:    rgba(196,154,42,0.12);
+      --red:           #6B3232;
+
+      --serif:  'Cormorant Garamond', 'Times New Roman', serif;
+      --mono:   'IBM Plex Mono', 'Courier New', monospace;
+      --sans:   'Barlow Condensed', 'Arial Narrow', sans-serif;
+
+      --row-grid: 28px 1fr 154px 100px 102px 1fr 86px;
+    }
+
+    html, body {
+      height: 100%; width: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow: hidden;
+    }
+
+    button { font-family: inherit; border: none; background: none; cursor: pointer; }
+
+    /* ── SHELL ────────────────────────────────────────── */
+    .shell {
+      display: grid;
+      grid-template-columns: 198px 1fr;
+      height: 100vh;
+    }
+
+    /* ── SIDEBAR ──────────────────────────────────────── */
+    .sidebar {
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .sb-logo {
+      padding: 26px 20px 22px;
+      border-bottom: 1px solid var(--border);
+    }
+    .sb-logo-mark {
+      font-family: var(--serif);
+      font-size: 2.25rem;
+      font-weight: 300;
+      letter-spacing: -0.025em;
+      line-height: 1;
+      color: var(--text);
+    }
+    .sb-logo-sub {
+      font-family: var(--sans);
+      font-size: 0.45rem;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--text-ghost);
+      margin-top: 5px;
+    }
+
+    .sb-nav {
+      padding: 18px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 20px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      cursor: pointer;
+      position: relative;
+      transition: color 0.12s;
+      user-select: none;
+    }
+    .nav-item:hover { color: var(--text); }
+    .nav-item.active { color: var(--text); }
+    .nav-item.active::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 50%;
+      transform: translateY(-50%);
+      width: 2px; height: 12px;
+      background: var(--amber);
+    }
+    .nav-pip {
+      width: 4px; height: 4px;
+      border: 1px solid currentColor;
+      border-radius: 50%;
+      opacity: 0.35;
+      flex-shrink: 0;
+    }
+    .nav-item.active .nav-pip {
+      background: var(--amber);
+      border-color: var(--amber);
+      opacity: 1;
+    }
+
+    .sb-section {
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .sb-section-label {
+      font-family: var(--mono);
+      font-size: 0.5rem;
+      font-weight: 400;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-ghost);
+      margin-bottom: 11px;
+    }
+
+    .icp-chip {
+      display: flex;
+      align-items: flex-start;
+      gap: 7px;
+      padding: 7px 9px;
+      border: 1px solid var(--border-strong);
+      background: var(--raised);
+    }
+    .icp-chip-dot {
+      width: 4px; height: 4px;
+      background: var(--amber);
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 3px;
+    }
+    .icp-chip-text {
+      font-size: 0.625rem;
+      font-weight: 400;
+      letter-spacing: 0.03em;
+      color: var(--text-dim);
+      line-height: 1.5;
+    }
+
+    .fw-list { display: flex; flex-direction: column; gap: 2px; }
+    .fw-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 8px;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+    .fw-item:hover { background: var(--raised); }
+    .fw-item.active { background: var(--amber-tint); }
+    .fw-name {
+      font-size: 0.625rem;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      color: var(--text-dim);
+    }
+    .fw-item.active .fw-name { color: var(--amber); }
+    .fw-count {
+      font-family: var(--mono);
+      font-size: 0.5rem;
+      color: var(--text-ghost);
+    }
+    .fw-item.active .fw-count { color: var(--amber-mid); }
+
+    .sb-footer {
+      margin-top: auto;
+      padding: 14px 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+    .user-avatar {
+      width: 26px; height: 26px;
+      background: var(--raised);
+      border: 1px solid var(--border-strong);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--mono);
+      font-size: 0.5rem;
+      font-weight: 500;
+      color: var(--text-dim);
+      flex-shrink: 0;
+    }
+    .user-name {
+      font-size: 0.6875rem;
+      font-weight: 500;
+      letter-spacing: 0.03em;
+      color: var(--text-dim);
+    }
+    .user-role {
+      font-family: var(--mono);
+      font-size: 0.4375rem;
+      color: var(--text-ghost);
+      letter-spacing: 0.06em;
+      margin-top: 2px;
+    }
+
+    /* ── MAIN ─────────────────────────────────────────── */
+    .main {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Topbar */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 26px;
+      height: 46px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .topbar-crumb {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 0.6875rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .crumb { color: var(--text-dim); }
+    .crumb.active { color: var(--text); }
+    .crumb-sep { color: var(--text-ghost); font-size: 0.5625rem; }
+
+    .topbar-meta {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--mono);
+      font-size: 0.5rem;
+      letter-spacing: 0.08em;
+      color: var(--text-ghost);
+    }
+    .live-dot {
+      width: 5px; height: 5px;
+      background: #2C6B40;
+      border-radius: 50%;
+      position: relative;
+    }
+    .live-dot::after {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border: 1px solid rgba(44,107,64,0.35);
+      border-radius: 50%;
+      animation: livepulse 2.8s ease-in-out infinite;
+    }
+    @keyframes livepulse {
+      0%,100% { opacity:0; transform:scale(1); }
+      50%      { opacity:1; transform:scale(1.5); }
+    }
+
+    /* Pipeline bar */
+    .pipeline-bar {
+      display: flex;
+      align-items: center;
+      padding: 0 26px;
+      height: 38px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+      gap: 0;
+    }
+    .pl-stage {
+      display: flex;
+      align-items: center;
+      height: 38px;
+      padding: 0 13px;
+      font-size: 0.625rem;
+      font-weight: 600;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--text-ghost);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      gap: 7px;
+      transition: color 0.12s;
+      white-space: nowrap;
+      user-select: none;
+    }
+    .pl-stage:first-child { padding-left: 0; }
+    .pl-stage:hover { color: var(--text-dim); }
+    .pl-stage.active { color: var(--text); border-bottom-color: var(--amber); }
+    .pl-count {
+      font-family: var(--mono);
+      font-size: 0.4375rem;
+      padding: 1px 5px;
+      background: var(--raised);
+      color: var(--text-ghost);
+    }
+    .pl-stage.active .pl-count {
+      background: var(--amber-tint);
+      color: var(--amber);
+    }
+    .pl-sep {
+      color: var(--text-phantom);
+      font-family: var(--mono);
+      font-size: 0.5rem;
+      padding: 0 3px;
+      user-select: none;
+    }
+
+    /* Control strip */
+    .control-strip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 26px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .ctrl-left { display: flex; align-items: center; gap: 14px; }
+    .ctrl-right { display: flex; align-items: center; gap: 10px; }
+
+    .active-icp {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 9px;
+      border: 1px solid var(--border-strong);
+      background: var(--raised);
+    }
+    .active-icp-dot { width: 4px; height: 4px; background: var(--amber); border-radius: 50%; flex-shrink: 0; }
+    .active-icp-label {
+      font-size: 0.625rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      color: var(--text-dim);
+    }
+    .active-icp-x {
+      font-family: var(--mono);
+      font-size: 0.5rem;
+      color: var(--text-ghost);
+      margin-left: 3px;
+      cursor: pointer;
+      padding: 1px 2px;
+    }
+    .active-icp-x:hover { color: var(--text-dim); }
+
+    .score-filter {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .filter-label {
+      font-size: 0.625rem;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--text-ghost);
+    }
+    .threshold-ctrl {
+      display: flex;
+      align-items: stretch;
+      height: 24px;
+    }
+    .threshold-btn {
+      width: 22px;
+      background: var(--raised);
+      border: 1px solid var(--border-strong);
+      color: var(--text-dim);
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.1s, color 0.1s;
+    }
+    .threshold-btn:hover { background: var(--border); color: var(--text); }
+    .threshold-val {
+      min-width: 38px;
+      background: var(--raised);
+      border-top: 1px solid var(--border-strong);
+      border-bottom: 1px solid var(--border-strong);
+      font-family: var(--mono);
+      font-size: 0.5625rem;
+      font-weight: 400;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      letter-spacing: 0.04em;
+      padding: 0 6px;
+    }
+
+    .sort-ctrl {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px 0;
+    }
+    .sort-label {
+      font-size: 0.625rem;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--text-ghost);
+    }
+    .sort-arrow {
+      font-family: var(--mono);
+      font-size: 0.5625rem;
+      color: var(--amber);
+    }
+
+    .result-tally {
+      font-family: var(--mono);
+      font-size: 0.5rem;
+      letter-spacing: 0.07em;
+      color: var(--text-ghost);
+    }
+
+    .btn-search {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 13px;
+      border: 1px solid var(--border-strong);
+      background: transparent;
+      color: var(--text-dim);
+      font-family: var(--sans);
+      font-size: 0.625rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-search:hover {
+      border-color: var(--amber);
+      color: var(--amber);
+      background: var(--amber-glow);
+    }
+    .btn-search-icon {
+      width: 11px; height: 11px;
+      border: 1px solid currentColor;
+      border-radius: 50%;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .btn-search-icon::after {
+      content: '';
+      position: absolute;
+      right: -3px; top: 50%;
+      transform: translateY(-50%) rotate(45deg);
+      width: 4px; height: 1px;
+      background: currentColor;
+      box-shadow: 0 -2px 0 currentColor;
+    }
+
+    /* Column headers */
+    .col-heads {
+      display: grid;
+      grid-template-columns: var(--row-grid);
+      padding: 0 26px;
+      height: 30px;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .ch {
+      font-family: var(--mono);
+      font-size: 0.4375rem;
+      font-weight: 400;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: var(--text-ghost);
+    }
+    .ch.sorted { color: var(--amber); }
+    .ch.sortable { cursor: pointer; }
+    .ch.sortable:hover { color: var(--text-dim); }
+
+    /* ── LEAD LIST ────────────────────────────────────── */
+    .lead-list {
+      flex: 1;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+    .lead-list::-webkit-scrollbar { width: 3px; }
+    .lead-list::-webkit-scrollbar-thumb { background: var(--border); }
+
+    /* ── LEAD ROW ─────────────────────────────────────── */
+    .lead-row {
+      display: grid;
+      grid-template-columns: var(--row-grid);
+      padding: 0 26px;
+      min-height: 74px;
+      align-items: center;
+      border-bottom: 1px solid var(--border-faint);
+      position: relative;
+      cursor: pointer;
+      transition: background 0.14s;
+
+      opacity: 0;
+      animation: rowIn 0.35s ease forwards;
+    }
+    @keyframes rowIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .lead-row::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 50%;
+      transform: translateY(-50%);
+      width: 2px; height: 0;
+      background: var(--amber);
+      transition: height 0.18s ease;
+    }
+    .lead-row:hover { background: var(--amber-glow); }
+    .lead-row:hover::before { height: 38px; }
+
+    /* Rank */
+    .cell-rank {
+      font-family: var(--mono);
+      font-size: 0.4375rem;
+      font-weight: 400;
+      letter-spacing: 0.06em;
+      color: var(--text-phantom);
+    }
+
+    /* Company */
+    .cell-company { padding: 14px 14px 14px 0; }
+    .co-name {
+      font-family: var(--serif);
+      font-size: 1.1875rem;
+      font-style: italic;
+      font-weight: 400;
+      color: var(--text);
+      line-height: 1.15;
+      letter-spacing: 0.005em;
+      transition: color 0.12s;
+    }
+    .lead-row:hover .co-name { color: #fff; }
+    .co-tag {
+      display: inline-block;
+      margin-top: 5px;
+      font-size: 0.5rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-ghost);
+      padding: 2px 6px;
+      border: 1px solid var(--border);
+    }
+
+    /* Framework */
+    .cell-fw { padding-right: 12px; }
+    .fw-label-text {
+      font-size: 0.5625rem;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      line-height: 1.45;
+    }
+    .fw-code {
+      font-family: var(--mono);
+      font-size: 0.4375rem;
+      color: var(--text-ghost);
+      margin-top: 3px;
+      letter-spacing: 0.06em;
+    }
+
+    /* ── SCORE — THE SIGNATURE ELEMENT ───────────────── */
+    .cell-score {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 5px;
+      padding-right: 10px;
+    }
+    .score-row {
+      display: flex;
+      align-items: baseline;
+      gap: 0;
+    }
+    .score-num {
+      font-family: var(--mono);
+      font-size: 1.9rem;
+      font-weight: 300;
+      line-height: 1;
+      letter-spacing: -0.045em;
+      /* color set per-row via class */
+    }
+    .score-num.tier-1 { color: var(--amber); }
+    .score-num.tier-2 { color: #A68624; }
+    .score-num.tier-3 { color: var(--text-dim); }
+    .score-denom {
+      font-family: var(--mono);
+      font-size: 0.5rem;
+      font-weight: 300;
+      color: var(--text-ghost);
+      letter-spacing: 0.04em;
+      margin-left: 2px;
+      margin-bottom: 3px;
+      align-self: flex-end;
+    }
+
+    /* Calibration ruler */
+    .score-ruler {
+      position: relative;
+      width: 58px;
+      height: 14px;
+    }
+    .ruler-baseline {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 1px;
+      background: var(--border-strong);
+    }
+    /* tick marks via box-shadow on a 1px dot */
+    .ruler-ticks {
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 100%; height: 14px;
+      /* 11 ticks at 0,1,2,...10 = 0%, 10%, 20%...100% */
+      background:
+        /* major ticks at 70%, 80%, 90%, 100% */
+        linear-gradient(to bottom, transparent 40%, var(--text-ghost) 40%, var(--text-ghost) 100%) no-repeat 70% 0 / 1px 9px,
+        linear-gradient(to bottom, transparent 40%, var(--text-ghost) 40%, var(--text-ghost) 100%) no-repeat 80% 0 / 1px 9px,
+        linear-gradient(to bottom, transparent 40%, var(--text-ghost) 40%, var(--text-ghost) 100%) no-repeat 90% 0 / 1px 9px,
+        linear-gradient(to bottom, transparent 40%, var(--text-ghost) 40%, var(--text-ghost) 100%) no-repeat 100% 0 / 1px 9px,
+        /* minor ticks */
+        linear-gradient(to bottom, transparent 55%, var(--text-phantom) 55%, var(--text-phantom) 100%) no-repeat 0%   0 / 1px 6px,
+        linear-gradient(to bottom, transparent 55%, var(--text-phantom) 55%, var(--text-phantom) 100%) no-repeat 10%  0 / 1px 6px,
+        linear-gradient(to bottom, transparent 55%, var(--text-phantom) 55%, var(--text-phantom) 100%) no-repeat 20%  0 / 1px 6px,
+        linear-gradient(to bottom, transparent 55%, var(--text-phantom) 55%, var(--text-phantom) 100%) no-repeat 30%  0 / 1px 6px,
+        linear-gradient(to bottom, transparent 55%, var(--text-phantom) 55%, var(--text-phantom) 100%) no-repeat 40%  0 / 1px 6px,
+        linear-gradient(to bottom, transparent 55%, var(--text-phantom) 55%, var(--text-phantom) 100%) no-repeat 50%  0 / 1px 6px,
+        linear-gradient(to bottom, transparent 55%, var(--text-phantom) 55%, var(--text-phantom) 100%) no-repeat 60%  0 / 1px 6px;
+    }
+    .ruler-needle {
+      position: absolute;
+      bottom: 0;
+      width: 1px;
+      height: 14px;
+      /* left set inline */
+    }
+    .ruler-needle.tier-1 { background: var(--amber); }
+    .ruler-needle.tier-2 { background: var(--amber-mid); }
+    .ruler-needle.tier-3 { background: var(--text-dim); }
+    .ruler-needle::after {
+      content: '';
+      position: absolute;
+      bottom: -1px; left: 50%;
+      transform: translateX(-50%);
+      width: 3px; height: 3px;
+      border-radius: 50%;
+      background: inherit;
+    }
+    .ruler-scale-labels {
+      position: absolute;
+      bottom: -10px; left: 0; right: 0;
+      display: flex;
+      justify-content: space-between;
+      /* only show 7, 8, 9, 10 */
+    }
+    .rsl {
+      font-family: var(--mono);
+      font-size: 0.3125rem;
+      color: var(--text-ghost);
+      letter-spacing: 0;
+      transform: translateX(-50%);
+    }
+
+    /* Stage */
+    .cell-stage { padding-right: 12px; }
+    .stage-label-text {
+      font-family: var(--mono);
+      font-size: 0.4375rem;
+      font-weight: 400;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--text-ghost);
+    }
+    .stage-num {
+      font-family: var(--mono);
+      font-size: 0.5625rem;
+      font-weight: 500;
+      color: var(--text-dim);
+      margin-bottom: 2px;
+    }
+
+    /* Signal */
+    .cell-signal { padding-right: 16px; }
+    .signal-quote {
+      font-family: var(--serif);
+      font-size: 0.8125rem;
+      font-style: italic;
+      font-weight: 300;
+      color: var(--text-dim);
+      line-height: 1.5;
+      letter-spacing: 0.01em;
+    }
+
+    /* Actions */
+    .cell-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .lead-row:hover .cell-actions { opacity: 1; }
+    .act-btn {
+      padding: 4px 8px;
+      border: 1px solid var(--border-strong);
+      background: transparent;
+      font-family: var(--sans);
+      font-size: 0.5rem;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.1s;
+    }
+    .act-btn:hover { border-color: var(--amber); color: var(--amber); }
+    .act-btn.primary {
+      background: var(--amber-tint);
+      border-color: var(--amber);
+      color: var(--amber);
+    }
+    .act-btn.primary:hover { background: rgba(196,154,42,0.22); }
+
+    /* ── BOTTOM BAR ───────────────────────────────────── */
+    .bottom-bar {
+      height: 30px;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      padding: 0 26px;
+      gap: 0;
+      flex-shrink: 0;
+    }
+    .bstat {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 0 18px 0 0;
+      margin-right: 18px;
+      border-right: 1px solid var(--border);
+    }
+    .bstat:last-of-type { border-right: none; }
+    .bstat-label {
+      font-family: var(--mono);
+      font-size: 0.4375rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-ghost);
+    }
+    .bstat-val {
+      font-family: var(--mono);
+      font-size: 0.4375rem;
+      color: var(--text-dim);
+      letter-spacing: 0.04em;
+    }
+    .bstat-val.highlight { color: var(--amber); }
+    .bottom-wordmark {
+      margin-left: auto;
+      font-family: var(--mono);
+      font-size: 0.375rem;
+      letter-spacing: 0.1em;
+      color: var(--text-phantom);
+    }
+  </style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- ═══════════════ SIDEBAR ════════════════ -->
+  <aside class="sidebar">
+
+    <div class="sb-logo">
+      <div class="sb-logo-mark">R&R</div>
+      <div class="sb-logo-sub">Collective</div>
+    </div>
+
+    <nav class="sb-nav">
+      <div class="nav-item active">
+        <span class="nav-pip"></span> Intelligence
+      </div>
+      <div class="nav-item">
+        <span class="nav-pip"></span> Pipeline
+      </div>
+      <div class="nav-item">
+        <span class="nav-pip"></span> Outreach
+      </div>
+      <div class="nav-item">
+        <span class="nav-pip"></span> Archive
+      </div>
+    </nav>
+
+    <div class="sb-section">
+      <div class="sb-section-label">Active ICP</div>
+      <div class="icp-chip">
+        <span class="icp-chip-dot"></span>
+        <span class="icp-chip-text">DTC Brand · $500K–$5M revenue<br>Marketing underinvestment</span>
+      </div>
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-section-label">Framework</div>
+      <div class="fw-list">
+        <div class="fw-item active">
+          <span class="fw-name">All Frameworks</span>
+          <span class="fw-count">24</span>
+        </div>
+        <div class="fw-item">
+          <span class="fw-name">Brand Positioning</span>
+          <span class="fw-count">07</span>
+        </div>
+        <div class="fw-item">
+          <span class="fw-name">Client Acquisition</span>
+          <span class="fw-count">06</span>
+        </div>
+        <div class="fw-item">
+          <span class="fw-name">Growth Infrastructure</span>
+          <span class="fw-count">05</span>
+        </div>
+        <div class="fw-item">
+          <span class="fw-name">Scaling Roadmap</span>
+          <span class="fw-count">04</span>
+        </div>
+        <div class="fw-item">
+          <span class="fw-name">Venture Development</span>
+          <span class="fw-count">02</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="sb-footer">
+      <div class="user-avatar">JS</div>
+      <div>
+        <div class="user-name">J. Sterling</div>
+        <div class="user-role">Growth Strategist</div>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- ═══════════════ MAIN ════════════════════ -->
+  <main class="main">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="topbar-crumb">
+        <span class="crumb">Intelligence</span>
+        <span class="crumb-sep">›</span>
+        <span class="crumb active">Lead Scan · DTC Q4-2026</span>
+      </div>
+      <div class="topbar-meta">
+        <div class="meta-item">
+          <span class="live-dot"></span>
+          LIVE
+        </div>
+        <div class="meta-item">FRI · 13 JUN 2026 · 08:42</div>
+      </div>
+    </div>
+
+    <!-- Pipeline stages -->
+    <div class="pipeline-bar">
+      <div class="pl-stage active">
+        Identified <span class="pl-count">24</span>
+      </div>
+      <span class="pl-sep">›</span>
+      <div class="pl-stage">
+        Qualified <span class="pl-count">11</span>
+      </div>
+      <span class="pl-sep">›</span>
+      <div class="pl-stage">
+        Outreach <span class="pl-count">08</span>
+      </div>
+      <span class="pl-sep">›</span>
+      <div class="pl-stage">
+        In Conversation <span class="pl-count">03</span>
+      </div>
+      <span class="pl-sep">›</span>
+      <div class="pl-stage">
+        Closed <span class="pl-count">02</span>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="control-strip">
+      <div class="ctrl-left">
+        <div class="active-icp">
+          <span class="active-icp-dot"></span>
+          <span class="active-icp-label">DTC Brand · $500K–$5M revenue · Marketing underinvestment</span>
+          <span class="active-icp-x">✕</span>
+        </div>
+        <div class="score-filter">
+          <span class="filter-label">Score ≥</span>
+          <div class="threshold-ctrl">
+            <button class="threshold-btn" onclick="adjustThreshold(-0.5)">−</button>
+            <div class="threshold-val" id="thresh">7.0</div>
+            <button class="threshold-btn" onclick="adjustThreshold(0.5)">+</button>
+          </div>
+        </div>
+        <div class="sort-ctrl">
+          <span class="sort-label">Score</span>
+          <span class="sort-arrow">↓</span>
+        </div>
+      </div>
+      <div class="ctrl-right">
+        <span class="result-tally">24 LEADS · RANKED BY SCORE</span>
+        <button class="btn-search">
+          <span class="btn-search-icon"></span>
+          Run New Search
+        </button>
+      </div>
+    </div>
+
+    <!-- Column headers -->
+    <div class="col-heads">
+      <div class="ch">#</div>
+      <div class="ch">Company</div>
+      <div class="ch">Framework</div>
+      <div class="ch sorted sortable">Score ↓</div>
+      <div class="ch">Stage</div>
+      <div class="ch">AI Signal</div>
+      <div class="ch"></div>
+    </div>
+
+    <!-- Lead list -->
+    <div class="lead-list">
+
+      <!-- ── ROW 1: Maverick Roast Co. ── -->
+      <div class="lead-row" style="animation-delay:0.04s">
+        <div class="cell-rank">01</div>
+
+        <div class="cell-company">
+          <div class="co-name">Maverick Roast Co.</div>
+          <span class="co-tag">Consumer Goods</span>
+        </div>
+
+        <div class="cell-fw">
+          <div class="fw-label-text">Brand Positioning<br>Framework</div>
+          <div class="fw-code">BPF · 001</div>
+        </div>
+
+        <div class="cell-score">
+          <div class="score-row">
+            <span class="score-num tier-1">9.1</span>
+            <span class="score-denom">/10</span>
+          </div>
+          <div class="score-ruler">
+            <div class="ruler-ticks"></div>
+            <div class="ruler-baseline"></div>
+            <div class="ruler-needle tier-1" style="left:calc(9.1/10*100%)"></div>
+          </div>
+        </div>
+
+        <div class="cell-stage">
+          <div class="stage-num">01</div>
+          <div class="stage-label-text">Identified</div>
+        </div>
+
+        <div class="cell-signal">
+          <div class="signal-quote">"Strong product-market fit, no brand differentiation or premium positioning visible"</div>
+        </div>
+
+        <div class="cell-actions">
+          <button class="act-btn primary">View Detail</button>
+          <button class="act-btn">Start Outreach</button>
+        </div>
+      </div>
+
+      <!-- ── ROW 2: Luma Athletics ── -->
+      <div class="lead-row" style="animation-delay:0.09s">
+        <div class="cell-rank">02</div>
+
+        <div class="cell-company">
+          <div class="co-name">Luma Athletics</div>
+          <span class="co-tag">D2C</span>
+        </div>
+
+        <div class="cell-fw">
+          <div class="fw-label-text">Growth Infrastructure<br>Framework</div>
+          <div class="fw-code">GIF · 003</div>
+        </div>
+
+        <div class="cell-score">
+          <div class="score-row">
+            <span class="score-num tier-1">8.6</span>
+            <span class="score-denom">/10</span>
+          </div>
+          <div class="score-ruler">
+            <div class="ruler-ticks"></div>
+            <div class="ruler-baseline"></div>
+            <div class="ruler-needle tier-1" style="left:calc(8.6/10*100%)"></div>
+          </div>
+        </div>
+
+        <div class="cell-stage">
+          <div class="stage-num">01</div>
+          <div class="stage-label-text">Identified</div>
+        </div>
+
+        <div class="cell-signal">
+          <div class="signal-quote">"Revenue growth stalled at $2.1M, no retention system, high CAC with no LTV model"</div>
+        </div>
+
+        <div class="cell-actions">
+          <button class="act-btn primary">View Detail</button>
+          <button class="act-btn">Start Outreach</button>
+        </div>
+      </div>
+
+      <!-- ── ROW 3: Terra Supply ── -->
+      <div class="lead-row" style="animation-delay:0.14s">
+        <div class="cell-rank">03</div>
+
+        <div class="cell-company">
+          <div class="co-name">Terra Supply</div>
+          <span class="co-tag">E-commerce</span>
+        </div>
+
+        <div class="cell-fw">
+          <div class="fw-label-text">Client Acquisition<br>Framework</div>
+          <div class="fw-code">CAF · 002</div>
+        </div>
+
+        <div class="cell-score">
+          <div class="score-row">
+            <span class="score-num tier-2">7.8</span>
+            <span class="score-denom">/10</span>
+          </div>
+          <div class="score-ruler">
+            <div class="ruler-ticks"></div>
+            <div class="ruler-baseline"></div>
+            <div class="ruler-needle tier-2" style="left:calc(7.8/10*100%)"></div>
+          </div>
+        </div>
+
+        <div class="cell-stage">
+          <div class="stage-num">02</div>
+          <div class="stage-label-text">Qualified</div>
+        </div>
+
+        <div class="cell-signal">
+          <div class="signal-quote">"Zero paid acquisition, no inbound funnel, relies entirely on word of mouth"</div>
+        </div>
+
+        <div class="cell-actions">
+          <button class="act-btn primary">View Detail</button>
+          <button class="act-btn">Start Outreach</button>
+        </div>
+      </div>
+
+      <!-- ── ROW 4: Solace Studio ── -->
+      <div class="lead-row" style="animation-delay:0.19s">
+        <div class="cell-rank">04</div>
+
+        <div class="cell-company">
+          <div class="co-name">Solace Studio</div>
+          <span class="co-tag">D2C · Wellness</span>
+        </div>
+
+        <div class="cell-fw">
+          <div class="fw-label-text">Scaling Roadmap<br>Framework</div>
+          <div class="fw-code">SRF · 004</div>
+        </div>
+
+        <div class="cell-score">
+          <div class="score-row">
+            <span class="score-num tier-2">7.7</span>
+            <span class="score-denom">/10</span>
+          </div>
+          <div class="score-ruler">
+            <div class="ruler-ticks"></div>
+            <div class="ruler-baseline"></div>
+            <div class="ruler-needle tier-2" style="left:calc(7.7/10*100%)"></div>
+          </div>
+        </div>
+
+        <div class="cell-stage">
+          <div class="stage-num">01</div>
+          <div class="stage-label-text">Identified</div>
+        </div>
+
+        <div class="cell-signal">
+          <div class="signal-quote">"Product line depth without SKU rationalization, no contribution margin visibility"</div>
+        </div>
+
+        <div class="cell-actions">
+          <button class="act-btn primary">View Detail</button>
+          <button class="act-btn">Start Outreach</button>
+        </div>
+      </div>
+
+      <!-- ── ROW 5: Drift & Bloom ── -->
+      <div class="lead-row" style="animation-delay:0.24s">
+        <div class="cell-rank">05</div>
+
+        <div class="cell-company">
+          <div class="co-name">Drift &amp; Bloom</div>
+          <span class="co-tag">Consumer Goods</span>
+        </div>
+
+        <div class="cell-fw">
+          <div class="fw-label-text">Brand Positioning<br>Framework</div>
+          <div class="fw-code">BPF · 005</div>
+        </div>
+
+        <div class="cell-score">
+          <div class="score-row">
+            <span class="score-num tier-3">7.4</span>
+            <span class="score-denom">/10</span>
+          </div>
+          <div class="score-ruler">
+            <div class="ruler-ticks"></div>
+            <div class="ruler-baseline"></div>
+            <div class="ruler-needle tier-3" style="left:calc(7.4/10*100%)"></div>
+          </div>
+        </div>
+
+        <div class="cell-stage">
+          <div class="stage-num">03</div>
+          <div class="stage-label-text">Outreach</div>
+        </div>
+
+        <div class="cell-signal">
+          <div class="signal-quote">"Premium price point with commodity brand presentation — significant positioning gap"</div>
+        </div>
+
+        <div class="cell-actions">
+          <button class="act-btn primary">View Detail</button>
+          <button class="act-btn">Start Outreach</button>
+        </div>
+      </div>
+
+      <!-- ── ROW 6: Northline Apparel ── -->
+      <div class="lead-row" style="animation-delay:0.29s">
+        <div class="cell-rank">06</div>
+
+        <div class="cell-company">
+          <div class="co-name">Northline Apparel</div>
+          <span class="co-tag">D2C · Fashion</span>
+        </div>
+
+        <div class="cell-fw">
+          <div class="fw-label-text">Client Acquisition<br>Framework</div>
+          <div class="fw-code">CAF · 006</div>
+        </div>
+
+        <div class="cell-score">
+          <div class="score-row">
+            <span class="score-num tier-3">7.1</span>
+            <span class="score-denom">/10</span>
+          </div>
+          <div class="score-ruler">
+            <div class="ruler-ticks"></div>
+            <div class="ruler-baseline"></div>
+            <div class="ruler-needle tier-3" style="left:calc(7.1/10*100%)"></div>
+          </div>
+        </div>
+
+        <div class="cell-stage">
+          <div class="stage-num">04</div>
+          <div class="stage-label-text">In Conversation</div>
+        </div>
+
+        <div class="cell-signal">
+          <div class="signal-quote">"Heavy organic reliance, active social channels but no lead capture or email list building"</div>
+        </div>
+
+        <div class="cell-actions">
+          <button class="act-btn primary">View Detail</button>
+          <button class="act-btn">Move Stage</button>
+        </div>
+      </div>
+
+    </div>
+    <!-- /lead-list -->
+
+    <!-- Bottom bar -->
+    <div class="bottom-bar">
+      <div class="bstat">
+        <span class="bstat-label">Avg Score</span>
+        <span class="bstat-val highlight">8.12</span>
+      </div>
+      <div class="bstat">
+        <span class="bstat-label">Top Framework</span>
+        <span class="bstat-val">Brand Positioning</span>
+      </div>
+      <div class="bstat">
+        <span class="bstat-label">Last Scan</span>
+        <span class="bstat-val">Today 06:00</span>
+      </div>
+      <div class="bstat">
+        <span class="bstat-label">ICP Match Rate</span>
+        <span class="bstat-val">83%</span>
+      </div>
+      <div class="bottom-wordmark">R&R COLLECTIVE · LEAD INTELLIGENCE v1.0</div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  let threshold = 7.0;
+
+  function adjustThreshold(delta) {
+    threshold = Math.min(10, Math.max(1, +(threshold + delta).toFixed(1)));
+    document.getElementById('thresh').textContent = threshold.toFixed(1);
+  }
+
+  // Framework filter
+  document.querySelectorAll('.fw-item').forEach(el => {
+    el.addEventListener('click', () => {
+      document.querySelectorAll('.fw-item').forEach(e => e.classList.remove('active'));
+      el.classList.add('active');
+    });
+  });
+
+  // Pipeline tabs
+  document.querySelectorAll('.pl-stage').forEach(el => {
+    el.addEventListener('click', () => {
+      document.querySelectorAll('.pl-stage').forEach(e => e.classList.remove('active'));
+      el.classList.add('active');
+    });
+  });
+
+  // Nav
+  document.querySelectorAll('.nav-item').forEach(el => {
+    el.addEventListener('click', () => {
+      document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
+      el.classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>
