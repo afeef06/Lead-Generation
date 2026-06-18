@@ -1,1275 +1,1222 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lead Intelligence — R&R Collective</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=IBM+Plex+Mono:wght@300;400;500&family=Barlow+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>R&R Collective — Lead Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,500;0,600;1,300;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    :root {
-      --bg:            #08080A;
-      --surface:       #0D0D10;
-      --raised:        #121216;
-      --border-faint:  #141418;
-      --border:        #1C1C22;
-      --border-strong: #262630;
-      --text:          #DDDDE6;
-      --text-dim:      #6E6E7A;
-      --text-ghost:    #36363F;
-      --text-phantom:  #1E1E26;
-      --amber:         #C49A2A;
-      --amber-mid:     #9A7820;
-      --amber-glow:    rgba(196,154,42,0.06);
-      --amber-tint:    rgba(196,154,42,0.12);
-      --red:           #6B3232;
+:root {
+  --bg-0: #080A11;
+  --bg-1: #0C0F1A;
+  --bg-2: #111520;
+  --bg-3: #171B2C;
+  --bg-hover: #1C2035;
 
-      --serif:  'Cormorant Garamond', 'Times New Roman', serif;
-      --mono:   'IBM Plex Mono', 'Courier New', monospace;
-      --sans:   'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --text-0: #EDE8DC;
+  --text-1: #9A9590;
+  --text-2: #4A4D62;
+  --text-3: #272A3A;
 
-      --row-grid: 28px 1fr 154px 100px 102px 1fr 86px;
-    }
+  --gold: #C4923C;
+  --gold-light: #D4A24A;
+  --gold-dim: rgba(196,146,60,0.12);
+  --gold-border: rgba(196,146,60,0.22);
 
-    html, body {
-      height: 100%; width: 100%;
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--sans);
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      overflow: hidden;
-    }
+  --border: #161929;
+  --border-mid: #1E2135;
+  --border-light: #252840;
 
-    button { font-family: inherit; border: none; background: none; cursor: pointer; }
+  --fw-brand-c: #C4923C;    --fw-brand-bg: rgba(196,146,60,0.10);    --fw-brand-b: rgba(196,146,60,0.22);
+  --fw-acq-c: #3A8B6A;      --fw-acq-bg: rgba(58,139,106,0.10);      --fw-acq-b: rgba(58,139,106,0.22);
+  --fw-growth-c: #7A5CAE;   --fw-growth-bg: rgba(122,92,174,0.10);   --fw-growth-b: rgba(122,92,174,0.22);
+  --fw-scale-c: #4A7EC4;    --fw-scale-bg: rgba(74,126,196,0.10);    --fw-scale-b: rgba(74,126,196,0.22);
+  --fw-venture-c: #AA5E7C;  --fw-venture-bg: rgba(170,94,124,0.10);  --fw-venture-b: rgba(170,94,124,0.22);
 
-    /* ── SHELL ────────────────────────────────────────── */
-    .shell {
-      display: grid;
-      grid-template-columns: 198px 1fr;
-      height: 100vh;
-    }
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-ui: 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
 
-    /* ── SIDEBAR ──────────────────────────────────────── */
-    .sidebar {
-      background: var(--surface);
-      border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
+html, body { height: 100%; overflow: hidden; }
 
-    .sb-logo {
-      padding: 26px 20px 22px;
-      border-bottom: 1px solid var(--border);
-    }
-    .sb-logo-mark {
-      font-family: var(--serif);
-      font-size: 2.25rem;
-      font-weight: 300;
-      letter-spacing: -0.025em;
-      line-height: 1;
-      color: var(--text);
-    }
-    .sb-logo-sub {
-      font-family: var(--sans);
-      font-size: 0.45rem;
-      font-weight: 700;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: var(--text-ghost);
-      margin-top: 5px;
-    }
+body {
+  background: var(--bg-0);
+  color: var(--text-0);
+  font-family: var(--font-ui);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
 
-    .sb-nav {
-      padding: 18px 0;
-      border-bottom: 1px solid var(--border);
-    }
-    .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 8px 20px;
-      font-size: 0.75rem;
-      font-weight: 500;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
-      color: var(--text-dim);
-      cursor: pointer;
-      position: relative;
-      transition: color 0.12s;
-      user-select: none;
-    }
-    .nav-item:hover { color: var(--text); }
-    .nav-item.active { color: var(--text); }
-    .nav-item.active::before {
-      content: '';
-      position: absolute;
-      left: 0; top: 50%;
-      transform: translateY(-50%);
-      width: 2px; height: 12px;
-      background: var(--amber);
-    }
-    .nav-pip {
-      width: 4px; height: 4px;
-      border: 1px solid currentColor;
-      border-radius: 50%;
-      opacity: 0.35;
-      flex-shrink: 0;
-    }
-    .nav-item.active .nav-pip {
-      background: var(--amber);
-      border-color: var(--amber);
-      opacity: 1;
-    }
+/* subtle noise overlay */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 9998; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.018;
+}
 
-    .sb-section {
-      padding: 18px 20px;
-      border-bottom: 1px solid var(--border);
-    }
-    .sb-section-label {
-      font-family: var(--mono);
-      font-size: 0.5rem;
-      font-weight: 400;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--text-ghost);
-      margin-bottom: 11px;
-    }
+/* scanlines */
+body::after {
+  content: '';
+  position: fixed; inset: 0; z-index: 9997; pointer-events: none;
+  background: repeating-linear-gradient(to bottom, transparent, transparent 3px, rgba(0,0,0,0.06) 3px, rgba(0,0,0,0.06) 4px);
+}
 
-    .icp-chip {
-      display: flex;
-      align-items: flex-start;
-      gap: 7px;
-      padding: 7px 9px;
-      border: 1px solid var(--border-strong);
-      background: var(--raised);
-    }
-    .icp-chip-dot {
-      width: 4px; height: 4px;
-      background: var(--amber);
-      border-radius: 50%;
-      flex-shrink: 0;
-      margin-top: 3px;
-    }
-    .icp-chip-text {
-      font-size: 0.625rem;
-      font-weight: 400;
-      letter-spacing: 0.03em;
-      color: var(--text-dim);
-      line-height: 1.5;
-    }
+/* ===== LAYOUT ===== */
+.app { display: flex; height: 100vh; overflow: hidden; }
 
-    .fw-list { display: flex; flex-direction: column; gap: 2px; }
-    .fw-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 6px 8px;
-      cursor: pointer;
-      transition: background 0.1s;
-    }
-    .fw-item:hover { background: var(--raised); }
-    .fw-item.active { background: var(--amber-tint); }
-    .fw-name {
-      font-size: 0.625rem;
-      font-weight: 400;
-      letter-spacing: 0.04em;
-      color: var(--text-dim);
-    }
-    .fw-item.active .fw-name { color: var(--amber); }
-    .fw-count {
-      font-family: var(--mono);
-      font-size: 0.5rem;
-      color: var(--text-ghost);
-    }
-    .fw-item.active .fw-count { color: var(--amber-mid); }
+/* ===== SIDEBAR ===== */
+.sidebar {
+  width: 218px; flex-shrink: 0;
+  background: var(--bg-1);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+}
 
-    .sb-footer {
-      margin-top: auto;
-      padding: 14px 20px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 9px;
-    }
-    .user-avatar {
-      width: 26px; height: 26px;
-      background: var(--raised);
-      border: 1px solid var(--border-strong);
-      display: flex; align-items: center; justify-content: center;
-      font-family: var(--mono);
-      font-size: 0.5rem;
-      font-weight: 500;
-      color: var(--text-dim);
-      flex-shrink: 0;
-    }
-    .user-name {
-      font-size: 0.6875rem;
-      font-weight: 500;
-      letter-spacing: 0.03em;
-      color: var(--text-dim);
-    }
-    .user-role {
-      font-family: var(--mono);
-      font-size: 0.4375rem;
-      color: var(--text-ghost);
-      letter-spacing: 0.06em;
-      margin-top: 2px;
-    }
+.brand {
+  padding: 26px 22px 20px;
+  border-bottom: 1px solid var(--border);
+}
 
-    /* ── MAIN ─────────────────────────────────────────── */
-    .main {
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
+.brand-mark {
+  font-family: var(--font-display);
+  font-size: 28px; font-weight: 600; letter-spacing: -0.02em;
+  color: var(--text-0); line-height: 1;
+}
+.brand-mark em { color: var(--gold); font-style: normal; }
 
-    /* Topbar */
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 26px;
-      height: 46px;
-      border-bottom: 1px solid var(--border);
-      flex-shrink: 0;
-    }
-    .topbar-crumb {
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      font-size: 0.6875rem;
-      font-weight: 500;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-    }
-    .crumb { color: var(--text-dim); }
-    .crumb.active { color: var(--text); }
-    .crumb-sep { color: var(--text-ghost); font-size: 0.5625rem; }
+.brand-sub {
+  font-family: var(--font-mono);
+  font-size: 8px; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--text-2); margin-top: 7px;
+}
 
-    .topbar-meta {
-      display: flex;
-      align-items: center;
-      gap: 18px;
-    }
-    .meta-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-family: var(--mono);
-      font-size: 0.5rem;
-      letter-spacing: 0.08em;
-      color: var(--text-ghost);
-    }
-    .live-dot {
-      width: 5px; height: 5px;
-      background: #2C6B40;
-      border-radius: 50%;
-      position: relative;
-    }
-    .live-dot::after {
-      content: '';
-      position: absolute;
-      inset: -2px;
-      border: 1px solid rgba(44,107,64,0.35);
-      border-radius: 50%;
-      animation: livepulse 2.8s ease-in-out infinite;
-    }
-    @keyframes livepulse {
-      0%,100% { opacity:0; transform:scale(1); }
-      50%      { opacity:1; transform:scale(1.5); }
-    }
+.nav { flex: 1; padding: 14px 10px; overflow-y: auto; }
 
-    /* Pipeline bar */
-    .pipeline-bar {
-      display: flex;
-      align-items: center;
-      padding: 0 26px;
-      height: 38px;
-      border-bottom: 1px solid var(--border);
-      background: var(--surface);
-      flex-shrink: 0;
-      gap: 0;
-    }
-    .pl-stage {
-      display: flex;
-      align-items: center;
-      height: 38px;
-      padding: 0 13px;
-      font-size: 0.625rem;
-      font-weight: 600;
-      letter-spacing: 0.09em;
-      text-transform: uppercase;
-      color: var(--text-ghost);
-      cursor: pointer;
-      border-bottom: 2px solid transparent;
-      margin-bottom: -1px;
-      gap: 7px;
-      transition: color 0.12s;
-      white-space: nowrap;
-      user-select: none;
-    }
-    .pl-stage:first-child { padding-left: 0; }
-    .pl-stage:hover { color: var(--text-dim); }
-    .pl-stage.active { color: var(--text); border-bottom-color: var(--amber); }
-    .pl-count {
-      font-family: var(--mono);
-      font-size: 0.4375rem;
-      padding: 1px 5px;
-      background: var(--raised);
-      color: var(--text-ghost);
-    }
-    .pl-stage.active .pl-count {
-      background: var(--amber-tint);
-      color: var(--amber);
-    }
-    .pl-sep {
-      color: var(--text-phantom);
-      font-family: var(--mono);
-      font-size: 0.5rem;
-      padding: 0 3px;
-      user-select: none;
-    }
+.nav-section {
+  font-family: var(--font-mono);
+  font-size: 8.5px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--text-2); padding: 0 12px; margin: 18px 0 6px;
+}
+.nav-section:first-child { margin-top: 6px; }
 
-    /* Control strip */
-    .control-strip {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 26px;
-      border-bottom: 1px solid var(--border);
-      flex-shrink: 0;
-    }
-    .ctrl-left { display: flex; align-items: center; gap: 14px; }
-    .ctrl-right { display: flex; align-items: center; gap: 10px; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 12px; border-radius: 5px;
+  cursor: pointer; color: var(--text-1);
+  font-size: 13px; font-weight: 400;
+  border: 1px solid transparent;
+  margin-bottom: 1px;
+  transition: all 0.13s ease;
+  user-select: none;
+}
+.nav-item:hover { background: var(--bg-hover); color: var(--text-0); }
+.nav-item.active {
+  background: var(--gold-dim);
+  border-color: var(--gold-border);
+  color: var(--gold);
+}
+.nav-item svg { flex-shrink: 0; opacity: 0.65; }
+.nav-item.active svg { opacity: 1; }
 
-    .active-icp {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 5px 9px;
-      border: 1px solid var(--border-strong);
-      background: var(--raised);
-    }
-    .active-icp-dot { width: 4px; height: 4px; background: var(--amber); border-radius: 50%; flex-shrink: 0; }
-    .active-icp-label {
-      font-size: 0.625rem;
-      font-weight: 500;
-      letter-spacing: 0.04em;
-      color: var(--text-dim);
-    }
-    .active-icp-x {
-      font-family: var(--mono);
-      font-size: 0.5rem;
-      color: var(--text-ghost);
-      margin-left: 3px;
-      cursor: pointer;
-      padding: 1px 2px;
-    }
-    .active-icp-x:hover { color: var(--text-dim); }
+.nav-chip {
+  margin-left: auto;
+  font-family: var(--font-mono); font-size: 9.5px;
+  padding: 1px 6px; border-radius: 3px;
+  background: var(--bg-3); color: var(--text-2);
+}
+.nav-item.active .nav-chip { background: rgba(196,146,60,0.18); color: var(--gold); }
 
-    .score-filter {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-    }
-    .filter-label {
-      font-size: 0.625rem;
-      font-weight: 600;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
-      color: var(--text-ghost);
-    }
-    .threshold-ctrl {
-      display: flex;
-      align-items: stretch;
-      height: 24px;
-    }
-    .threshold-btn {
-      width: 22px;
-      background: var(--raised);
-      border: 1px solid var(--border-strong);
-      color: var(--text-dim);
-      font-family: var(--mono);
-      font-size: 0.75rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: background 0.1s, color 0.1s;
-    }
-    .threshold-btn:hover { background: var(--border); color: var(--text); }
-    .threshold-val {
-      min-width: 38px;
-      background: var(--raised);
-      border-top: 1px solid var(--border-strong);
-      border-bottom: 1px solid var(--border-strong);
-      font-family: var(--mono);
-      font-size: 0.5625rem;
-      font-weight: 400;
-      color: var(--text);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      letter-spacing: 0.04em;
-      padding: 0 6px;
-    }
+.sidebar-foot {
+  padding: 14px 10px;
+  border-top: 1px solid var(--border);
+}
 
-    .sort-ctrl {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      cursor: pointer;
-      padding: 4px 0;
-    }
-    .sort-label {
-      font-size: 0.625rem;
-      font-weight: 600;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
-      color: var(--text-ghost);
-    }
-    .sort-arrow {
-      font-family: var(--mono);
-      font-size: 0.5625rem;
-      color: var(--amber);
-    }
+.api-status {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 12px; border-radius: 5px;
+  font-size: 11.5px; color: var(--text-2);
+  font-family: var(--font-mono);
+}
+.status-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--fw-acq-c); flex-shrink: 0;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-dot {
+  0%,100% { opacity:1; box-shadow: 0 0 0 0 rgba(58,139,106,0.5); }
+  50%      { opacity:0.7; box-shadow: 0 0 0 5px rgba(58,139,106,0); }
+}
 
-    .result-tally {
-      font-family: var(--mono);
-      font-size: 0.5rem;
-      letter-spacing: 0.07em;
-      color: var(--text-ghost);
-    }
+/* ===== MAIN ===== */
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
 
-    .btn-search {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 13px;
-      border: 1px solid var(--border-strong);
-      background: transparent;
-      color: var(--text-dim);
-      font-family: var(--sans);
-      font-size: 0.625rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-    .btn-search:hover {
-      border-color: var(--amber);
-      color: var(--amber);
-      background: var(--amber-glow);
-    }
-    .btn-search-icon {
-      width: 11px; height: 11px;
-      border: 1px solid currentColor;
-      border-radius: 50%;
-      position: relative;
-      flex-shrink: 0;
-    }
-    .btn-search-icon::after {
-      content: '';
-      position: absolute;
-      right: -3px; top: 50%;
-      transform: translateY(-50%) rotate(45deg);
-      width: 4px; height: 1px;
-      background: currentColor;
-      box-shadow: 0 -2px 0 currentColor;
-    }
+/* ===== TOPBAR ===== */
+.topbar {
+  height: 62px; flex-shrink: 0;
+  background: var(--bg-0); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; padding: 0 22px; gap: 14px;
+}
 
-    /* Column headers */
-    .col-heads {
-      display: grid;
-      grid-template-columns: var(--row-grid);
-      padding: 0 26px;
-      height: 30px;
-      align-items: center;
-      border-bottom: 1px solid var(--border);
-      background: var(--surface);
-      flex-shrink: 0;
-    }
-    .ch {
-      font-family: var(--mono);
-      font-size: 0.4375rem;
-      font-weight: 400;
-      letter-spacing: 0.13em;
-      text-transform: uppercase;
-      color: var(--text-ghost);
-    }
-    .ch.sorted { color: var(--amber); }
-    .ch.sortable { cursor: pointer; }
-    .ch.sortable:hover { color: var(--text-dim); }
+.view-title {
+  font-family: var(--font-display);
+  font-size: 19px; font-weight: 500; letter-spacing: -0.01em;
+  color: var(--text-0); flex-shrink: 0;
+  white-space: nowrap;
+}
 
-    /* ── LEAD LIST ────────────────────────────────────── */
-    .lead-list {
-      flex: 1;
-      overflow-y: auto;
-      scrollbar-width: thin;
-      scrollbar-color: var(--border) transparent;
-    }
-    .lead-list::-webkit-scrollbar { width: 3px; }
-    .lead-list::-webkit-scrollbar-thumb { background: var(--border); }
+.topbar-sep { width: 1px; height: 18px; background: var(--border-mid); flex-shrink: 0; }
 
-    /* ── LEAD ROW ─────────────────────────────────────── */
-    .lead-row {
-      display: grid;
-      grid-template-columns: var(--row-grid);
-      padding: 0 26px;
-      min-height: 74px;
-      align-items: center;
-      border-bottom: 1px solid var(--border-faint);
-      position: relative;
-      cursor: pointer;
-      transition: background 0.14s;
+.search-form { flex: 1; display: flex; gap: 7px; }
 
-      opacity: 0;
-      animation: rowIn 0.35s ease forwards;
-    }
-    @keyframes rowIn {
-      from { opacity: 0; transform: translateY(5px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .lead-row::before {
-      content: '';
-      position: absolute;
-      left: 0; top: 50%;
-      transform: translateY(-50%);
-      width: 2px; height: 0;
-      background: var(--amber);
-      transition: height 0.18s ease;
-    }
-    .lead-row:hover { background: var(--amber-glow); }
-    .lead-row:hover::before { height: 38px; }
+.input-wrap { position: relative; flex: 1; }
+.input-wrap .icon {
+  position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+  color: var(--text-2); pointer-events: none;
+}
 
-    /* Rank */
-    .cell-rank {
-      font-family: var(--mono);
-      font-size: 0.4375rem;
-      font-weight: 400;
-      letter-spacing: 0.06em;
-      color: var(--text-phantom);
-    }
+.txt-input {
+  width: 100%; height: 35px;
+  background: var(--bg-2); border: 1px solid var(--border-mid);
+  border-radius: 5px; padding: 0 11px 0 34px;
+  color: var(--text-0); font-family: var(--font-ui); font-size: 13px;
+  outline: none; transition: border-color 0.13s, background 0.13s;
+}
+.txt-input::placeholder { color: var(--text-2); }
+.txt-input:focus { border-color: var(--gold-border); background: var(--bg-3); }
 
-    /* Company */
-    .cell-company { padding: 14px 14px 14px 0; }
-    .co-name {
-      font-family: var(--serif);
-      font-size: 1.1875rem;
-      font-style: italic;
-      font-weight: 400;
-      color: var(--text);
-      line-height: 1.15;
-      letter-spacing: 0.005em;
-      transition: color 0.12s;
-    }
-    .lead-row:hover .co-name { color: #fff; }
-    .co-tag {
-      display: inline-block;
-      margin-top: 5px;
-      font-size: 0.5rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--text-ghost);
-      padding: 2px 6px;
-      border: 1px solid var(--border);
-    }
+.city-wrap { max-width: 155px; }
 
-    /* Framework */
-    .cell-fw { padding-right: 12px; }
-    .fw-label-text {
-      font-size: 0.5625rem;
-      font-weight: 600;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
-      color: var(--text-dim);
-      line-height: 1.45;
-    }
-    .fw-code {
-      font-family: var(--mono);
-      font-size: 0.4375rem;
-      color: var(--text-ghost);
-      margin-top: 3px;
-      letter-spacing: 0.06em;
-    }
+.btn-discover {
+  height: 35px; padding: 0 17px;
+  background: var(--gold); color: #080A11;
+  font-family: var(--font-ui); font-size: 12.5px; font-weight: 600;
+  border: none; border-radius: 5px; cursor: pointer;
+  white-space: nowrap; letter-spacing: 0.01em;
+  transition: all 0.13s ease;
+}
+.btn-discover:hover {
+  background: var(--gold-light);
+  box-shadow: 0 3px 14px rgba(196,146,60,0.28);
+  transform: translateY(-1px);
+}
 
-    /* ── SCORE — THE SIGNATURE ELEMENT ───────────────── */
-    .cell-score {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 5px;
-      padding-right: 10px;
-    }
-    .score-row {
-      display: flex;
-      align-items: baseline;
-      gap: 0;
-    }
-    .score-num {
-      font-family: var(--mono);
-      font-size: 1.9rem;
-      font-weight: 300;
-      line-height: 1;
-      letter-spacing: -0.045em;
-      /* color set per-row via class */
-    }
-    .score-num.tier-1 { color: var(--amber); }
-    .score-num.tier-2 { color: #A68624; }
-    .score-num.tier-3 { color: var(--text-dim); }
-    .score-denom {
-      font-family: var(--mono);
-      font-size: 0.5rem;
-      font-weight: 300;
-      color: var(--text-ghost);
-      letter-spacing: 0.04em;
-      margin-left: 2px;
-      margin-bottom: 3px;
-      align-self: flex-end;
-    }
+.live-badge {
+  display: flex; align-items: center; gap: 5px;
+  padding: 4px 10px; border-radius: 20px;
+  background: rgba(58,139,106,0.09);
+  border: 1px solid rgba(58,139,106,0.18);
+  font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.08em;
+  color: var(--fw-acq-c); flex-shrink: 0;
+}
+.live-badge-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--fw-acq-c);
+  animation: pulse-dot 1.6s ease-in-out infinite;
+}
 
-    /* Calibration ruler */
-    .score-ruler {
-      position: relative;
-      width: 58px;
-      height: 14px;
-    }
-    .ruler-baseline {
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      height: 1px;
-      background: var(--border-strong);
-    }
-    /* tick marks via box-shadow on a 1px dot */
-    .ruler-ticks {
-      position: absolute;
-      bottom: 0; left: 0;
-      width: 100%; height: 14px;
-      /* 11 ticks at 0,1,2,...10 = 0%, 10%, 20%...100% */
-      background:
-        /* major ticks at 70%, 80%, 90%, 100% */
-        linear-gradient(to bottom, transparent 40%, var(--text-ghost) 40%, var(--text-ghost) 100%) no-repeat 70% 0 / 1px 9px,
-        linear-gradient(to bottom, transparent 40%, var(--text-ghost) 40%, var(--text-ghost) 100%) no-repeat 80% 0 / 1px 9px,
-        linear-gradient(to bottom, transparent 40%, var(--text-ghost) 40%, var(--text-ghost) 100%) no-repeat 90% 0 / 1px 9px,
-        linear-gradient(to bottom, transparent 40%, var(--text-ghost) 40%, var(--text-ghost) 100%) no-repeat 100% 0 / 1px 9px,
-        /* minor ticks */
-        linear-gradient(to bottom, transparent 55%, var(--text-phantom) 55%, var(--text-phantom) 100%) no-repeat 0%   0 / 1px 6px,
-        linear-gradient(to bottom, transparent 55%, var(--text-phantom) 55%, var(--text-phantom) 100%) no-repeat 10%  0 / 1px 6px,
-        linear-gradient(to bottom, transparent 55%, var(--text-phantom) 55%, var(--text-phantom) 100%) no-repeat 20%  0 / 1px 6px,
-        linear-gradient(to bottom, transparent 55%, var(--text-phantom) 55%, var(--text-phantom) 100%) no-repeat 30%  0 / 1px 6px,
-        linear-gradient(to bottom, transparent 55%, var(--text-phantom) 55%, var(--text-phantom) 100%) no-repeat 40%  0 / 1px 6px,
-        linear-gradient(to bottom, transparent 55%, var(--text-phantom) 55%, var(--text-phantom) 100%) no-repeat 50%  0 / 1px 6px,
-        linear-gradient(to bottom, transparent 55%, var(--text-phantom) 55%, var(--text-phantom) 100%) no-repeat 60%  0 / 1px 6px;
-    }
-    .ruler-needle {
-      position: absolute;
-      bottom: 0;
-      width: 1px;
-      height: 14px;
-      /* left set inline */
-    }
-    .ruler-needle.tier-1 { background: var(--amber); }
-    .ruler-needle.tier-2 { background: var(--amber-mid); }
-    .ruler-needle.tier-3 { background: var(--text-dim); }
-    .ruler-needle::after {
-      content: '';
-      position: absolute;
-      bottom: -1px; left: 50%;
-      transform: translateX(-50%);
-      width: 3px; height: 3px;
-      border-radius: 50%;
-      background: inherit;
-    }
-    .ruler-scale-labels {
-      position: absolute;
-      bottom: -10px; left: 0; right: 0;
-      display: flex;
-      justify-content: space-between;
-      /* only show 7, 8, 9, 10 */
-    }
-    .rsl {
-      font-family: var(--mono);
-      font-size: 0.3125rem;
-      color: var(--text-ghost);
-      letter-spacing: 0;
-      transform: translateX(-50%);
-    }
+/* ===== CONTENT ===== */
+.content { flex: 1; display: flex; overflow: hidden; }
 
-    /* Stage */
-    .cell-stage { padding-right: 12px; }
-    .stage-label-text {
-      font-family: var(--mono);
-      font-size: 0.4375rem;
-      font-weight: 400;
-      letter-spacing: 0.09em;
-      text-transform: uppercase;
-      color: var(--text-ghost);
-    }
-    .stage-num {
-      font-family: var(--mono);
-      font-size: 0.5625rem;
-      font-weight: 500;
-      color: var(--text-dim);
-      margin-bottom: 2px;
-    }
+/* ===== DISCOVERY VIEW ===== */
+#discovery-view { flex: 1; display: flex; overflow: hidden; min-width: 0; }
+#discovery-view.hidden { display: none; }
 
-    /* Signal */
-    .cell-signal { padding-right: 16px; }
-    .signal-quote {
-      font-family: var(--serif);
-      font-size: 0.8125rem;
-      font-style: italic;
-      font-weight: 300;
-      color: var(--text-dim);
-      line-height: 1.5;
-      letter-spacing: 0.01em;
-    }
+.table-pane { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
 
-    /* Actions */
-    .cell-actions {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      opacity: 0;
-      transition: opacity 0.15s;
-    }
-    .lead-row:hover .cell-actions { opacity: 1; }
-    .act-btn {
-      padding: 4px 8px;
-      border: 1px solid var(--border-strong);
-      background: transparent;
-      font-family: var(--sans);
-      font-size: 0.5rem;
-      font-weight: 700;
-      letter-spacing: 0.09em;
-      text-transform: uppercase;
-      color: var(--text-dim);
-      cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.1s;
-    }
-    .act-btn:hover { border-color: var(--amber); color: var(--amber); }
-    .act-btn.primary {
-      background: var(--amber-tint);
-      border-color: var(--amber);
-      color: var(--amber);
-    }
-    .act-btn.primary:hover { background: rgba(196,154,42,0.22); }
+/* Results bar */
+.results-bar {
+  padding: 11px 22px; flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-0);
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+}
 
-    /* ── BOTTOM BAR ───────────────────────────────────── */
-    .bottom-bar {
-      height: 30px;
-      border-top: 1px solid var(--border);
-      background: var(--surface);
-      display: flex;
-      align-items: center;
-      padding: 0 26px;
-      gap: 0;
-      flex-shrink: 0;
-    }
-    .bstat {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      padding: 0 18px 0 0;
-      margin-right: 18px;
-      border-right: 1px solid var(--border);
-    }
-    .bstat:last-of-type { border-right: none; }
-    .bstat-label {
-      font-family: var(--mono);
-      font-size: 0.4375rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--text-ghost);
-    }
-    .bstat-val {
-      font-family: var(--mono);
-      font-size: 0.4375rem;
-      color: var(--text-dim);
-      letter-spacing: 0.04em;
-    }
-    .bstat-val.highlight { color: var(--amber); }
-    .bottom-wordmark {
-      margin-left: auto;
-      font-family: var(--mono);
-      font-size: 0.375rem;
-      letter-spacing: 0.1em;
-      color: var(--text-phantom);
-    }
-  </style>
+.results-meta {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+}
+.results-count {
+  font-family: var(--font-mono); font-size: 11px; color: var(--text-2);
+  letter-spacing: 0.04em; white-space: nowrap;
+}
+.results-count strong { color: var(--text-1); font-weight: 500; }
+
+.fw-filters { display: flex; gap: 5px; flex-wrap: wrap; }
+
+.fw-pill {
+  padding: 3px 9px; border-radius: 4px;
+  font-size: 11px; font-weight: 500; cursor: pointer;
+  border: 1px solid transparent; transition: all 0.12s;
+  user-select: none;
+}
+.fw-pill.all    { background: var(--bg-3); border-color: var(--border-light); color: var(--text-1); }
+.fw-pill.brand  { background: var(--fw-brand-bg); border-color: var(--fw-brand-b); color: var(--fw-brand-c); }
+.fw-pill.acq    { background: var(--fw-acq-bg); border-color: var(--fw-acq-b); color: var(--fw-acq-c); }
+.fw-pill.growth { background: var(--fw-growth-bg); border-color: var(--fw-growth-b); color: var(--fw-growth-c); }
+.fw-pill.scale  { background: var(--fw-scale-bg); border-color: var(--fw-scale-b); color: var(--fw-scale-c); }
+.fw-pill.venture{ background: var(--fw-venture-bg); border-color: var(--fw-venture-b); color: var(--fw-venture-c); }
+.fw-pill.active  { font-weight: 600; box-shadow: inset 0 0 0 1.5px currentColor; }
+
+.sort-row { display: flex; align-items: center; gap: 7px; flex-shrink: 0; }
+.sort-label { font-size: 11.5px; color: var(--text-2); }
+.sort-sel {
+  background: var(--bg-2); border: 1px solid var(--border-mid);
+  border-radius: 4px; padding: 3px 7px;
+  font-size: 11.5px; color: var(--text-1); font-family: var(--font-ui);
+  outline: none; cursor: pointer;
+}
+
+/* Table */
+.tbl-scroll {
+  flex: 1; overflow-y: auto;
+  scrollbar-width: thin; scrollbar-color: var(--border-mid) transparent;
+}
+
+.leads-tbl {
+  width: 100%; border-collapse: collapse;
+}
+
+.leads-tbl thead {
+  position: sticky; top: 0; z-index: 5;
+}
+
+.leads-tbl th {
+  background: var(--bg-1); border-bottom: 1px solid var(--border-mid);
+  padding: 9px 14px; text-align: left;
+  font-family: var(--font-mono); font-size: 9px;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--text-2); font-weight: 500; white-space: nowrap;
+}
+.leads-tbl th:first-child { padding-left: 22px; }
+.leads-tbl th:last-child { padding-right: 22px; }
+
+.leads-tbl td {
+  padding: 0 14px; border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.leads-tbl td:first-child { padding-left: 0; }
+.leads-tbl td:last-child { padding-right: 22px; }
+
+.leads-tbl tbody tr {
+  height: 54px; cursor: pointer;
+  transition: background 0.11s ease;
+  position: relative;
+}
+.leads-tbl tbody tr:hover { background: var(--bg-hover); }
+.leads-tbl tbody tr.row-active { background: rgba(196,146,60,0.04); }
+
+/* Left accent border via first td */
+.row-accent { width: 3px; padding: 0 !important; }
+.row-accent-bar {
+  width: 3px; height: 54px;
+  background: transparent; transition: background 0.11s ease;
+}
+tr:hover .row-accent-bar,
+tr.row-active .row-accent-bar { /* set by JS via data-fw */ }
+
+.lead-cell { display: flex; flex-direction: column; gap: 2px; padding-left: 12px; }
+.lead-name { font-size: 13.5px; font-weight: 500; color: var(--text-0); }
+.lead-loc {
+  font-family: var(--font-mono); font-size: 10.5px; color: var(--text-2);
+}
+
+/* Framework badge */
+.fw-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 9px; border-radius: 4px;
+  font-size: 11px; font-weight: 500; border: 1px solid;
+  white-space: nowrap; letter-spacing: 0.01em;
+}
+.fw-badge .dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+
+.fw-brand_positioning  { background: var(--fw-brand-bg); border-color: var(--fw-brand-b); color: var(--fw-brand-c); }
+.fw-brand_positioning .dot { background: var(--fw-brand-c); }
+.fw-client_acquisition { background: var(--fw-acq-bg); border-color: var(--fw-acq-b); color: var(--fw-acq-c); }
+.fw-client_acquisition .dot { background: var(--fw-acq-c); }
+.fw-growth_infrastructure { background: var(--fw-growth-bg); border-color: var(--fw-growth-b); color: var(--fw-growth-c); }
+.fw-growth_infrastructure .dot { background: var(--fw-growth-c); }
+.fw-scaling_roadmap { background: var(--fw-scale-bg); border-color: var(--fw-scale-b); color: var(--fw-scale-c); }
+.fw-scaling_roadmap .dot { background: var(--fw-scale-c); }
+.fw-venture_development { background: var(--fw-venture-bg); border-color: var(--fw-venture-b); color: var(--fw-venture-c); }
+.fw-venture_development .dot { background: var(--fw-venture-c); }
+
+/* Score cell */
+.score-cell { display: flex; flex-direction: column; gap: 4px; min-width: 70px; }
+.score-num {
+  font-family: var(--font-mono); font-size: 16px; font-weight: 600; line-height: 1;
+}
+.score-bar { height: 2px; background: var(--bg-3); border-radius: 1px; overflow: hidden; }
+.score-bar-fill { height: 100%; border-radius: 1px; }
+
+.s-hi  .score-num { color: var(--fw-brand-c); }
+.s-mid .score-num { color: #7ABF68; }
+.s-lo  .score-num { color: var(--text-1); }
+.s-vlo .score-num { color: #9B5555; }
+
+/* Stage badge */
+.stage-tag {
+  padding: 3px 9px; border-radius: 4px;
+  font-family: var(--font-mono); font-size: 9.5px;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  border: 1px solid; display: inline-block;
+}
+.st-discovered { background: rgba(255,255,255,0.03); color: var(--text-2); border-color: var(--border-light); }
+.st-qualified  { background: var(--fw-scale-bg); color: var(--fw-scale-c); border-color: var(--fw-scale-b); }
+.st-outreach   { background: var(--gold-dim); color: var(--gold); border-color: var(--gold-border); }
+.st-closed     { background: var(--fw-acq-bg); color: var(--fw-acq-c); border-color: var(--fw-acq-b); }
+
+/* Row action buttons */
+.row-btns { display: flex; gap: 5px; opacity: 0; transition: opacity 0.11s; }
+tr:hover .row-btns { opacity: 1; }
+
+.rbtn {
+  padding: 4px 10px; font-size: 11.5px; border-radius: 4px;
+  border: 1px solid var(--border-light); background: var(--bg-2);
+  color: var(--text-1); cursor: pointer; font-family: var(--font-ui);
+  transition: all 0.11s;
+}
+.rbtn:hover { background: var(--bg-hover); color: var(--text-0); }
+.rbtn.rp {
+  background: var(--gold-dim); border-color: var(--gold-border); color: var(--gold);
+}
+.rbtn.rp:hover { background: rgba(196,146,60,0.2); }
+
+/* Row enter animation */
+@keyframes rowIn {
+  from { opacity: 0; transform: translateX(-6px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.leads-tbl tbody tr { animation: rowIn 0.3s ease both; }
+.leads-tbl tbody tr:nth-child(1)  { animation-delay: 0.04s; }
+.leads-tbl tbody tr:nth-child(2)  { animation-delay: 0.08s; }
+.leads-tbl tbody tr:nth-child(3)  { animation-delay: 0.12s; }
+.leads-tbl tbody tr:nth-child(4)  { animation-delay: 0.16s; }
+.leads-tbl tbody tr:nth-child(5)  { animation-delay: 0.20s; }
+.leads-tbl tbody tr:nth-child(6)  { animation-delay: 0.24s; }
+.leads-tbl tbody tr:nth-child(7)  { animation-delay: 0.28s; }
+.leads-tbl tbody tr:nth-child(8)  { animation-delay: 0.32s; }
+.leads-tbl tbody tr:nth-child(9)  { animation-delay: 0.36s; }
+.leads-tbl.no-anim tbody tr { animation: none !important; }
+
+/* Skeleton shimmer */
+@keyframes shimmer {
+  from { background-position: -200% 0; }
+  to   { background-position:  200% 0; }
+}
+.sk {
+  border-radius: 3px; display: inline-block;
+  background: linear-gradient(90deg, var(--bg-2) 25%, var(--bg-3) 50%, var(--bg-2) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+/* ===== DETAIL PANEL ===== */
+.detail-panel {
+  width: 355px; flex-shrink: 0;
+  background: var(--bg-1); border-left: 1px solid var(--border);
+  display: flex; flex-direction: column; overflow: hidden;
+  transform: translateX(100%);
+  transition: transform 0.24s cubic-bezier(0.22,1,0.36,1);
+}
+.detail-panel.open { transform: translateX(0); }
+
+.dp-head {
+  padding: 18px 18px 15px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: flex-start; gap: 10px; flex-shrink: 0;
+}
+.dp-company { flex: 1; min-width: 0; }
+.dp-name {
+  font-family: var(--font-display);
+  font-size: 22px; font-weight: 500; letter-spacing: -0.01em;
+  color: var(--text-0); line-height: 1.2;
+}
+.dp-industry {
+  font-family: var(--font-mono); font-size: 10.5px;
+  color: var(--text-2); margin-top: 4px;
+}
+.dp-close {
+  width: 27px; height: 27px; border-radius: 4px;
+  background: var(--bg-2); border: 1px solid var(--border-light);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--text-2); flex-shrink: 0;
+  transition: all 0.11s;
+}
+.dp-close:hover { background: var(--bg-hover); color: var(--text-0); }
+
+.dp-scroll { flex: 1; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--border-mid) transparent; }
+
+.dp-sec { padding: 16px 18px; border-bottom: 1px solid var(--border); }
+
+.dp-sec-title {
+  font-family: var(--font-mono); font-size: 8.5px;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--text-2); margin-bottom: 12px;
+}
+
+/* Score ring */
+.score-display { display: flex; align-items: center; gap: 14px; }
+
+.score-ring-wrap { position: relative; width: 74px; height: 74px; flex-shrink: 0; }
+.score-ring-wrap svg { transform: rotate(-90deg); }
+
+.ring-bg { fill: none; stroke: var(--bg-3); stroke-width: 4; }
+.ring-fill {
+  fill: none; stroke-width: 4; stroke-linecap: round;
+  transition: stroke-dashoffset 1.1s cubic-bezier(0.22,1,0.36,1),
+              stroke 0.2s ease;
+}
+
+.ring-label {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.ring-num {
+  font-family: var(--font-mono); font-size: 18px; font-weight: 600; line-height: 1;
+}
+.ring-denom {
+  font-family: var(--font-mono); font-size: 8.5px; color: var(--text-2); margin-top: 1px;
+}
+
+.score-meta { flex: 1; min-width: 0; }
+.score-need { font-size: 11px; color: var(--text-2); margin-bottom: 4px; }
+.score-fw-name {
+  font-family: var(--font-display); font-size: 16px; font-weight: 500;
+  line-height: 1.25; margin-bottom: 8px;
+}
+
+.dp-reasoning {
+  font-family: var(--font-display);
+  font-size: 15px; font-style: italic; line-height: 1.65;
+  color: var(--text-1);
+}
+
+.signals { display: flex; flex-direction: column; gap: 7px; }
+.signal {
+  display: flex; align-items: flex-start; gap: 8px;
+  font-size: 12.5px; color: var(--text-1); line-height: 1.45;
+}
+.signal::before {
+  content: '↗'; font-family: var(--font-mono); font-size: 9.5px;
+  color: var(--text-2); margin-top: 2px; flex-shrink: 0;
+}
+
+.contact-rows { display: flex; flex-direction: column; gap: 9px; }
+.contact-row { display: flex; gap: 10px; align-items: baseline; }
+.c-label {
+  font-family: var(--font-mono); font-size: 9px;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--text-2); width: 56px; flex-shrink: 0;
+}
+.c-val {
+  font-family: var(--font-mono); font-size: 12px;
+  color: var(--text-1); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.c-val a { color: var(--gold); text-decoration: none; }
+.c-val a:hover { text-decoration: underline; }
+.c-empty { font-family: var(--font-ui); font-style: italic; font-size: 11.5px; color: var(--text-2); }
+
+.dp-actions { padding: 14px 18px; display: flex; flex-direction: column; gap: 7px; flex-shrink: 0; }
+
+.dp-btn {
+  width: 100%; padding: 9px 14px; border-radius: 5px;
+  font-size: 13px; font-weight: 500; cursor: pointer;
+  border: none; font-family: var(--font-ui); transition: all 0.13s;
+}
+.dp-btn.primary { background: var(--gold); color: #080A11; }
+.dp-btn.primary:hover { background: var(--gold-light); box-shadow: 0 4px 14px rgba(196,146,60,0.28); }
+.dp-btn.secondary {
+  background: var(--bg-2); color: var(--text-1);
+  border: 1px solid var(--border-light);
+}
+.dp-btn.secondary:hover { background: var(--bg-hover); color: var(--text-0); }
+
+/* ===== PIPELINE VIEW ===== */
+#pipeline-view { flex: 1; display: none; flex-direction: column; overflow: hidden; }
+#pipeline-view.active { display: flex; }
+
+.pipe-header {
+  padding: 12px 22px; flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.pipe-header-title {
+  font-family: var(--font-display); font-size: 15px; font-weight: 400;
+  color: var(--text-1); letter-spacing: 0.01em;
+}
+
+.kanban { flex: 1; display: flex; overflow: hidden; }
+
+.k-col {
+  flex: 1; display: flex; flex-direction: column;
+  border-right: 1px solid var(--border); overflow: hidden;
+  min-width: 0;
+}
+.k-col:last-child { border-right: none; }
+
+.k-col-head {
+  padding: 12px 16px 10px; flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 8px;
+}
+.k-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.k-stage-name {
+  font-family: var(--font-mono); font-size: 9px;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--text-2); flex: 1;
+}
+.k-count {
+  font-family: var(--font-mono); font-size: 9.5px;
+  background: var(--bg-3); color: var(--text-2);
+  padding: 1px 6px; border-radius: 3px;
+}
+
+.k-cards {
+  flex: 1; overflow-y: auto; padding: 10px;
+  display: flex; flex-direction: column; gap: 7px;
+  scrollbar-width: thin; scrollbar-color: var(--border-mid) transparent;
+}
+
+.k-card {
+  background: var(--bg-2); border: 1px solid var(--border-mid);
+  border-radius: 5px; padding: 11px 13px;
+  cursor: pointer; transition: all 0.12s ease;
+  border-left: 2px solid;
+}
+.k-card:hover {
+  background: var(--bg-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+}
+
+.k-card-fw { margin-bottom: 7px; }
+.k-card-name { font-size: 13px; font-weight: 500; color: var(--text-0); margin-bottom: 2px; }
+.k-card-ind  { font-size: 11px; color: var(--text-2); margin-bottom: 9px; }
+.k-card-foot { display: flex; align-items: center; justify-content: space-between; }
+.k-score { font-family: var(--font-mono); font-size: 13px; font-weight: 600; }
+.k-loc   { font-family: var(--font-mono); font-size: 9.5px; color: var(--text-2); }
+
+.k-empty {
+  text-align: center; padding: 36px 0;
+  font-family: var(--font-mono); font-size: 10px;
+  letter-spacing: 0.1em; color: var(--text-2);
+}
+</style>
 </head>
 <body>
-<div class="shell">
+<div class="app">
 
-  <!-- ═══════════════ SIDEBAR ════════════════ -->
+  <!-- SIDEBAR -->
   <aside class="sidebar">
-
-    <div class="sb-logo">
-      <div class="sb-logo-mark">R&R</div>
-      <div class="sb-logo-sub">Collective</div>
+    <div class="brand">
+      <div class="brand-mark">R<em>&</em>R</div>
+      <div class="brand-sub">Collective Intelligence</div>
     </div>
-
-    <nav class="sb-nav">
-      <div class="nav-item active">
-        <span class="nav-pip"></span> Intelligence
+    <nav class="nav">
+      <div class="nav-section">Prospecting</div>
+      <div class="nav-item active" onclick="showView('discovery')">
+        <svg width="14" height="14" viewBox="0 0 15 15" fill="none">
+          <circle cx="6.5" cy="6.5" r="4" stroke="currentColor" stroke-width="1.3"/>
+          <path d="M9.5 9.5L13 13" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+        </svg>
+        Discover
+        <span class="nav-chip">9</span>
       </div>
-      <div class="nav-item">
-        <span class="nav-pip"></span> Pipeline
+      <div class="nav-item" onclick="showView('pipeline')">
+        <svg width="14" height="14" viewBox="0 0 15 15" fill="none">
+          <rect x="2" y="2.5" width="3" height="10" rx="1" stroke="currentColor" stroke-width="1.3"/>
+          <rect x="6.5" y="5" width="3" height="7.5" rx="1" stroke="currentColor" stroke-width="1.3"/>
+          <rect x="11" y="4" width="2.5" height="8.5" rx="1" stroke="currentColor" stroke-width="1.3"/>
+        </svg>
+        Pipeline
+        <span class="nav-chip">4</span>
       </div>
+      <div class="nav-section">Database</div>
       <div class="nav-item">
-        <span class="nav-pip"></span> Outreach
+        <svg width="14" height="14" viewBox="0 0 15 15" fill="none">
+          <ellipse cx="7.5" cy="4" rx="4.5" ry="2" stroke="currentColor" stroke-width="1.3"/>
+          <path d="M3 4V7.5C3 8.605 5.015 9.5 7.5 9.5C9.985 9.5 12 8.605 12 7.5V4" stroke="currentColor" stroke-width="1.3"/>
+          <path d="M3 7.5V11C3 12.105 5.015 13 7.5 13C9.985 13 12 12.105 12 11V7.5" stroke="currentColor" stroke-width="1.3"/>
+        </svg>
+        All Leads
+        <span class="nav-chip">47</span>
       </div>
+      <div class="nav-section">Config</div>
       <div class="nav-item">
-        <span class="nav-pip"></span> Archive
+        <svg width="14" height="14" viewBox="0 0 15 15" fill="none">
+          <path d="M7.5 9.5C8.605 9.5 9.5 8.605 9.5 7.5C9.5 6.395 8.605 5.5 7.5 5.5C6.395 5.5 5.5 6.395 5.5 7.5C5.5 8.605 6.395 9.5 7.5 9.5Z" stroke="currentColor" stroke-width="1.3"/>
+          <path d="M12.7 9.1L13.5 7.5L12.7 5.9L11.1 5.9C10.9 5.4 10.7 4.9 10.4 4.5L10.8 2.9L9.5 2L8.1 2.8C7.6 2.6 7 2.6 6.5 2.8L5.1 2L3.8 2.9L4.2 4.5C3.9 4.9 3.7 5.4 3.5 5.9L1.9 5.9L1.1 7.5L1.9 9.1L3.5 9.1C3.7 9.6 3.9 10.1 4.2 10.5L3.8 12.1L5.1 13L6.5 12.2C7 12.4 7.6 12.4 8.1 12.2L9.5 13L10.8 12.1L10.4 10.5C10.7 10.1 10.9 9.6 11.1 9.1L12.7 9.1Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+        </svg>
+        ICP Criteria
       </div>
     </nav>
-
-    <div class="sb-section">
-      <div class="sb-section-label">Active ICP</div>
-      <div class="icp-chip">
-        <span class="icp-chip-dot"></span>
-        <span class="icp-chip-text">DTC Brand · $500K–$5M revenue<br>Marketing underinvestment</span>
+    <div class="sidebar-foot">
+      <div class="api-status">
+        <div class="status-dot"></div>
+        APIs connected
       </div>
     </div>
-
-    <div class="sb-section">
-      <div class="sb-section-label">Framework</div>
-      <div class="fw-list">
-        <div class="fw-item active">
-          <span class="fw-name">All Frameworks</span>
-          <span class="fw-count">24</span>
-        </div>
-        <div class="fw-item">
-          <span class="fw-name">Brand Positioning</span>
-          <span class="fw-count">07</span>
-        </div>
-        <div class="fw-item">
-          <span class="fw-name">Client Acquisition</span>
-          <span class="fw-count">06</span>
-        </div>
-        <div class="fw-item">
-          <span class="fw-name">Growth Infrastructure</span>
-          <span class="fw-count">05</span>
-        </div>
-        <div class="fw-item">
-          <span class="fw-name">Scaling Roadmap</span>
-          <span class="fw-count">04</span>
-        </div>
-        <div class="fw-item">
-          <span class="fw-name">Venture Development</span>
-          <span class="fw-count">02</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="sb-footer">
-      <div class="user-avatar">JS</div>
-      <div>
-        <div class="user-name">J. Sterling</div>
-        <div class="user-role">Growth Strategist</div>
-      </div>
-    </div>
-
   </aside>
 
-  <!-- ═══════════════ MAIN ════════════════════ -->
+  <!-- MAIN -->
   <main class="main">
 
-    <!-- Topbar -->
-    <div class="topbar">
-      <div class="topbar-crumb">
-        <span class="crumb">Intelligence</span>
-        <span class="crumb-sep">›</span>
-        <span class="crumb active">Lead Scan · DTC Q4-2026</span>
-      </div>
-      <div class="topbar-meta">
-        <div class="meta-item">
-          <span class="live-dot"></span>
-          LIVE
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <span class="view-title" id="view-title">Lead Discovery</span>
+      <div class="topbar-sep"></div>
+      <form class="search-form" onsubmit="runSearch(event)">
+        <div class="input-wrap">
+          <svg class="icon" width="13" height="13" viewBox="0 0 15 15" fill="none">
+            <circle cx="6.5" cy="6.5" r="4" stroke="currentColor" stroke-width="1.3"/>
+            <path d="M9.5 9.5L13 13" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+          <input class="txt-input" id="niche-in" type="text" placeholder="Niche — skincare brand, boutique hotel…" value="lifestyle brand">
         </div>
-        <div class="meta-item">FRI · 13 JUN 2026 · 08:42</div>
-      </div>
-    </div>
-
-    <!-- Pipeline stages -->
-    <div class="pipeline-bar">
-      <div class="pl-stage active">
-        Identified <span class="pl-count">24</span>
-      </div>
-      <span class="pl-sep">›</span>
-      <div class="pl-stage">
-        Qualified <span class="pl-count">11</span>
-      </div>
-      <span class="pl-sep">›</span>
-      <div class="pl-stage">
-        Outreach <span class="pl-count">08</span>
-      </div>
-      <span class="pl-sep">›</span>
-      <div class="pl-stage">
-        In Conversation <span class="pl-count">03</span>
-      </div>
-      <span class="pl-sep">›</span>
-      <div class="pl-stage">
-        Closed <span class="pl-count">02</span>
-      </div>
-    </div>
-
-    <!-- Controls -->
-    <div class="control-strip">
-      <div class="ctrl-left">
-        <div class="active-icp">
-          <span class="active-icp-dot"></span>
-          <span class="active-icp-label">DTC Brand · $500K–$5M revenue · Marketing underinvestment</span>
-          <span class="active-icp-x">✕</span>
+        <div class="input-wrap city-wrap">
+          <svg class="icon" width="13" height="13" viewBox="0 0 15 15" fill="none">
+            <path d="M7.5 13C7.5 13 2.5 9.2 2.5 5.5C2.5 3.015 4.74 1 7.5 1C10.26 1 12.5 3.015 12.5 5.5C12.5 9.2 7.5 13 7.5 13Z" stroke="currentColor" stroke-width="1.3"/>
+            <circle cx="7.5" cy="5.5" r="1.5" stroke="currentColor" stroke-width="1.3"/>
+          </svg>
+          <input class="txt-input" id="city-in" type="text" placeholder="City" value="Los Angeles, CA">
         </div>
-        <div class="score-filter">
-          <span class="filter-label">Score ≥</span>
-          <div class="threshold-ctrl">
-            <button class="threshold-btn" onclick="adjustThreshold(-0.5)">−</button>
-            <div class="threshold-val" id="thresh">7.0</div>
-            <button class="threshold-btn" onclick="adjustThreshold(0.5)">+</button>
+        <button type="submit" class="btn-discover">Discover →</button>
+      </form>
+      <div class="live-badge">
+        <div class="live-badge-dot"></div>
+        LIVE
+      </div>
+    </header>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+      <!-- DISCOVERY VIEW -->
+      <div id="discovery-view">
+        <div class="table-pane">
+          <div class="results-bar">
+            <div class="results-meta">
+              <span class="results-count" id="results-count"><strong>9 leads</strong> · Los Angeles, CA · lifestyle brand</span>
+              <div class="fw-filters">
+                <span class="fw-pill all">All</span>
+                <span class="fw-pill brand">Brand</span>
+                <span class="fw-pill acq">Acquisition</span>
+                <span class="fw-pill growth">Growth</span>
+                <span class="fw-pill scale">Scaling</span>
+                <span class="fw-pill venture">Venture</span>
+              </div>
+            </div>
+            <div class="sort-row">
+              <span class="sort-label">Sort</span>
+              <select class="sort-sel">
+                <option>Framework Score ↓</option>
+                <option>Company Name</option>
+                <option>Stage</option>
+              </select>
+            </div>
           </div>
-        </div>
-        <div class="sort-ctrl">
-          <span class="sort-label">Score</span>
-          <span class="sort-arrow">↓</span>
-        </div>
-      </div>
-      <div class="ctrl-right">
-        <span class="result-tally">24 LEADS · RANKED BY SCORE</span>
-        <button class="btn-search">
-          <span class="btn-search-icon"></span>
-          Run New Search
-        </button>
-      </div>
-    </div>
-
-    <!-- Column headers -->
-    <div class="col-heads">
-      <div class="ch">#</div>
-      <div class="ch">Company</div>
-      <div class="ch">Framework</div>
-      <div class="ch sorted sortable">Score ↓</div>
-      <div class="ch">Stage</div>
-      <div class="ch">AI Signal</div>
-      <div class="ch"></div>
-    </div>
-
-    <!-- Lead list -->
-    <div class="lead-list">
-
-      <!-- ── ROW 1: Maverick Roast Co. ── -->
-      <div class="lead-row" style="animation-delay:0.04s">
-        <div class="cell-rank">01</div>
-
-        <div class="cell-company">
-          <div class="co-name">Maverick Roast Co.</div>
-          <span class="co-tag">Consumer Goods</span>
-        </div>
-
-        <div class="cell-fw">
-          <div class="fw-label-text">Brand Positioning<br>Framework</div>
-          <div class="fw-code">BPF · 001</div>
-        </div>
-
-        <div class="cell-score">
-          <div class="score-row">
-            <span class="score-num tier-1">9.1</span>
-            <span class="score-denom">/10</span>
-          </div>
-          <div class="score-ruler">
-            <div class="ruler-ticks"></div>
-            <div class="ruler-baseline"></div>
-            <div class="ruler-needle tier-1" style="left:calc(9.1/10*100%)"></div>
+          <div class="tbl-scroll">
+            <table class="leads-tbl">
+              <thead>
+                <tr>
+                  <th style="width:3px;padding:0"></th>
+                  <th style="width:200px">Company</th>
+                  <th style="width:185px">Framework Match</th>
+                  <th style="width:78px">Score</th>
+                  <th>Industry</th>
+                  <th style="width:96px">Stage</th>
+                  <th style="width:175px"></th>
+                </tr>
+              </thead>
+              <tbody id="leads-tbody"></tbody>
+            </table>
           </div>
         </div>
 
-        <div class="cell-stage">
-          <div class="stage-num">01</div>
-          <div class="stage-label-text">Identified</div>
-        </div>
-
-        <div class="cell-signal">
-          <div class="signal-quote">"Strong product-market fit, no brand differentiation or premium positioning visible"</div>
-        </div>
-
-        <div class="cell-actions">
-          <button class="act-btn primary">View Detail</button>
-          <button class="act-btn">Start Outreach</button>
+        <!-- DETAIL PANEL -->
+        <div class="detail-panel" id="detail-panel">
+          <div class="dp-head">
+            <div class="dp-company">
+              <div class="dp-name" id="dp-name">—</div>
+              <div class="dp-industry" id="dp-industry">—</div>
+            </div>
+            <div class="dp-close" onclick="closePanel()">
+              <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
+                <path d="M1 1L11 11M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+          <div class="dp-scroll">
+            <div class="dp-sec">
+              <div class="dp-sec-title">Framework Intelligence</div>
+              <div class="score-display">
+                <div class="score-ring-wrap">
+                  <svg width="74" height="74" viewBox="0 0 74 74">
+                    <circle class="ring-bg" cx="37" cy="37" r="30"/>
+                    <circle class="ring-fill" id="dp-ring" cx="37" cy="37" r="30"
+                            stroke-dasharray="188.5" stroke-dashoffset="188.5"/>
+                  </svg>
+                  <div class="ring-label">
+                    <span class="ring-num" id="dp-score-num">—</span>
+                    <span class="ring-denom">/ 10</span>
+                  </div>
+                </div>
+                <div class="score-meta">
+                  <div class="score-need">Primary Need</div>
+                  <div class="score-fw-name" id="dp-fw-name">—</div>
+                  <span class="fw-badge" id="dp-fw-badge">
+                    <span class="dot" id="dp-fw-dot"></span>
+                    <span id="dp-fw-badge-txt">—</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="dp-sec">
+              <div class="dp-sec-title">AI Analysis</div>
+              <div class="dp-reasoning" id="dp-reasoning">—</div>
+            </div>
+            <div class="dp-sec">
+              <div class="dp-sec-title">Signals Detected</div>
+              <div class="signals" id="dp-signals"></div>
+            </div>
+            <div class="dp-sec">
+              <div class="dp-sec-title">Contact Details</div>
+              <div class="contact-rows" id="dp-contact"></div>
+            </div>
+          </div>
+          <div class="dp-actions">
+            <button class="dp-btn primary" onclick="qualifyLead()">→ Move to Qualified</button>
+            <button class="dp-btn secondary">Enrich with Hunter.io</button>
+          </div>
         </div>
       </div>
 
-      <!-- ── ROW 2: Luma Athletics ── -->
-      <div class="lead-row" style="animation-delay:0.09s">
-        <div class="cell-rank">02</div>
-
-        <div class="cell-company">
-          <div class="co-name">Luma Athletics</div>
-          <span class="co-tag">D2C</span>
+      <!-- PIPELINE VIEW -->
+      <div id="pipeline-view">
+        <div class="pipe-header">
+          <span class="pipe-header-title">Active Pipeline</span>
         </div>
-
-        <div class="cell-fw">
-          <div class="fw-label-text">Growth Infrastructure<br>Framework</div>
-          <div class="fw-code">GIF · 003</div>
-        </div>
-
-        <div class="cell-score">
-          <div class="score-row">
-            <span class="score-num tier-1">8.6</span>
-            <span class="score-denom">/10</span>
-          </div>
-          <div class="score-ruler">
-            <div class="ruler-ticks"></div>
-            <div class="ruler-baseline"></div>
-            <div class="ruler-needle tier-1" style="left:calc(8.6/10*100%)"></div>
-          </div>
-        </div>
-
-        <div class="cell-stage">
-          <div class="stage-num">01</div>
-          <div class="stage-label-text">Identified</div>
-        </div>
-
-        <div class="cell-signal">
-          <div class="signal-quote">"Revenue growth stalled at $2.1M, no retention system, high CAC with no LTV model"</div>
-        </div>
-
-        <div class="cell-actions">
-          <button class="act-btn primary">View Detail</button>
-          <button class="act-btn">Start Outreach</button>
-        </div>
-      </div>
-
-      <!-- ── ROW 3: Terra Supply ── -->
-      <div class="lead-row" style="animation-delay:0.14s">
-        <div class="cell-rank">03</div>
-
-        <div class="cell-company">
-          <div class="co-name">Terra Supply</div>
-          <span class="co-tag">E-commerce</span>
-        </div>
-
-        <div class="cell-fw">
-          <div class="fw-label-text">Client Acquisition<br>Framework</div>
-          <div class="fw-code">CAF · 002</div>
-        </div>
-
-        <div class="cell-score">
-          <div class="score-row">
-            <span class="score-num tier-2">7.8</span>
-            <span class="score-denom">/10</span>
-          </div>
-          <div class="score-ruler">
-            <div class="ruler-ticks"></div>
-            <div class="ruler-baseline"></div>
-            <div class="ruler-needle tier-2" style="left:calc(7.8/10*100%)"></div>
-          </div>
-        </div>
-
-        <div class="cell-stage">
-          <div class="stage-num">02</div>
-          <div class="stage-label-text">Qualified</div>
-        </div>
-
-        <div class="cell-signal">
-          <div class="signal-quote">"Zero paid acquisition, no inbound funnel, relies entirely on word of mouth"</div>
-        </div>
-
-        <div class="cell-actions">
-          <button class="act-btn primary">View Detail</button>
-          <button class="act-btn">Start Outreach</button>
-        </div>
-      </div>
-
-      <!-- ── ROW 4: Solace Studio ── -->
-      <div class="lead-row" style="animation-delay:0.19s">
-        <div class="cell-rank">04</div>
-
-        <div class="cell-company">
-          <div class="co-name">Solace Studio</div>
-          <span class="co-tag">D2C · Wellness</span>
-        </div>
-
-        <div class="cell-fw">
-          <div class="fw-label-text">Scaling Roadmap<br>Framework</div>
-          <div class="fw-code">SRF · 004</div>
-        </div>
-
-        <div class="cell-score">
-          <div class="score-row">
-            <span class="score-num tier-2">7.7</span>
-            <span class="score-denom">/10</span>
-          </div>
-          <div class="score-ruler">
-            <div class="ruler-ticks"></div>
-            <div class="ruler-baseline"></div>
-            <div class="ruler-needle tier-2" style="left:calc(7.7/10*100%)"></div>
-          </div>
-        </div>
-
-        <div class="cell-stage">
-          <div class="stage-num">01</div>
-          <div class="stage-label-text">Identified</div>
-        </div>
-
-        <div class="cell-signal">
-          <div class="signal-quote">"Product line depth without SKU rationalization, no contribution margin visibility"</div>
-        </div>
-
-        <div class="cell-actions">
-          <button class="act-btn primary">View Detail</button>
-          <button class="act-btn">Start Outreach</button>
-        </div>
-      </div>
-
-      <!-- ── ROW 5: Drift & Bloom ── -->
-      <div class="lead-row" style="animation-delay:0.24s">
-        <div class="cell-rank">05</div>
-
-        <div class="cell-company">
-          <div class="co-name">Drift &amp; Bloom</div>
-          <span class="co-tag">Consumer Goods</span>
-        </div>
-
-        <div class="cell-fw">
-          <div class="fw-label-text">Brand Positioning<br>Framework</div>
-          <div class="fw-code">BPF · 005</div>
-        </div>
-
-        <div class="cell-score">
-          <div class="score-row">
-            <span class="score-num tier-3">7.4</span>
-            <span class="score-denom">/10</span>
-          </div>
-          <div class="score-ruler">
-            <div class="ruler-ticks"></div>
-            <div class="ruler-baseline"></div>
-            <div class="ruler-needle tier-3" style="left:calc(7.4/10*100%)"></div>
-          </div>
-        </div>
-
-        <div class="cell-stage">
-          <div class="stage-num">03</div>
-          <div class="stage-label-text">Outreach</div>
-        </div>
-
-        <div class="cell-signal">
-          <div class="signal-quote">"Premium price point with commodity brand presentation — significant positioning gap"</div>
-        </div>
-
-        <div class="cell-actions">
-          <button class="act-btn primary">View Detail</button>
-          <button class="act-btn">Start Outreach</button>
-        </div>
-      </div>
-
-      <!-- ── ROW 6: Northline Apparel ── -->
-      <div class="lead-row" style="animation-delay:0.29s">
-        <div class="cell-rank">06</div>
-
-        <div class="cell-company">
-          <div class="co-name">Northline Apparel</div>
-          <span class="co-tag">D2C · Fashion</span>
-        </div>
-
-        <div class="cell-fw">
-          <div class="fw-label-text">Client Acquisition<br>Framework</div>
-          <div class="fw-code">CAF · 006</div>
-        </div>
-
-        <div class="cell-score">
-          <div class="score-row">
-            <span class="score-num tier-3">7.1</span>
-            <span class="score-denom">/10</span>
-          </div>
-          <div class="score-ruler">
-            <div class="ruler-ticks"></div>
-            <div class="ruler-baseline"></div>
-            <div class="ruler-needle tier-3" style="left:calc(7.1/10*100%)"></div>
-          </div>
-        </div>
-
-        <div class="cell-stage">
-          <div class="stage-num">04</div>
-          <div class="stage-label-text">In Conversation</div>
-        </div>
-
-        <div class="cell-signal">
-          <div class="signal-quote">"Heavy organic reliance, active social channels but no lead capture or email list building"</div>
-        </div>
-
-        <div class="cell-actions">
-          <button class="act-btn primary">View Detail</button>
-          <button class="act-btn">Move Stage</button>
-        </div>
+        <div class="kanban" id="kanban"></div>
       </div>
 
     </div>
-    <!-- /lead-list -->
-
-    <!-- Bottom bar -->
-    <div class="bottom-bar">
-      <div class="bstat">
-        <span class="bstat-label">Avg Score</span>
-        <span class="bstat-val highlight">8.12</span>
-      </div>
-      <div class="bstat">
-        <span class="bstat-label">Top Framework</span>
-        <span class="bstat-val">Brand Positioning</span>
-      </div>
-      <div class="bstat">
-        <span class="bstat-label">Last Scan</span>
-        <span class="bstat-val">Today 06:00</span>
-      </div>
-      <div class="bstat">
-        <span class="bstat-label">ICP Match Rate</span>
-        <span class="bstat-val">83%</span>
-      </div>
-      <div class="bottom-wordmark">R&R COLLECTIVE · LEAD INTELLIGENCE v1.0</div>
-    </div>
-
   </main>
 </div>
 
 <script>
-  let threshold = 7.0;
+const FW = {
+  brand_positioning:    { label: 'Brand Positioning',     short: 'Brand',       color: '#C4923C' },
+  client_acquisition:   { label: 'Client Acquisition',    short: 'Acquisition', color: '#3A8B6A' },
+  growth_infrastructure:{ label: 'Growth Infrastructure', short: 'Growth',      color: '#7A5CAE' },
+  scaling_roadmap:      { label: 'Scaling Roadmap',       short: 'Scaling',     color: '#4A7EC4' },
+  venture_development:  { label: 'Venture Development',   short: 'Venture',     color: '#AA5E7C' }
+};
 
-  function adjustThreshold(delta) {
-    threshold = Math.min(10, Math.max(1, +(threshold + delta).toFixed(1)));
-    document.getElementById('thresh').textContent = threshold.toFixed(1);
+const STAGE = {
+  discovered: { label: 'Discovered', cls: 'st-discovered' },
+  qualified:  { label: 'Qualified',  cls: 'st-qualified'  },
+  outreach:   { label: 'Outreach',   cls: 'st-outreach'   },
+  closed:     { label: 'Closed',     cls: 'st-closed'     }
+};
+
+const STAGE_ORDER = ['discovered', 'qualified', 'outreach', 'closed'];
+
+const STAGE_COLORS = {
+  discovered: '#4A4D62', qualified: '#4A7EC4',
+  outreach: '#C4923C', closed: '#3A8B6A'
+};
+
+const FW_PILL_MAP = {
+  all: null, brand: 'brand_positioning', acq: 'client_acquisition',
+  growth: 'growth_infrastructure', scale: 'scaling_roadmap', venture: 'venture_development'
+};
+
+let activeFilter = null;
+
+const leads = [
+  {
+    id: 1, name: 'Solène Studio', location: 'Silver Lake, CA',
+    industry: 'Beauty & Wellness', website: 'solenestudio.com',
+    phone: '(323) 847-2291', email: 'hello@solenestudio.com',
+    framework: 'brand_positioning', score: 9.2, stage: 'qualified',
+    reasoning: 'Strong product-market fit in luxury skincare with a loyal repeat-buyer base, but brand identity is inconsistent across touchpoints and pricing lacks the premium narrative the product quality deserves.',
+    signals: ['Instagram 48k followers, above-average engagement', 'Website copy undersells product quality significantly', 'Recently raised prices without repositioning messaging', 'Featured in Vogue Beauty but no ongoing PR strategy']
+  },
+  {
+    id: 2, name: 'Bloom & Barrel', location: 'Venice, CA',
+    industry: 'Artisan Food & Beverage', website: 'bloomandbarrel.co',
+    phone: '(310) 562-8847', email: null,
+    framework: 'growth_infrastructure', score: 8.7, stage: 'outreach',
+    reasoning: 'Revenue has plateaued despite strong demand signals — the business lacks a retention system, customer data infrastructure, and any KPI framework to identify where growth is leaking.',
+    signals: ['3 locations, no centralized CRM in use', 'Loyal customer base with no loyalty or rewards program', 'Paid ads running with zero attribution tracking', 'Hired 2 new managers in the past quarter — growth intent']
+  },
+  {
+    id: 3, name: 'Vela Creative', location: 'Culver City, CA',
+    industry: 'Boutique Creative Agency', website: 'velaagency.com',
+    phone: '(213) 904-1175', email: 'team@velaagency.com',
+    framework: 'client_acquisition', score: 8.3, stage: 'discovered',
+    reasoning: 'Excellent work product and strong referral reputation, but 100% of new business is word-of-mouth — no systematic outreach process means unpredictable pipeline and zero ability to target ideal clients.',
+    signals: ['Zero inbound content or SEO presence', 'All new business from referrals only', 'Strong case studies with no distribution strategy', 'LinkedIn: 1.2k followers, last post 4 months ago']
+  },
+  {
+    id: 4, name: 'Tartan & Co.', location: 'Echo Park, CA',
+    industry: 'Lifestyle Brand', website: 'tartanandco.com',
+    phone: '(323) 441-9920', email: null,
+    framework: 'brand_positioning', score: 8.1, stage: 'discovered',
+    reasoning: 'Distinctive aesthetic and cult following in streetwear-adjacent lifestyle, but the brand story is undefined and they are competing on product alone against better-resourced competitors who will win on scale.',
+    signals: ['TikTok 82k followers with multiple viral product posts', 'No brand manifesto or about page on website', 'Selling on Amazon without brand identity protection', 'Underpriced by ~40% vs comparable premium brands']
+  },
+  {
+    id: 5, name: 'Meridian Advisory', location: 'Century City, CA',
+    industry: 'Management Consulting', website: 'meridianadvisory.com',
+    phone: '(310) 887-4422', email: 'info@meridianadvisory.com',
+    framework: 'client_acquisition', score: 7.8, stage: 'discovered',
+    reasoning: 'Credentialed team with strong client outcomes but no systematic pipeline — they rely on alumni networks and occasional speaking engagements that produce feast-or-famine deal flow.',
+    signals: ['Partner has 12k LinkedIn followers with no lead funnel', 'No website lead capture or downloadable assets', 'Sponsors industry events without any follow-up system', 'Added 2 new practice area pages recently — clear growth intent']
+  },
+  {
+    id: 6, name: 'The Reform Collective', location: 'Arts District, CA',
+    industry: 'Co-working & Community', website: 'reformcollective.co',
+    phone: '(213) 230-5581', email: null,
+    framework: 'scaling_roadmap', score: 7.1, stage: 'discovered',
+    reasoning: 'Explosive growth from one to four locations in 18 months, but the operational model is still founder-driven with no documented processes — creating margin compression and talent retention issues at scale.',
+    signals: ['4 locations in 18 months, operationally chaotic', 'Glassdoor reviews consistently mention leadership instability', 'No franchise or expansion model formalized', 'Founder still approves day-to-day operational decisions']
+  },
+  {
+    id: 7, name: 'Hollow Earth Records', location: 'Highland Park, CA',
+    industry: 'Independent Music Label', website: 'hollowearthrecords.com',
+    phone: '(323) 775-8830', email: 'mgmt@hollowearthrecords.com',
+    framework: 'venture_development', score: 6.4, stage: 'discovered',
+    reasoning: 'Strong curation instincts and an emerging roster with real crossover potential — positioned to become a media and brand entity beyond the label, but needs capital strategy and brand architecture expertise.',
+    signals: ['2 roster acts with 500k+ Spotify monthly listeners', 'Founder approached weekly about licensing deals', 'No formal IP ownership or business structure', 'Strong visual identity with zero monetization strategy']
+  },
+  {
+    id: 8, name: 'Overland Ventures', location: 'West Hollywood, CA',
+    industry: 'Real Estate Development', website: 'overlandventures.co',
+    phone: '(310) 661-7743', email: null,
+    framework: 'scaling_roadmap', score: 6.7, stage: 'discovered',
+    reasoning: 'Profitable boutique developer with a differentiated design-forward approach, but operational complexity is outpacing team capacity as they attempt to run three simultaneous projects.',
+    signals: ['5 projects completed, 3 in pipeline simultaneously', 'Team of 6 managing complex multi-project workflow', 'No project management system in place', 'Founder mentioned operational overwhelm in recent interview']
+  },
+  {
+    id: 9, name: 'Quorum Media', location: 'Koreatown, CA',
+    industry: 'Digital Publishing', website: 'quorummedia.com',
+    phone: '(213) 445-0017', email: 'editorial@quorummedia.com',
+    framework: 'growth_infrastructure', score: 5.9, stage: 'discovered',
+    reasoning: 'High-quality content with a dedicated 180k-reader audience, operating on fragile ad-dependent revenue with no diversification, subscriber strategy, or data ownership.',
+    signals: ['180k monthly unique readers, strong retention', '90% revenue from a single ad network', 'No email list strategy or paid subscriber tier', 'Content quality significantly above monetization level']
+  }
+];
+
+function scoreClass(s) {
+  if (s >= 8.5) return 's-hi';
+  if (s >= 7)   return 's-mid';
+  if (s >= 5.5) return 's-lo';
+  return 's-vlo';
+}
+
+function fwBadgeHTML(fw) {
+  return `<span class="fw-badge fw-${fw}"><span class="dot"></span>${FW[fw].label}</span>`;
+}
+
+function visibleLeads() {
+  const sortVal = document.querySelector('.sort-sel')?.value || '';
+  let list = activeFilter ? leads.filter(l => l.framework === activeFilter) : [...leads];
+  if (sortVal === 'Company Name') list.sort((a, b) => a.name.localeCompare(b.name));
+  else if (sortVal === 'Stage') list.sort((a, b) => STAGE_ORDER.indexOf(a.stage) - STAGE_ORDER.indexOf(b.stage));
+  else list.sort((a, b) => b.score - a.score);
+  return list;
+}
+
+function renderTable(animate = true) {
+  const tbody = document.getElementById('leads-tbody');
+  const tbl = document.querySelector('.leads-tbl');
+  tbody.innerHTML = '';
+  if (animate) tbl.classList.remove('no-anim');
+  else tbl.classList.add('no-anim');
+
+  visibleLeads().forEach(lead => {
+    const fw = FW[lead.framework];
+    const st = STAGE[lead.stage];
+    const pct = Math.round(lead.score * 10);
+    const nextKey = STAGE_ORDER[STAGE_ORDER.indexOf(lead.stage) + 1];
+    const tr = document.createElement('tr');
+    tr.dataset.id = lead.id;
+    tr.dataset.fw = lead.framework;
+    tr.innerHTML = `
+      <td class="row-accent"><div class="row-accent-bar" id="bar-${lead.id}"></div></td>
+      <td><div class="lead-cell">
+        <span class="lead-name">${lead.name}</span>
+        <span class="lead-loc">${lead.location}</span>
+      </div></td>
+      <td>${fwBadgeHTML(lead.framework)}</td>
+      <td><div class="score-cell ${scoreClass(lead.score)}">
+        <span class="score-num">${lead.score.toFixed(1)}</span>
+        <div class="score-bar"><div class="score-bar-fill" style="width:${pct}%;background:${fw.color}"></div></div>
+      </div></td>
+      <td style="color:var(--text-1);font-size:13px">${lead.industry}</td>
+      <td><span class="stage-tag ${st.cls}">${st.label}</span></td>
+      <td><div class="row-btns">
+        <button class="rbtn rp" onclick="event.stopPropagation();openPanel(${lead.id})">View →</button>
+        ${nextKey ? `<button class="rbtn" onclick="event.stopPropagation();advanceStage(${lead.id})">${STAGE[nextKey].label} →</button>` : ''}
+      </div></td>
+    `;
+    tr.addEventListener('click', () => openPanel(lead.id));
+    tr.addEventListener('mouseenter', () => setAccentBar(lead.id, fw.color));
+    tr.addEventListener('mouseleave', () => {
+      if (!tr.classList.contains('row-active')) setAccentBar(lead.id, 'transparent');
+    });
+    tbody.appendChild(tr);
+  });
+
+  // Re-apply row-active for the currently open panel lead
+  if (currentId !== null) {
+    const activeRow = tbody.querySelector(`tr[data-id="${currentId}"]`);
+    if (activeRow) {
+      activeRow.classList.add('row-active');
+      const al = leads.find(l => l.id === currentId);
+      if (al) setAccentBar(currentId, FW[al.framework].color);
+    }
+  }
+}
+
+function setAccentBar(id, color) {
+  const bar = document.getElementById('bar-' + id);
+  if (bar) bar.style.background = color;
+}
+
+let currentId = null;
+let rafId = null;
+
+function openPanel(id) {
+  const lead = leads.find(l => l.id === id);
+  if (!lead) return;
+
+  // Cancel any in-flight score animation
+  if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null; }
+
+  currentId = id;
+  const fw = FW[lead.framework];
+
+  document.querySelectorAll('#leads-tbody tr').forEach(tr => {
+    const isActive = parseInt(tr.dataset.id) === id;
+    tr.classList.toggle('row-active', isActive);
+    if (isActive) setAccentBar(id, fw.color);
+    else if (!tr.matches(':hover')) setAccentBar(parseInt(tr.dataset.id), 'transparent');
+  });
+
+  document.getElementById('dp-name').textContent = lead.name;
+  document.getElementById('dp-industry').textContent = lead.industry + ' · ' + lead.location;
+
+  const fwName = document.getElementById('dp-fw-name');
+  fwName.textContent = fw.label;
+  fwName.style.color = fw.color;
+
+  const badge = document.getElementById('dp-fw-badge');
+  badge.className = `fw-badge fw-${lead.framework}`;
+  document.getElementById('dp-fw-badge-txt').textContent = fw.label;
+
+  document.getElementById('dp-reasoning').textContent = '”' + lead.reasoning + '”';
+
+  document.getElementById('dp-signals').innerHTML = lead.signals
+    .map(s => `<div class=”signal”>${s}</div>`).join('');
+
+  document.getElementById('dp-contact').innerHTML = `
+    <div class=”contact-row”>
+      <span class=”c-label”>Website</span>
+      <span class=”c-val”><a href=”#” onclick=”return false”>${lead.website}</a></span>
+    </div>
+    <div class=”contact-row”>
+      <span class=”c-label”>Phone</span>
+      <span class=”c-val”>${lead.phone}</span>
+    </div>
+    <div class=”contact-row”>
+      <span class=”c-label”>Email</span>
+      <span class=”c-val”>${lead.email
+        ? `<a href=”#” onclick=”return false”>${lead.email}</a>`
+        : `<span class=”c-empty”>Enrich to discover</span>`
+      }</span>
+    </div>
+  `;
+
+  // Update advance button to reflect the actual next stage
+  const nextKey = STAGE_ORDER[STAGE_ORDER.indexOf(lead.stage) + 1];
+  const advBtn = document.querySelector('.dp-btn.primary');
+  if (nextKey) {
+    advBtn.textContent = `→ Move to ${STAGE[nextKey].label}`;
+    advBtn.disabled = false;
+    advBtn.style.opacity = '';
+  } else {
+    advBtn.textContent = 'Closed';
+    advBtn.disabled = true;
+    advBtn.style.opacity = '0.4';
   }
 
-  // Framework filter
-  document.querySelectorAll('.fw-item').forEach(el => {
-    el.addEventListener('click', () => {
-      document.querySelectorAll('.fw-item').forEach(e => e.classList.remove('active'));
-      el.classList.add('active');
-    });
-  });
+  // Animate ring — suppress CSS transition for the empty-reset, then restore it
+  const ring = document.getElementById('dp-ring');
+  const numEl = document.getElementById('dp-score-num');
+  const circumference = 188.5;
+  ring.style.stroke = fw.color;
+  ring.style.transition = 'none';
+  ring.style.strokeDashoffset = circumference;
+  ring.getBoundingClientRect(); // force layout flush so the reset lands before transition returns
+  numEl.textContent = '0.0';
+  numEl.style.color = fw.color;
 
-  // Pipeline tabs
-  document.querySelectorAll('.pl-stage').forEach(el => {
-    el.addEventListener('click', () => {
-      document.querySelectorAll('.pl-stage').forEach(e => e.classList.remove('active'));
-      el.classList.add('active');
-    });
-  });
+  document.getElementById('detail-panel').classList.add('open');
 
-  // Nav
-  document.querySelectorAll('.nav-item').forEach(el => {
-    el.addEventListener('click', () => {
-      document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
-      el.classList.add('active');
-    });
+  rafId = requestAnimationFrame(() => {
+    const target = lead.score;
+    const offset = circumference - (target / 10) * circumference;
+    ring.style.transition = ''; // restore CSS transition before animating to target
+    ring.style.strokeDashoffset = offset;
+    const start = performance.now();
+    const dur = 1000;
+    (function tick(now) {
+      const p = Math.min((now - start) / dur, 1);
+      const e = 1 - Math.pow(1 - p, 3);
+      numEl.textContent = (e * target).toFixed(1);
+      if (p < 1) { rafId = requestAnimationFrame(tick); }
+      else { rafId = null; numEl.textContent = target.toFixed(1); }
+    })(start);
   });
+}
+
+function closePanel() {
+  if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null; }
+  document.getElementById('detail-panel').classList.remove('open');
+  document.querySelectorAll('#leads-tbody tr').forEach(tr => {
+    tr.classList.remove('row-active');
+    setAccentBar(parseInt(tr.dataset.id), 'transparent');
+  });
+  currentId = null;
+}
+
+function advanceStage(id) {
+  const lead = leads.find(l => l.id === id);
+  if (!lead) return;
+  const idx = STAGE_ORDER.indexOf(lead.stage);
+  if (idx < STAGE_ORDER.length - 1) moveStage(id, STAGE_ORDER[idx + 1]);
+}
+
+function moveStage(id, stage) {
+  const lead = leads.find(l => l.id === id);
+  if (!lead) return;
+  lead.stage = stage;
+  renderTable(false); // suppress entrance animation for single-cell mutations
+  if (currentId === id) openPanel(id);
+}
+
+function qualifyLead() {
+  if (currentId) advanceStage(currentId);
+}
+
+function renderPipeline() {
+  const board = document.getElementById('kanban');
+  board.innerHTML = '';
+  ['discovered','qualified','outreach','closed'].forEach(stage => {
+    const stageName = STAGE[stage].label;
+    const stageLeads = leads.filter(l => l.stage === stage);
+    const col = document.createElement('div');
+    col.className = 'k-col';
+    col.innerHTML = `
+      <div class="k-col-head">
+        <div class="k-dot" style="background:${STAGE_COLORS[stage]}"></div>
+        <span class="k-stage-name">${stageName}</span>
+        <span class="k-count">${stageLeads.length}</span>
+      </div>
+      <div class="k-cards">
+        ${stageLeads.length ? stageLeads.map(lead => {
+          const fw = FW[lead.framework];
+          return `
+            <div class="k-card fw-${lead.framework}" style="border-left-color:${fw.color}"
+                 onclick="showView('discovery');openPanel(${lead.id})">
+              <div class="k-card-fw">
+                <span class="fw-badge fw-${lead.framework}">
+                  <span class="dot"></span>${fw.short}
+                </span>
+              </div>
+              <div class="k-card-name">${lead.name}</div>
+              <div class="k-card-ind">${lead.industry}</div>
+              <div class="k-card-foot">
+                <span class="k-score" style="color:${fw.color}">${lead.score.toFixed(1)}</span>
+                <span class="k-loc">${lead.location.split(',')[1]?.trim() || 'CA'}</span>
+              </div>
+            </div>`;
+        }).join('') : `<div class="k-empty">NO LEADS</div>`}
+      </div>
+    `;
+    board.appendChild(col);
+  });
+}
+
+function showView(view) {
+  const dv = document.getElementById('discovery-view');
+  const pv = document.getElementById('pipeline-view');
+  const title = document.getElementById('view-title');
+  const navItems = document.querySelectorAll('.nav-item');
+
+  navItems.forEach(n => n.classList.remove('active'));
+
+  if (view === 'discovery') {
+    dv.classList.remove('hidden');
+    pv.classList.remove('active');
+    title.textContent = 'Lead Discovery';
+    navItems[0].classList.add('active');
+  } else if (view === 'pipeline') {
+    dv.classList.add('hidden');
+    pv.classList.add('active');
+    title.textContent = 'Pipeline';
+    navItems[1].classList.add('active');
+    renderPipeline();
+  }
+}
+
+function runSearch(e) {
+  e.preventDefault();
+  closePanel();
+  document.querySelector('.leads-tbl').classList.remove('no-anim');
+  const tbody = document.getElementById('leads-tbody');
+  tbody.innerHTML = Array(6).fill(0).map(() => `
+    <tr style="height:54px">
+      <td class="row-accent"><div class="row-accent-bar"></div></td>
+      <td><div style="display:flex;flex-direction:column;gap:5px;padding-left:12px">
+        <div class="sk" style="width:130px;height:12px"></div>
+        <div class="sk" style="width:80px;height:9px"></div>
+      </div></td>
+      <td><div class="sk" style="width:110px;height:22px;border-radius:4px"></div></td>
+      <td><div class="sk" style="width:36px;height:16px"></div></td>
+      <td><div class="sk" style="width:100px;height:12px"></div></td>
+      <td><div class="sk" style="width:72px;height:20px;border-radius:4px"></div></td>
+      <td></td>
+    </tr>
+  `).join('');
+  setTimeout(() => renderTable(), 1400);
+}
+
+// Init
+renderTable();
+setTimeout(() => openPanel(1), 500);
+
+// Wire filter pills (Finding #3)
+document.querySelectorAll('.fw-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    const key = [...pill.classList].find(c => FW_PILL_MAP.hasOwnProperty(c));
+    activeFilter = key ? FW_PILL_MAP[key] : null;
+    document.querySelectorAll('.fw-pill').forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+    renderTable();
+  });
+});
+document.querySelector('.fw-pill.all').classList.add('active');
+
+// Wire sort select (Finding #4)
+document.querySelector('.sort-sel').addEventListener('change', () => renderTable());
 </script>
 </body>
 </html>

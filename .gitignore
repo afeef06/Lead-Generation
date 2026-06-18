@@ -1,0 +1,9 @@
+# Editor swap files
+*.swp
+*.swo
+
+# Claude Code internal files (sessions, memory)
+.claude/
+
+# macOS
+.DS_Store
