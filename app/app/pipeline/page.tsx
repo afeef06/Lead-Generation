@@ -9,6 +9,7 @@ import {
   IconArrowRight, IconCheck, IconMail, IconCopy, IconTrash,
   IconGlobe, IconPhone,
 } from '../components/icons';
+import { STAGES, type Stage } from '../../lib/stages';
 
 interface Lead {
   id: string;
@@ -18,7 +19,7 @@ interface Lead {
   phone: string | null;
   website: string | null;
   email: string | null;
-  stage: 'discovered' | 'qualified' | 'outreach' | 'closed';
+  stage: Stage;
   framework_match: string | null;
   framework_score: number | null;
   framework_reasoning: string | null;
@@ -43,9 +44,6 @@ function safeUrl(url: string | null | undefined): string | undefined {
   } catch { /* invalid URL */ }
   return undefined;
 }
-
-const STAGES = ['discovered', 'qualified', 'outreach', 'closed'] as const;
-type Stage = typeof STAGES[number];
 
 const STAGE_META: Record<Stage, { label: string; color: string }> = {
   discovered: { label: 'Discovered', color: '#4d4635' },
