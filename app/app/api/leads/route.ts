@@ -52,7 +52,9 @@ export async function POST(req: NextRequest) {
       framework_match: body.framework_match ?? null,
       framework_score: body.framework_score ?? null,
       framework_reasoning: body.framework_reasoning ?? null,
-      source: 'google_places',
+      source: body.source ?? 'google_places',
+      created_by: user.id,
+      created_by_email: user.email ?? null,
     })
     .select()
     .single();

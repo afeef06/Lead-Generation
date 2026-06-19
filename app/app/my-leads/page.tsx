@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '../../lib/supabase/client';
 import { Topbar } from '../components/topbar';
+import { SearchModal } from '../components/SearchModal';
 import {
   IconArrowRight, IconCheck, IconMail, IconCopy, IconTrash,
   IconGlobe, IconPhone,
@@ -28,11 +29,6 @@ interface Lead {
   created_at: string;
   created_by: string | null;
   created_by_email: string | null;
-}
-
-interface Member {
-  id: string;
-  email: string;
 }
 
 function safeUrl(url: string | null | undefined): string | undefined {
@@ -153,7 +149,7 @@ function NoteField({ lead, onSave }: { lead: Lead; onSave: (id: string, notes: s
 }
 
 function Card({
-  lead, onAdvance, onSaveNote, onUpdate, selectMode, selected, onToggle, currentUserId,
+  lead, onAdvance, onSaveNote, onUpdate, selectMode, selected, onToggle,
 }: {
   lead: Lead;
   onAdvance: (lead: Lead) => void;
@@ -162,12 +158,10 @@ function Card({
   selectMode: boolean;
   selected: boolean;
   onToggle: () => void;
-  currentUserId: string | null;
 }) {
   const fw = lead.framework_match ? FW[lead.framework_match] : null;
   const stageIdx = STAGES.indexOf(lead.stage);
   const nextStage = stageIdx < STAGES.length - 1 ? STAGES[stageIdx + 1] : null;
-  const isMe = lead.created_by === currentUserId;
 
   return (
     <div
@@ -194,12 +188,6 @@ function Card({
           <span className="card-addr">{lead.address.split(',').slice(-3).join(',').trim()}</span>
         )}
       </div>
-
-      {lead.created_by_email && (
-        <span className={`card-contributor${isMe ? ' card-contributor-me' : ''}`}>
-          {isMe ? 'Me' : lead.created_by_email.split('@')[0]}
-        </span>
-      )}
 
       {fw && lead.framework_score !== null && (
         <div className="fw-cell" style={{ marginTop: 2 }}>
@@ -252,7 +240,7 @@ function Card({
 }
 
 function Column({
-  stage, leads, onAdvance, onSaveNote, onUpdate, selectMode, selectedIds, onToggle, currentUserId,
+  stage, leads, onAdvance, onSaveNote, onUpdate, selectMode, selectedIds, onToggle,
 }: {
   stage: Stage;
   leads: Lead[];
@@ -262,7 +250,6 @@ function Column({
   selectMode: boolean;
   selectedIds: Set<string>;
   onToggle: (id: string) => void;
-  currentUserId: string | null;
 }) {
   const meta = STAGE_META[stage];
   return (
@@ -284,7 +271,6 @@ function Column({
             selectMode={selectMode}
             selected={selectedIds.has(lead.id)}
             onToggle={() => onToggle(lead.id)}
-            currentUserId={currentUserId}
           />
         ))}
       </div>
@@ -292,20 +278,18 @@ function Column({
   );
 }
 
-export default function PipelinePage() {
+export default function MyLeadsPage() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectMode, setSelectMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [deleting, setDeleting] = useState(false);
-  const [members, setMembers] = useState<Member[]>([]);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [filterBy, setFilterBy] = useState<string | null>(null);
+  const [showSearchModal, setShowSearchModal] = useState(false);
   const router = useRouter();
   const supabase = createClient();
 
   const loadLeads = useCallback(async () => {
-    const res = await fetch('/api/pipeline');
+    const res = await fetch('/api/pipeline?scope=mine');
     if (res.ok) {
       const data = await res.json();
       setLeads(data.leads);
@@ -313,24 +297,12 @@ export default function PipelinePage() {
     setLoading(false);
   }, []);
 
-  const loadMembers = useCallback(async () => {
-    const res = await fetch('/api/members');
-    if (res.ok) {
-      const data = await res.json();
-      setMembers(data.members ?? []);
-      setCurrentUserId(data.currentUserId ?? null);
-    }
-  }, []);
-
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) router.replace('/login');
-      else {
-        loadLeads();
-        loadMembers();
-      }
+      else loadLeads();
     });
-  }, [supabase, router, loadLeads, loadMembers]);
+  }, [supabase, router, loadLeads]);
 
   async function handleSignOut() {
     await supabase.auth.signOut();
@@ -386,10 +358,8 @@ export default function PipelinePage() {
     setDeleting(false);
   }
 
-  const displayedLeads = filterBy ? leads.filter(l => l.created_by === filterBy) : leads;
-
   const byStage = STAGES.reduce((acc, s) => {
-    acc[s] = displayedLeads.filter(l => l.stage === s);
+    acc[s] = leads.filter(l => l.stage === s);
     return acc;
   }, {} as Record<Stage, Lead[]>);
 
@@ -421,57 +391,32 @@ export default function PipelinePage() {
           align-items: center;
           gap: 8px;
         }
-        .col-indicator {
-          width: 3px;
-          height: 14px;
-          flex-shrink: 0;
-        }
+        .col-indicator { width: 3px; height: 14px; flex-shrink: 0; }
         .col-name {
-          font-size: 10px;
-          font-family: var(--font-mono);
-          text-transform: uppercase;
-          letter-spacing: 0.12em;
-          font-weight: 500;
-          color: var(--t1);
-          flex: 1;
+          font-size: 10px; font-family: var(--font-mono);
+          text-transform: uppercase; letter-spacing: 0.12em;
+          font-weight: 500; color: var(--t1); flex: 1;
         }
         .col-count {
-          font-size: 10px;
-          font-family: var(--font-mono);
-          background: var(--bg3);
-          border: 1px solid var(--b0);
-          padding: 1px 7px;
-          color: var(--t2);
-          letter-spacing: 0.04em;
+          font-size: 10px; font-family: var(--font-mono);
+          background: var(--bg3); border: 1px solid var(--b0);
+          padding: 1px 7px; color: var(--t2); letter-spacing: 0.04em;
         }
         .cards {
-          padding: 8px;
-          display: flex;
-          flex-direction: column;
-          gap: 6px;
-          min-height: 60px;
+          padding: 8px; display: flex; flex-direction: column;
+          gap: 6px; min-height: 60px;
         }
         .col-empty {
-          font-size: 11px;
-          font-family: var(--font-mono);
-          color: var(--t2);
-          text-align: center;
-          padding: 32px 8px;
-          letter-spacing: 0.04em;
+          font-size: 11px; font-family: var(--font-mono); color: var(--t2);
+          text-align: center; padding: 32px 8px; letter-spacing: 0.04em;
         }
 
-        /* Card — gold top-border per Stitch spec */
         .card {
-          background: var(--bg2);
-          border: 1px solid var(--b0);
-          border-top: 1px solid; /* color set inline per framework */
-          padding: 12px 13px;
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-          animation: cardIn 0.22s ease both;
-          transition: background 0.1s;
-          cursor: default;
+          background: var(--bg2); border: 1px solid var(--b0);
+          border-top: 1px solid;
+          padding: 12px 13px; display: flex; flex-direction: column;
+          gap: 8px; animation: cardIn 0.22s ease both;
+          transition: background 0.1s; cursor: default;
         }
         .card:hover { background: var(--bg3); }
         .card-selected { background: rgba(212,175,55,0.04) !important; outline: 1px solid rgba(212,175,55,0.25); }
@@ -480,267 +425,130 @@ export default function PipelinePage() {
 
         .card-top { display: flex; flex-direction: column; gap: 3px; }
         .card-name {
-          font-size: 12px;
-          font-weight: 500;
-          color: var(--t0);
-          text-decoration: none;
-          line-height: 1.35;
-          transition: color 0.12s;
-          font-family: var(--font-mono);
-          letter-spacing: 0.01em;
+          font-size: 12px; font-weight: 500; color: var(--t0);
+          text-decoration: none; line-height: 1.35; transition: color 0.12s;
+          font-family: var(--font-mono); letter-spacing: 0.01em;
         }
         .card-name:hover { color: var(--gold-dim); }
         .card-addr {
-          font-size: 9px;
-          font-family: var(--font-mono);
-          color: var(--t2);
-          line-height: 1.4;
-          letter-spacing: 0.04em;
+          font-size: 9px; font-family: var(--font-mono); color: var(--t2);
+          line-height: 1.4; letter-spacing: 0.04em;
         }
         .card-reasoning {
-          font-size: 10px;
-          color: var(--t1);
-          line-height: 1.6;
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-          font-family: var(--font-mono);
-          letter-spacing: 0.01em;
+          font-size: 10px; color: var(--t1); line-height: 1.6;
+          display: -webkit-box; -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical; overflow: hidden;
+          font-family: var(--font-mono); letter-spacing: 0.01em;
         }
 
         .card-links { display: flex; flex-direction: column; gap: 4px; }
         .card-link {
-          font-size: 10px;
-          font-family: var(--font-mono);
-          color: var(--blue);
-          text-decoration: none;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          display: flex;
-          align-items: center;
-          gap: 5px;
-          transition: color 0.12s;
-          letter-spacing: 0.02em;
+          font-size: 10px; font-family: var(--font-mono); color: var(--blue);
+          text-decoration: none; overflow: hidden; text-overflow: ellipsis;
+          white-space: nowrap; display: flex; align-items: center;
+          gap: 5px; transition: color 0.12s; letter-spacing: 0.02em;
         }
         .card-link:hover { color: var(--t0); }
         .card-phone {
-          font-size: 10px;
-          font-family: var(--font-mono);
-          color: var(--t2);
-          display: flex;
-          align-items: center;
-          gap: 5px;
-          letter-spacing: 0.02em;
+          font-size: 10px; font-family: var(--font-mono); color: var(--t2);
+          display: flex; align-items: center; gap: 5px; letter-spacing: 0.02em;
         }
 
-        /* Note */
         .note-wrap { position: relative; }
         .note-input {
-          width: 100%;
-          background: var(--bg3);
-          border: none;
-          border-bottom: 1px solid var(--b0);
-          color: var(--t1);
-          font-size: 10px;
-          font-family: var(--font-mono);
-          padding: 7px 8px;
-          resize: none;
-          outline: none;
-          transition: border-color 0.15s, color 0.15s;
-          line-height: 1.55;
-          letter-spacing: 0.02em;
+          width: 100%; background: var(--bg3); border: none;
+          border-bottom: 1px solid var(--b0); color: var(--t1);
+          font-size: 10px; font-family: var(--font-mono); padding: 7px 8px;
+          resize: none; outline: none; transition: border-color 0.15s, color 0.15s;
+          line-height: 1.55; letter-spacing: 0.02em;
         }
         .note-input::placeholder { color: var(--t2); }
         .note-input:focus { border-bottom-color: var(--b0); color: var(--t0); }
         .note-status {
-          position: absolute;
-          bottom: 6px;
-          right: 7px;
-          font-size: 9px;
-          font-family: var(--font-mono);
-          color: var(--green);
-          display: flex;
-          align-items: center;
-          gap: 3px;
-          pointer-events: none;
-          letter-spacing: 0.04em;
+          position: absolute; bottom: 6px; right: 7px;
+          font-size: 9px; font-family: var(--font-mono); color: var(--green);
+          display: flex; align-items: center; gap: 3px;
+          pointer-events: none; letter-spacing: 0.04em;
         }
 
-        /* Email */
         .email-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
         .email-val {
-          font-size: 10px;
-          font-family: var(--font-mono);
-          color: var(--green);
-          background: none;
-          border: none;
-          cursor: pointer;
-          padding: 0;
-          text-align: left;
-          display: flex;
-          align-items: center;
-          gap: 5px;
-          transition: color 0.12s;
-          letter-spacing: 0.02em;
+          font-size: 10px; font-family: var(--font-mono); color: var(--green);
+          background: none; border: none; cursor: pointer; padding: 0;
+          text-align: left; display: flex; align-items: center;
+          gap: 5px; transition: color 0.12s; letter-spacing: 0.02em;
         }
         .email-val:hover { color: var(--t0); }
         .email-src {
-          font-size: 8px;
-          font-family: var(--font-mono);
-          padding: 1px 5px;
-          text-transform: uppercase;
-          letter-spacing: 0.08em;
+          font-size: 8px; font-family: var(--font-mono); padding: 1px 5px;
+          text-transform: uppercase; letter-spacing: 0.08em;
         }
         .email-src.hunter  { background: rgba(58,139,106,0.12); color: var(--green); border: 1px solid rgba(58,139,106,0.28); }
         .email-src.inferred { background: var(--bg3); color: var(--t2); border: 1px solid var(--b0); }
         .email-copied {
-          font-size: 9px;
-          font-family: var(--font-mono);
-          color: var(--green);
-          display: flex;
-          align-items: center;
-          gap: 3px;
-          letter-spacing: 0.04em;
+          font-size: 9px; font-family: var(--font-mono); color: var(--green);
+          display: flex; align-items: center; gap: 3px; letter-spacing: 0.04em;
         }
         .enrich-btn {
-          background: none;
-          border: 1px dashed var(--b0);
-          color: var(--t2);
-          font-size: 10px;
-          font-family: var(--font-mono);
-          padding: 5px 10px;
-          cursor: pointer;
-          width: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 6px;
+          background: none; border: 1px dashed var(--b0); color: var(--t2);
+          font-size: 10px; font-family: var(--font-mono); padding: 5px 10px;
+          cursor: pointer; width: 100%; display: flex; align-items: center;
+          justify-content: center; gap: 6px;
           transition: color 0.15s, border-color 0.15s, border-style 0.15s;
-          letter-spacing: 0.06em;
-          text-transform: uppercase;
+          letter-spacing: 0.06em; text-transform: uppercase;
         }
         .enrich-btn:hover:not(:disabled) { color: var(--t1); border-color: var(--t2); border-style: solid; }
         .enrich-btn:disabled { opacity: 0.5; cursor: default; }
 
-        /* Advance / closed */
         .advance-btn {
-          width: 100%;
-          background: none;
-          border: 1px solid var(--b0);
-          color: var(--t2);
-          font-size: 10px;
-          font-family: var(--font-mono);
-          padding: 7px;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 6px;
+          width: 100%; background: none; border: 1px solid var(--b0);
+          color: var(--t2); font-size: 10px; font-family: var(--font-mono);
+          padding: 7px; cursor: pointer; display: flex; align-items: center;
+          justify-content: center; gap: 6px;
           transition: color 0.15s, border-color 0.15s, background 0.15s;
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
+          letter-spacing: 0.08em; text-transform: uppercase;
         }
         .advance-btn:hover { color: var(--t0); border-color: var(--t1); background: var(--bg3); }
         .closed-tag {
-          font-size: 9px;
-          font-family: var(--font-mono);
-          color: var(--green);
-          text-align: center;
-          padding: 4px;
-          letter-spacing: 0.1em;
-          text-transform: uppercase;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 5px;
+          font-size: 9px; font-family: var(--font-mono); color: var(--green);
+          text-align: center; padding: 4px; letter-spacing: 0.1em;
+          text-transform: uppercase; display: flex; align-items: center;
+          justify-content: center; gap: 5px;
         }
 
-        /* Delete bar */
         .delete-bar {
-          position: fixed;
-          bottom: 24px;
-          left: 50%;
-          transform: translateX(-50%);
-          display: flex;
-          align-items: center;
-          gap: 14px;
-          background: var(--bg2);
-          border: 1px solid var(--b0);
-          border-top: 1px solid rgba(212,175,55,0.2);
-          padding: 12px 20px;
-          box-shadow: 0 16px 48px rgba(0,0,0,0.6);
-          z-index: 50;
-          white-space: nowrap;
+          position: fixed; bottom: 24px; left: 50%;
+          transform: translateX(-50%); display: flex; align-items: center;
+          gap: 14px; background: var(--bg2); border: 1px solid var(--b0);
+          border-top: 1px solid rgba(212,175,55,0.2); padding: 12px 20px;
+          box-shadow: 0 16px 48px rgba(0,0,0,0.6); z-index: 50; white-space: nowrap;
         }
-        .delete-bar-count {
-          font-size: 12px;
-          font-family: var(--font-mono);
-          color: var(--t1);
-          letter-spacing: 0.04em;
-        }
+        .delete-bar-count { font-size: 12px; font-family: var(--font-mono); color: var(--t1); letter-spacing: 0.04em; }
         .delete-bar-count strong { color: var(--gold-dim); font-weight: 500; }
 
-        /* Loading / empty */
         .pl-loading {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          height: 50vh;
-          font-family: var(--font-mono);
-          font-size: 12px;
-          color: var(--t2);
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
+          display: flex; align-items: center; justify-content: center;
+          height: 50vh; font-family: var(--font-mono); font-size: 12px;
+          color: var(--t2); letter-spacing: 0.08em; text-transform: uppercase;
         }
         .empty-board {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          height: 60vh;
-          gap: 14px;
+          display: flex; flex-direction: column; align-items: center;
+          justify-content: center; height: 60vh; gap: 14px;
         }
         .empty-board .headline {
-          font-family: var(--font-d);
-          font-size: 32px;
-          color: var(--t1);
-          font-style: italic;
+          font-family: var(--font-d); font-size: 32px;
+          color: var(--t1); font-style: italic;
         }
         .empty-board p { font-size: 12px; color: var(--t2); font-family: var(--font-mono); letter-spacing: 0.04em; }
         .empty-board a { color: var(--gold-dim); text-decoration: none; }
         .empty-board a:hover { text-decoration: underline; }
-
-        /* Filter bar */
-        .filter-bar {
-          display: flex; align-items: center; gap: 8px;
-          padding: 10px 40px; border-bottom: 1px solid var(--b0);
-          background: var(--bg0); flex-wrap: wrap;
+        .empty-board-cta {
+          background: none; border: none; color: var(--gold-dim);
+          font-family: var(--font-mono); font-size: 12px;
+          cursor: pointer; padding: 0; letter-spacing: 0.04em;
+          text-decoration: underline; text-underline-offset: 2px;
         }
-        .filter-label {
-          font-size: 9px; font-family: var(--font-mono); color: var(--t2);
-          letter-spacing: 0.14em; text-transform: uppercase; margin-right: 4px;
-          flex-shrink: 0;
-        }
-        .filter-chip {
-          background: var(--bg2); border: 1px solid var(--b0);
-          color: var(--t2); font-size: 10px; font-family: var(--font-mono);
-          padding: 4px 12px; cursor: pointer; letter-spacing: 0.06em;
-          transition: color 0.15s, border-color 0.15s, background 0.15s;
-        }
-        .filter-chip:hover { color: var(--t1); border-color: var(--t2); }
-        .filter-chip.active { color: var(--gold-dim); border-color: rgba(212,175,55,0.45); background: rgba(212,175,55,0.06); }
-        .filter-chip.is-me.active { color: var(--green); border-color: rgba(58,139,106,0.45); background: rgba(58,139,106,0.06); }
-
-        /* Teammate badge on card */
-        .card-contributor {
-          font-size: 9px; font-family: var(--font-mono); color: var(--t2);
-          letter-spacing: 0.08em; text-transform: uppercase;
-          background: var(--bg3); border: 1px solid var(--b1);
-          padding: 1px 6px; align-self: flex-start;
-        }
-        .card-contributor-me { color: var(--green); background: rgba(58,139,106,0.07); border-color: rgba(58,139,106,0.22); }
+        .empty-board-cta:hover { color: var(--gold); }
       `}</style>
 
       <Topbar onSignOut={handleSignOut}>
@@ -759,38 +567,25 @@ export default function PipelinePage() {
               : 'Select'}
           </button>
         )}
+        <button className="btn-primary" onClick={() => setShowSearchModal(true)}>
+          <IconArrowRight size={11} />
+          Add Leads
+        </button>
       </Topbar>
 
       {loading ? (
-        <div className="pl-loading">Loading pipeline…</div>
+        <div className="pl-loading">Loading your pipeline…</div>
       ) : total === 0 ? (
         <div className="empty-board">
-          <div className="headline">Pipeline is empty</div>
-          <p>Save leads from <Link href="/">Discovery</Link> to start tracking them here.</p>
+          <div className="headline">Your pipeline is empty</div>
+          <p>
+            <button className="empty-board-cta" onClick={() => setShowSearchModal(true)}>Add Leads</button>
+            {' '}to search Google Maps and score your first prospects, or save from{' '}
+            <Link href="/">Discovery</Link>.
+          </p>
         </div>
       ) : (
         <>
-          {members.length > 1 && (
-            <div className="filter-bar">
-              <span className="filter-label">View</span>
-              <button
-                className={`filter-chip${filterBy === null ? ' active' : ''}`}
-                onClick={() => setFilterBy(null)}
-              >
-                All ({leads.length})
-              </button>
-              {members.map(m => (
-                <button
-                  key={m.id}
-                  className={`filter-chip${filterBy === m.id ? ' active' : ''}${m.id === currentUserId ? ' is-me' : ''}`}
-                  onClick={() => setFilterBy(filterBy === m.id ? null : m.id)}
-                >
-                  {m.id === currentUserId ? 'Me' : m.email.split('@')[0]}
-                  {' '}({leads.filter(l => l.created_by === m.id).length})
-                </button>
-              ))}
-            </div>
-          )}
           {selectMode && selectedIds.size > 0 && (
             <div className="delete-bar">
               <span className="delete-bar-count">
@@ -814,11 +609,17 @@ export default function PipelinePage() {
                 selectMode={selectMode}
                 selectedIds={selectedIds}
                 onToggle={toggleSelect}
-                currentUserId={currentUserId}
               />
             ))}
           </div>
         </>
+      )}
+
+      {showSearchModal && (
+        <SearchModal
+          onClose={() => setShowSearchModal(false)}
+          onSaved={loadLeads}
+        />
       )}
     </>
   );

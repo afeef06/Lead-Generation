@@ -22,6 +22,9 @@ export function Topbar({ onSignOut, children }: TopbarProps) {
         <Link href="/" className={`topbar-link${path === '/' ? ' active' : ''}`}>
           Discovery
         </Link>
+        <Link href="/my-leads" className={`topbar-link${path === '/my-leads' ? ' active' : ''}`}>
+          My Leads
+        </Link>
         <Link href="/pipeline" className={`topbar-link${path === '/pipeline' ? ' active' : ''}`}>
           Pipeline
         </Link>
