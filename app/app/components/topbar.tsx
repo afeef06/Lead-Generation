@@ -34,6 +34,9 @@ export function Topbar({ onSignOut, children }: TopbarProps) {
         <Link href="/conversion" className={`topbar-link${path === '/conversion' ? ' active' : ''}`}>
           Conversion
         </Link>
+        <Link href="/costs" className={`topbar-link${path === '/costs' ? ' active' : ''}`}>
+          Costs
+        </Link>
       </nav>
 
       {children && (
