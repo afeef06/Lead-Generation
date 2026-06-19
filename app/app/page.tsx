@@ -18,12 +18,21 @@ interface ScoreResult {
 }
 
 const FW: Record<string, { label: string; short: string; color: string }> = {
-  brand_positioning:     { label: 'Brand Positioning',     short: 'Brand',       color: '#C4923C' },
+  brand_positioning:     { label: 'Brand Positioning',     short: 'Brand',       color: '#d4af37' },
   client_acquisition:    { label: 'Client Acquisition',    short: 'Acquisition', color: '#3A8B6A' },
   growth_infrastructure: { label: 'Growth Infrastructure', short: 'Growth',      color: '#7A5CAE' },
   scaling_roadmap:       { label: 'Scaling Roadmap',       short: 'Scaling',     color: '#4A7EC4' },
   venture_development:   { label: 'Venture Development',   short: 'Venture',     color: '#AA5E7C' },
 };
+
+function safeUrl(url: string | null | undefined): string | undefined {
+  if (!url) return undefined;
+  try {
+    const parsed = new URL(url);
+    if (['http:', 'https:'].includes(parsed.protocol)) return url;
+  } catch { /* invalid URL */ }
+  return undefined;
+}
 
 const NICHES = [
   'e-commerce brand', 'lifestyle brand', 'media company',
@@ -32,21 +41,28 @@ const NICHES = [
 ];
 
 function DataQualityBar({ results }: { results: PlacesResult[] }) {
-  const withPhone = results.filter(r => r.phone).length;
+  const withPhone   = results.filter(r => r.phone).length;
   const withWebsite = results.filter(r => r.website).length;
-  const withRating = results.filter(r => r.rating !== null).length;
+  const withRating  = results.filter(r => r.rating !== null).length;
   const pct = (n: number) => Math.round((n / results.length) * 100);
   const websitePct = pct(withWebsite);
-  const verdict = websitePct >= 70 ? { text: 'Strong signal', ok: true } : websitePct >= 40 ? { text: 'Partial signal', ok: null } : { text: 'Thin data', ok: false };
+  const verdict = websitePct >= 70
+    ? { text: 'Strong signal',  ok: true  }
+    : websitePct >= 40
+    ? { text: 'Partial signal', ok: null  }
+    : { text: 'Thin data',      ok: false };
 
   return (
     <div className="dq-bar">
       <span className="dq-label">Data quality</span>
-      <Meter label="Phone" value={pct(withPhone)} />
+      <Meter label="Phone"   value={pct(withPhone)} />
       <Meter label="Website" value={websitePct} />
-      <Meter label="Rating" value={pct(withRating)} />
-      <span className="dq-verdict" style={{ color: verdict.ok === true ? 'var(--green)' : verdict.ok === null ? 'var(--gold)' : 'var(--rose)' }}>
-        {verdict.ok === false ? <IconWarning size={12} /> : <IconCheck size={12} />}
+      <Meter label="Rating"  value={pct(withRating)} />
+      <span
+        className="dq-verdict"
+        style={{ color: verdict.ok === true ? 'var(--green)' : verdict.ok === null ? 'var(--gold-dim)' : 'var(--rose)' }}
+      >
+        {verdict.ok === false ? <IconWarning size={11} /> : <IconCheck size={11} />}
         {verdict.text}
       </span>
     </div>
@@ -54,7 +70,7 @@ function DataQualityBar({ results }: { results: PlacesResult[] }) {
 }
 
 function Meter({ label, value }: { label: string; value: number }) {
-  const color = value >= 70 ? 'var(--green)' : value >= 40 ? 'var(--gold)' : 'var(--rose)';
+  const color = value >= 70 ? 'var(--green)' : value >= 40 ? 'var(--gold-dim)' : 'var(--rose)';
   return (
     <span className="meter">
       <span className="meter-label">{label}</span>
@@ -71,7 +87,10 @@ function FwBadge({ fw, score }: { fw: string; score: number }) {
   if (!meta) return null;
   return (
     <div className="fw-cell">
-      <span className="fw-badge" style={{ color: meta.color, background: `${meta.color}18`, borderColor: `${meta.color}35` }}>
+      <span
+        className="fw-badge"
+        style={{ color: meta.color, background: `${meta.color}12`, borderColor: `${meta.color}30` }}
+      >
         <span className="fw-dot" style={{ background: meta.color }} />
         {meta.short}
       </span>
@@ -91,7 +110,7 @@ function ResultRow({
   return (
     <tr
       className={`result-row${selected ? ' row-selected' : ''}`}
-      style={{ animationDelay: `${index * 30}ms`, cursor: selectMode ? 'pointer' : 'default' }}
+      style={{ animationDelay: `${index * 25}ms`, cursor: selectMode ? 'pointer' : 'default' }}
       onClick={selectMode ? onToggle : undefined}
     >
       {selectMode && (
@@ -101,7 +120,7 @@ function ResultRow({
       )}
       <td className="td-num">{index + 1}</td>
       <td className="td-name">
-        <a href={r.maps_url} target="_blank" rel="noreferrer" className="name-link">{r.name}</a>
+        <a href={r.maps_url} target="_blank" rel="noreferrer noopener" className="name-link">{r.name}</a>
         <span className="address">{r.address}</span>
       </td>
       <td className="td-fw">
@@ -115,11 +134,11 @@ function ResultRow({
           : <span className="scoring-dots muted">{scoring ? 'Analysing…' : ''}</span>}
       </td>
       <td className="td-web">
-        {r.website
+        {safeUrl(r.website)
           ? (
-            <a href={r.website} target="_blank" rel="noreferrer" className="web-link">
+            <a href={safeUrl(r.website)} target="_blank" rel="noreferrer noopener" className="web-link">
               <IconGlobe size={11} />
-              {r.website.replace(/^https?:\/\/(www\.)?/, '').split('/')[0]}
+              {r.website!.replace(/^https?:\/\/(www\.)?/, '').split('/')[0]}
             </a>
           )
           : <span className="empty">—</span>}
@@ -137,10 +156,10 @@ function ResultRow({
       </td>
       <td className="td-save">
         {saved
-          ? <span className="save-done"><IconCheck size={12} />Saved</span>
+          ? <span className="save-done"><IconCheck size={11} />Saved</span>
           : (
             <button className="btn-save" onClick={onSave} disabled={saving}>
-              {saving ? '…' : <><IconArrowRight size={11} />Save</>}
+              {saving ? '…' : <><IconArrowRight size={10} />Save</>}
             </button>
           )}
       </td>
@@ -305,8 +324,8 @@ export default function DiscoveryPage() {
   }
 
   const sorted = results ? [...results].sort((a, b) => {
-    if (sort === 'score') return (scores[b.place_id]?.score ?? -1) - (scores[a.place_id]?.score ?? -1);
-    if (sort === 'rating') return (b.rating ?? 0) - (a.rating ?? 0);
+    if (sort === 'score')   return (scores[b.place_id]?.score ?? -1) - (scores[a.place_id]?.score ?? -1);
+    if (sort === 'rating')  return (b.rating ?? 0) - (a.rating ?? 0);
     if (sort === 'reviews') return (b.user_ratings_total ?? 0) - (a.user_ratings_total ?? 0);
     return a.name.localeCompare(b.name);
   }) : [];
@@ -314,117 +333,299 @@ export default function DiscoveryPage() {
   return (
     <>
       <style>{`
-        /* ── Discovery-specific styles ── */
-        .main { max-width: 1280px; margin: 0 auto; padding: 44px 32px 80px; }
+        .main {
+          max-width: 1400px;
+          margin: 0 auto;
+          padding: 48px 40px 80px;
+        }
 
-        .hero { margin-bottom: 36px; }
-        .hero h1 { font-family: var(--font-d); font-size: 40px; font-weight: 500; color: var(--t0); line-height: 1.1; margin-bottom: 10px; letter-spacing: -0.01em; }
-        .hero h1 em { color: var(--gold); font-style: normal; }
-        .hero p { font-size: 14px; color: var(--t1); max-width: 520px; line-height: 1.65; }
+        /* Hero */
+        .hero { margin-bottom: 40px; }
+        .hero h1 {
+          font-family: var(--font-d);
+          font-size: 44px;
+          font-weight: 500;
+          color: var(--t0);
+          line-height: 1.05;
+          margin-bottom: 12px;
+          letter-spacing: -0.01em;
+        }
+        .hero h1 em { color: var(--gold-dim); font-style: italic; }
+        .hero p { font-size: 12px; color: var(--t1); max-width: 520px; line-height: 1.7; letter-spacing: 0.02em; }
 
-        .search-form { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; align-items: flex-end; }
-        .field-wrap { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 200px; }
-        .field-wrap label { font-size: 10px; font-family: var(--font-mono); color: var(--t2); letter-spacing: 0.1em; text-transform: uppercase; }
+        /* Search form */
+        .search-form {
+          display: flex;
+          gap: 12px;
+          margin-bottom: 12px;
+          flex-wrap: wrap;
+          align-items: flex-end;
+        }
+        .field-wrap { display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 200px; }
+        .field-wrap label {
+          font-size: 9px;
+          font-family: var(--font-mono);
+          color: var(--t2);
+          letter-spacing: 0.15em;
+          text-transform: uppercase;
+        }
         .field-wrap input {
-          background: var(--bg2);
-          border: 1px solid var(--b1);
+          background: var(--bg1);
+          border: none;
+          border-bottom: 1px solid var(--b0);
           color: var(--t0);
           font-size: 14px;
-          font-family: var(--font-ui);
-          padding: 11px 14px;
-          border-radius: 7px;
+          font-family: var(--font-mono);
+          padding: 10px 0;
           outline: none;
-          transition: border-color 0.15s, box-shadow 0.15s;
+          transition: border-color 0.2s;
+          letter-spacing: 0.02em;
         }
         .field-wrap input::placeholder { color: var(--t2); }
-        .field-wrap input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(196,146,60,0.1); }
-        .search-hint { font-size: 12px; color: var(--t2); margin-bottom: 32px; line-height: 1.6; font-family: var(--font-mono); }
+        .field-wrap input:focus { border-bottom-color: var(--gold-dim); }
+        .search-hint {
+          font-size: 11px;
+          color: var(--t2);
+          margin-bottom: 36px;
+          line-height: 1.6;
+          font-family: var(--font-mono);
+          letter-spacing: 0.03em;
+        }
 
         /* Status row */
-        .status-row { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; flex-wrap: wrap; }
-        .query-label { font-family: var(--font-mono); font-size: 13px; color: var(--gold); }
-        .count-tag { font-size: 12px; color: var(--t2); font-family: var(--font-mono); background: var(--bg3); border: 1px solid var(--b0); padding: 2px 8px; border-radius: 3px; }
-        .elapsed { font-size: 11px; color: var(--t2); font-family: var(--font-mono); }
-        .sort-row { display: flex; align-items: center; gap: 8px; margin-left: auto; }
-        .sort-row label { font-size: 10px; color: var(--t2); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.08em; }
+        .status-row {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          margin-bottom: 16px;
+          flex-wrap: wrap;
+        }
+        .query-label {
+          font-family: var(--font-d);
+          font-size: 17px;
+          font-weight: 500;
+          color: var(--gold-dim);
+          font-style: italic;
+        }
+        .count-tag {
+          font-size: 10px;
+          color: var(--t2);
+          font-family: var(--font-mono);
+          background: var(--bg2);
+          border: 1px solid var(--b0);
+          padding: 2px 9px;
+          letter-spacing: 0.08em;
+        }
+        .elapsed {
+          font-size: 10px;
+          color: var(--t2);
+          font-family: var(--font-mono);
+          letter-spacing: 0.06em;
+        }
+        .sort-row {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin-left: auto;
+        }
+        .sort-row label {
+          font-size: 9px;
+          color: var(--t2);
+          font-family: var(--font-mono);
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+        }
         .sort-row select {
-          background: var(--bg2); border: 1px solid var(--b1); color: var(--t0);
-          font-size: 12px; font-family: var(--font-mono); padding: 5px 10px;
-          border-radius: 4px; outline: none; cursor: pointer;
+          background: var(--bg2);
+          border: 1px solid var(--b0);
+          color: var(--t0);
+          font-size: 11px;
+          font-family: var(--font-mono);
+          padding: 5px 10px;
+          outline: none;
+          cursor: pointer;
+          letter-spacing: 0.04em;
         }
 
         /* Data quality bar */
         .dq-bar {
-          display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
-          background: var(--bg2); border: 1px solid var(--b0);
-          border-radius: 7px; padding: 12px 18px; margin-bottom: 22px;
+          display: flex;
+          align-items: center;
+          gap: 20px;
+          flex-wrap: wrap;
+          background: var(--bg1);
+          border: 1px solid var(--b0);
+          border-top: 1px solid rgba(212,175,55,0.2);
+          padding: 12px 20px;
+          margin-bottom: 20px;
         }
-        .dq-label { font-size: 10px; font-family: var(--font-mono); color: var(--t2); text-transform: uppercase; letter-spacing: 0.1em; white-space: nowrap; }
+        .dq-label {
+          font-size: 9px;
+          font-family: var(--font-mono);
+          color: var(--t2);
+          text-transform: uppercase;
+          letter-spacing: 0.14em;
+          white-space: nowrap;
+        }
         .meter { display: flex; align-items: center; gap: 8px; }
-        .meter-label { font-size: 11px; color: var(--t1); font-family: var(--font-mono); }
-        .meter-track { width: 72px; height: 3px; background: var(--bg3); border-radius: 2px; overflow: hidden; }
-        .meter-fill { height: 100%; border-radius: 2px; transition: width 0.7s ease; }
-        .meter-pct { font-size: 11px; font-family: var(--font-mono); font-weight: 500; min-width: 32px; }
-        .dq-verdict { margin-left: auto; font-size: 11px; font-family: var(--font-mono); display: flex; align-items: center; gap: 5px; white-space: nowrap; }
+        .meter-label { font-size: 10px; color: var(--t2); font-family: var(--font-mono); letter-spacing: 0.04em; }
+        .meter-track { width: 72px; height: 2px; background: var(--bg3); overflow: hidden; }
+        .meter-fill  { height: 100%; transition: width 0.8s ease; }
+        .meter-pct   { font-size: 10px; font-family: var(--font-mono); font-weight: 500; min-width: 30px; }
+        .dq-verdict  {
+          margin-left: auto;
+          font-size: 10px;
+          font-family: var(--font-mono);
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          white-space: nowrap;
+          letter-spacing: 0.06em;
+          text-transform: uppercase;
+        }
 
         /* Table */
-        .tbl-wrap { border: 1px solid var(--b0); border-radius: 8px; overflow: hidden; }
+        .tbl-wrap { border: 1px solid var(--b0); overflow: hidden; }
         table { width: 100%; border-collapse: collapse; }
-        thead { background: var(--bg2); border-bottom: 1px solid var(--b1); }
-        thead th { padding: 10px 14px; font-size: 10px; font-family: var(--font-mono); color: var(--t2); text-transform: uppercase; letter-spacing: 0.08em; text-align: left; white-space: nowrap; user-select: none; }
-        .result-row { border-bottom: 1px solid var(--b0); background: var(--bg1); animation: rowIn 0.3s ease both; transition: background 0.1s; }
+        thead { background: var(--bg2); border-bottom: 1px solid var(--b0); }
+        thead th {
+          padding: 9px 14px;
+          font-size: 9px;
+          font-family: var(--font-mono);
+          color: var(--t2);
+          text-transform: uppercase;
+          letter-spacing: 0.12em;
+          text-align: left;
+          white-space: nowrap;
+          user-select: none;
+        }
+        .result-row {
+          border-bottom: 1px solid var(--b1);
+          background: var(--bg1);
+          animation: rowIn 0.28s ease both;
+          transition: background 0.1s;
+        }
         .result-row:last-child { border-bottom: none; }
         .result-row:hover { background: var(--bg2); }
-        td { padding: 11px 14px; vertical-align: middle; }
-        .row-selected { background: rgba(196,146,60,0.05) !important; }
+        td { padding: 10px 14px; vertical-align: middle; }
+        .row-selected { background: rgba(212,175,55,0.04) !important; }
+
         .td-check { width: 36px; padding-right: 0; }
-        .td-check input { accent-color: var(--gold); width: 14px; height: 14px; cursor: pointer; }
-        .td-num { font-size: 11px; font-family: var(--font-mono); color: var(--t2); width: 32px; }
+        .td-check input { accent-color: var(--gold-dim); width: 13px; height: 13px; cursor: pointer; }
+        .td-num { font-size: 10px; font-family: var(--font-mono); color: var(--t2); width: 30px; }
         .td-name { min-width: 180px; }
-        .name-link { font-size: 14px; font-weight: 500; color: var(--t0); text-decoration: none; display: block; margin-bottom: 3px; transition: color 0.12s; cursor: pointer; }
-        .name-link:hover { color: var(--gold); }
-        .address { font-size: 11px; color: var(--t2); font-family: var(--font-mono); display: block; line-height: 1.4; }
-        .td-fw { width: 150px; }
+        .name-link {
+          font-size: 13px;
+          font-weight: 500;
+          color: var(--t0);
+          text-decoration: none;
+          display: block;
+          margin-bottom: 3px;
+          transition: color 0.12s;
+          font-family: var(--font-mono);
+          letter-spacing: 0.01em;
+        }
+        .name-link:hover { color: var(--gold-dim); }
+        .address { font-size: 10px; color: var(--t2); font-family: var(--font-mono); display: block; line-height: 1.4; }
+
+        .td-fw { width: 160px; }
         .td-reasoning { max-width: 280px; }
-        .reasoning-text { font-size: 12px; color: var(--t1); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .td-web { font-size: 12px; max-width: 160px; }
-        .web-link { color: var(--blue); text-decoration: none; font-size: 11px; font-family: var(--font-mono); word-break: break-all; display: flex; align-items: center; gap: 5px; transition: color 0.12s; cursor: pointer; }
+        .reasoning-text {
+          font-size: 11px;
+          color: var(--t1);
+          line-height: 1.55;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          font-family: var(--font-mono);
+          letter-spacing: 0.01em;
+        }
+        .td-web { font-size: 11px; max-width: 160px; }
+        .web-link {
+          color: var(--blue);
+          text-decoration: none;
+          font-size: 10px;
+          font-family: var(--font-mono);
+          word-break: break-all;
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          transition: color 0.12s;
+          letter-spacing: 0.02em;
+        }
         .web-link:hover { color: var(--t0); }
-        .empty { color: var(--t2); font-family: var(--font-mono); font-size: 12px; }
-        .td-rating { font-size: 12px; font-family: var(--font-mono); white-space: nowrap; }
+        .empty { color: var(--t2); font-family: var(--font-mono); font-size: 11px; }
+
+        .td-rating { font-size: 11px; font-family: var(--font-mono); white-space: nowrap; }
         .rating { color: var(--t0); display: flex; align-items: center; gap: 5px; }
-        .reviews { color: var(--t2); font-size: 11px; }
+        .reviews { color: var(--t2); font-size: 10px; }
         .td-save { white-space: nowrap; }
         .muted { color: var(--t2); }
 
         /* Select mode */
-        .select-all-btn { font-size: 11px; font-family: var(--font-mono); color: var(--t2); background: none; border: none; padding: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+        .select-all-btn {
+          font-size: 10px;
+          font-family: var(--font-mono);
+          color: var(--t2);
+          background: none;
+          border: none;
+          padding: 0;
+          cursor: pointer;
+          text-decoration: underline;
+          text-underline-offset: 2px;
+          letter-spacing: 0.06em;
+        }
         .select-all-btn:hover { color: var(--t1); }
         .remove-bar {
-          display: flex; align-items: center; gap: 12px;
-          padding: 11px 16px; background: var(--bg2);
-          border-top: 1px solid var(--b1);
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 10px 16px;
+          background: var(--bg2);
+          border-top: 1px solid var(--b0);
         }
-        .remove-bar-count { font-size: 12px; font-family: var(--font-mono); color: var(--t1); }
-        .remove-bar-count strong { color: var(--gold); font-weight: 500; }
+        .remove-bar-count { font-size: 11px; font-family: var(--font-mono); color: var(--t1); }
+        .remove-bar-count strong { color: var(--gold-dim); font-weight: 500; }
 
         /* Find more */
-        .find-more-row { display: flex; justify-content: center; margin-top: 20px; }
+        .find-more-row { display: flex; justify-content: center; margin-top: 24px; }
         .find-more-wrap { text-align: center; }
         .find-more-btn {
-          background: none; border: 1px solid var(--b1); color: var(--t1);
-          font-size: 12px; font-family: var(--font-mono); padding: 9px 28px;
-          border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 7px;
+          background: none;
+          border: 1px solid var(--b0);
+          color: var(--t1);
+          font-size: 11px;
+          font-family: var(--font-mono);
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          padding: 10px 32px;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
           transition: color 0.15s, border-color 0.15s;
         }
         .find-more-btn:hover:not(:disabled) { color: var(--t0); border-color: var(--t2); }
         .find-more-btn:disabled { opacity: 0.4; cursor: default; }
-        .find-more-note { font-size: 11px; color: var(--t2); font-family: var(--font-mono); margin-top: 7px; }
+        .find-more-note {
+          font-size: 10px;
+          color: var(--t2);
+          font-family: var(--font-mono);
+          margin-top: 8px;
+          letter-spacing: 0.04em;
+        }
 
         /* Empty + error states */
         .empty-state { text-align: center; padding: 80px 32px; }
-        .empty-state .headline { font-family: var(--font-d); font-size: 24px; color: var(--t1); margin-bottom: 10px; }
-        .empty-state p { font-size: 13px; color: var(--t2); line-height: 1.7; }
+        .empty-state .headline {
+          font-family: var(--font-d);
+          font-size: 28px;
+          color: var(--t1);
+          margin-bottom: 12px;
+          font-style: italic;
+        }
+        .empty-state p { font-size: 12px; color: var(--t2); line-height: 1.8; font-family: var(--font-mono); }
       `}</style>
 
       <Topbar onSignOut={handleSignOut}>
@@ -436,12 +637,12 @@ export default function DiscoveryPage() {
         )}
         {savedCount > 0 && (
           <span className="pipeline-count">
-            <strong>{savedCount}</strong> in pipeline
+            <strong>{savedCount}</strong>&nbsp;in pipeline
           </span>
         )}
       </Topbar>
 
-      <div className="main">
+      <main className="main">
         <div className="hero">
           <h1>Lead <em>Discovery</em></h1>
           <p>Search a niche and city. Claude Haiku scores every result against R&amp;R&apos;s 5 frameworks — hit Save to add a lead to your pipeline.</p>
@@ -458,7 +659,9 @@ export default function DiscoveryPage() {
               placeholder="e.g. lifestyle brand"
               required
             />
-            <datalist id="niche-suggestions">{NICHES.map(n => <option key={n} value={n} />)}</datalist>
+            <datalist id="niche-suggestions">
+              {NICHES.map(n => <option key={n} value={n} />)}
+            </datalist>
           </div>
           <div className="field-wrap">
             <label htmlFor="city-input">City</label>
@@ -471,7 +674,7 @@ export default function DiscoveryPage() {
             />
           </div>
           <button className="btn-primary" type="submit" disabled={loading} style={{ alignSelf: 'flex-end' }}>
-            {loading ? 'Searching…' : <>Search <IconArrowRight size={14} /></>}
+            {loading ? 'Searching…' : <>Search <IconArrowRight size={12} /></>}
           </button>
         </form>
 
@@ -479,7 +682,7 @@ export default function DiscoveryPage() {
 
         {error && (
           <div className="error-msg">
-            <IconWarning size={14} />
+            <IconWarning size={13} />
             {error}
           </div>
         )}
@@ -488,15 +691,15 @@ export default function DiscoveryPage() {
           <div className="skeleton-wrap">
             {Array.from({ length: 8 }).map((_, i) => (
               <div key={i} className="sk-row">
-                <div className="sk" style={{ width: 24, height: 12, flexShrink: 0 }} />
+                <div className="sk" style={{ width: 22, height: 11, flexShrink: 0 }} />
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 7 }}>
-                  <div className="sk" style={{ width: '38%', height: 13 }} />
-                  <div className="sk" style={{ width: '60%', height: 10 }} />
+                  <div className="sk" style={{ width: '36%', height: 12 }} />
+                  <div className="sk" style={{ width: '58%', height: 9 }} />
                 </div>
-                <div className="sk" style={{ width: 96, height: 24, borderRadius: 4, flexShrink: 0 }} />
-                <div className="sk" style={{ width: 200, height: 10, flexShrink: 0 }} />
-                <div className="sk" style={{ width: 110, height: 12, flexShrink: 0 }} />
-                <div className="sk" style={{ width: 60, height: 26, borderRadius: 4, flexShrink: 0 }} />
+                <div className="sk" style={{ width: 90, height: 22, flexShrink: 0 }} />
+                <div className="sk" style={{ width: 190, height: 9, flexShrink: 0 }} />
+                <div className="sk" style={{ width: 100, height: 11, flexShrink: 0 }} />
+                <div className="sk" style={{ width: 56, height: 24, flexShrink: 0 }} />
               </div>
             ))}
           </div>
@@ -569,8 +772,8 @@ export default function DiscoveryPage() {
                 <div className="remove-bar">
                   <span className="remove-bar-count"><strong>{selectedIds.size}</strong> selected</span>
                   <button className="btn-danger" style={{ marginLeft: 'auto' }} onClick={removeSelected}>
-                    <IconWarning size={12} />
-                    Remove from results
+                    <IconWarning size={11} />
+                    Remove
                   </button>
                 </div>
               )}
@@ -580,7 +783,7 @@ export default function DiscoveryPage() {
               <div className="find-more-row">
                 <div className="find-more-wrap">
                   <button className="find-more-btn" onClick={handleFindMore} disabled={loadingMore || scoring}>
-                    {loadingMore ? 'Loading more…' : <><IconArrowRight size={12} />Find More</>}
+                    {loadingMore ? 'Loading more…' : <><IconArrowRight size={11} />Find More</>}
                   </button>
                   <div className="find-more-note">{results.length} results so far · up to 60 total</div>
                 </div>
@@ -595,7 +798,7 @@ export default function DiscoveryPage() {
             <p>Enter a niche and city above.<br />Results are framework-scored by Claude Haiku in real time.</p>
           </div>
         )}
-      </div>
+      </main>
     </>
   );
 }

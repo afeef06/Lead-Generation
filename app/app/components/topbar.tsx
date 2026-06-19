@@ -15,22 +15,30 @@ export function Topbar({ onSignOut, children }: TopbarProps) {
   return (
     <header className="topbar">
       <span className="topbar-logo">R&amp;R</span>
-      <span className="topbar-badge">Lead Intelligence</span>
+      <span className="topbar-badge">Intelligence</span>
+      <div className="topbar-divider" />
 
-      <nav className="topbar-nav">
+      <nav className="topbar-nav" aria-label="Main navigation">
         <Link href="/" className={`topbar-link${path === '/' ? ' active' : ''}`}>
           Discovery
         </Link>
         <Link href="/pipeline" className={`topbar-link${path === '/pipeline' ? ' active' : ''}`}>
           Pipeline
         </Link>
+        <Link href="/conversion" className={`topbar-link${path === '/conversion' ? ' active' : ''}`}>
+          Conversion
+        </Link>
       </nav>
 
-      {children && <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginLeft: 8 }}>{children}</div>}
+      {children && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginLeft: 8 }}>
+          {children}
+        </div>
+      )}
 
       <div className="topbar-right">
-        <button className="btn-ghost" onClick={onSignOut} style={{ gap: 6 }}>
-          <IconSignOut size={13} />
+        <button className="btn-ghost" onClick={onSignOut}>
+          <IconSignOut size={12} />
           Sign out
         </button>
       </div>
