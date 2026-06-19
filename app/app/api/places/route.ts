@@ -59,6 +59,7 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const niche = searchParams.get('niche')?.trim();
   const city = searchParams.get('city')?.trim();
+  const name = searchParams.get('name')?.trim();
   const pagetoken = searchParams.get('pagetoken');
 
   let textSearchUrl: string;
@@ -69,9 +70,13 @@ export async function GET(req: NextRequest) {
     await new Promise(r => setTimeout(r, 2000));
     textSearchUrl = `https://maps.googleapis.com/maps/api/place/textsearch/json?pagetoken=${encodeURIComponent(pagetoken)}`;
     queryLabel = searchParams.get('query') ?? '';
+  } else if (name) {
+    const q = city ? `${name} in ${city}` : name;
+    textSearchUrl = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(q)}`;
+    queryLabel = q;
   } else {
     if (!niche || !city) {
-      return NextResponse.json({ error: 'niche and city are required' }, { status: 400 });
+      return NextResponse.json({ error: 'Provide name, or both niche and city' }, { status: 400 });
     }
     const query = encodeURIComponent(`${niche} in ${city}`);
     textSearchUrl = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${query}`;
