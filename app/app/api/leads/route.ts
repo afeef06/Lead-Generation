@@ -55,6 +55,7 @@ export async function POST(req: NextRequest) {
       source: body.source ?? 'google_places',
       created_by: user.id,
       created_by_email: user.email ?? null,
+      created_by_name: (user.user_metadata as { full_name?: string })?.full_name ?? null,
     })
     .select()
     .single();

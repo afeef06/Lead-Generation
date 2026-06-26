@@ -40,6 +40,9 @@ create table leads (
   review_count        integer,
   source              text default 'google_places',
   notes               text,
+  created_by          uuid references auth.users(id),
+  created_by_email    text,
+  created_by_name     text,
   created_at          timestamptz default now(),
   updated_at          timestamptz default now(),
   unique (organization_id, place_id)
@@ -132,11 +135,8 @@ create trigger on_auth_user_created
 
 insert into organizations (name) values ('R&R Collective');
 
--- ── Migration: add created_by ownership ──────────────────────
--- Run this block in Supabase SQL Editor AFTER the initial schema is applied.
-
-alter table leads
-  add column if not exists created_by       uuid references auth.users(id),
-  add column if not exists created_by_email text;
-
-create index if not exists leads_created_by_idx on leads (created_by);
+-- ── Migration for existing deployments ──────────────────────
+-- Run these in Supabase SQL Editor if the leads table already exists:
+-- alter table leads add column if not exists created_by uuid references auth.users(id);
+-- alter table leads add column if not exists created_by_email text;
+-- alter table leads add column if not exists created_by_name text;

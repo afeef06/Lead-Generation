@@ -29,6 +29,7 @@ interface Lead {
   created_at: string;
   created_by: string | null;
   created_by_email: string | null;
+  created_by_name: string | null;
 }
 
 function safeUrl(url: string | null | undefined): string | undefined {
@@ -149,7 +150,7 @@ function NoteField({ lead, onSave }: { lead: Lead; onSave: (id: string, notes: s
 }
 
 function Card({
-  lead, onAdvance, onSaveNote, onUpdate, selectMode, selected, onToggle,
+  lead, onAdvance, onSaveNote, onUpdate, selectMode, selected, onToggle, currentUserId,
 }: {
   lead: Lead;
   onAdvance: (lead: Lead) => void;
@@ -158,10 +159,12 @@ function Card({
   selectMode: boolean;
   selected: boolean;
   onToggle: () => void;
+  currentUserId: string | null;
 }) {
   const fw = lead.framework_match ? FW[lead.framework_match] : null;
   const stageIdx = STAGES.indexOf(lead.stage);
   const nextStage = stageIdx < STAGES.length - 1 ? STAGES[stageIdx + 1] : null;
+  const isMe = lead.created_by === currentUserId;
 
   return (
     <div
@@ -188,6 +191,12 @@ function Card({
           <span className="card-addr">{lead.address.split(',').slice(-3).join(',').trim()}</span>
         )}
       </div>
+
+      {(lead.created_by_name || lead.created_by_email) && (
+        <span className={`card-contributor${isMe ? ' card-contributor-me' : ''}`}>
+          {isMe ? 'Me' : (lead.created_by_name ?? lead.created_by_email?.split('@')[0])}
+        </span>
+      )}
 
       {fw && lead.framework_score !== null && (
         <div className="fw-cell" style={{ marginTop: 2 }}>
@@ -240,7 +249,7 @@ function Card({
 }
 
 function Column({
-  stage, leads, onAdvance, onSaveNote, onUpdate, selectMode, selectedIds, onToggle,
+  stage, leads, onAdvance, onSaveNote, onUpdate, selectMode, selectedIds, onToggle, currentUserId,
 }: {
   stage: Stage;
   leads: Lead[];
@@ -250,6 +259,7 @@ function Column({
   selectMode: boolean;
   selectedIds: Set<string>;
   onToggle: (id: string) => void;
+  currentUserId: string | null;
 }) {
   const meta = STAGE_META[stage];
   return (
@@ -271,6 +281,7 @@ function Column({
             selectMode={selectMode}
             selected={selectedIds.has(lead.id)}
             onToggle={() => onToggle(lead.id)}
+            currentUserId={currentUserId}
           />
         ))}
       </div>
@@ -285,6 +296,7 @@ export default function MyLeadsPage() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [deleting, setDeleting] = useState(false);
   const [showSearchModal, setShowSearchModal] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const router = useRouter();
   const supabase = createClient();
 
@@ -300,7 +312,10 @@ export default function MyLeadsPage() {
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) router.replace('/login');
-      else loadLeads();
+      else {
+        setCurrentUserId(user.id);
+        loadLeads();
+      }
     });
   }, [supabase, router, loadLeads]);
 
@@ -549,6 +564,14 @@ export default function MyLeadsPage() {
           text-decoration: underline; text-underline-offset: 2px;
         }
         .empty-board-cta:hover { color: var(--gold); }
+
+        .card-contributor {
+          font-size: 9px; font-family: var(--font-mono); color: var(--t2);
+          letter-spacing: 0.08em; text-transform: uppercase;
+          background: var(--bg3); border: 1px solid var(--b1);
+          padding: 1px 6px; align-self: flex-start;
+        }
+        .card-contributor-me { color: var(--green); background: rgba(58,139,106,0.07); border-color: rgba(58,139,106,0.22); }
       `}</style>
 
       <Topbar onSignOut={handleSignOut}>
@@ -609,6 +632,7 @@ export default function MyLeadsPage() {
                 selectMode={selectMode}
                 selectedIds={selectedIds}
                 onToggle={toggleSelect}
+                currentUserId={currentUserId}
               />
             ))}
           </div>

@@ -29,11 +29,13 @@ interface Lead {
   created_at: string;
   created_by: string | null;
   created_by_email: string | null;
+  created_by_name: string | null;
 }
 
 interface Member {
   id: string;
   email: string;
+  name: string | null;
 }
 
 function safeUrl(url: string | null | undefined): string | undefined {
@@ -193,9 +195,9 @@ function Card({
         )}
       </div>
 
-      {lead.created_by_email && (
+      {(lead.created_by_name || lead.created_by_email) && (
         <span className={`card-contributor${isMe ? ' card-contributor-me' : ''}`}>
-          {isMe ? 'Me' : lead.created_by_email.split('@')[0]}
+          {isMe ? 'Me' : (lead.created_by_name ?? lead.created_by_email?.split('@')[0])}
         </span>
       )}
 
@@ -783,7 +785,7 @@ export default function PipelinePage() {
                   className={`filter-chip${filterBy === m.id ? ' active' : ''}${m.id === currentUserId ? ' is-me' : ''}`}
                   onClick={() => setFilterBy(filterBy === m.id ? null : m.id)}
                 >
-                  {m.id === currentUserId ? 'Me' : m.email.split('@')[0]}
+                  {m.id === currentUserId ? 'Me' : (m.name ?? m.email.split('@')[0])}
                   {' '}({leads.filter(l => l.created_by === m.id).length})
                 </button>
               ))}

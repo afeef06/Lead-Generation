@@ -16,16 +16,20 @@ export async function GET() {
 
   const { data: rows } = await supabase
     .from('leads')
-    .select('created_by, created_by_email')
+    .select('created_by, created_by_email, created_by_name')
     .eq('organization_id', uo.organization_id)
     .not('created_by', 'is', null);
 
   const seen = new Set<string>();
-  const members: { id: string; email: string }[] = [];
+  const members: { id: string; email: string; name: string | null }[] = [];
   for (const row of rows ?? []) {
     if (row.created_by && !seen.has(row.created_by)) {
       seen.add(row.created_by);
-      members.push({ id: row.created_by, email: row.created_by_email ?? row.created_by });
+      members.push({
+        id: row.created_by,
+        email: row.created_by_email ?? row.created_by,
+        name: row.created_by_name ?? null,
+      });
     }
   }
 
