@@ -29,13 +29,13 @@ create table leads (
   email               text,
   stage               text not null default 'discovered'
                         check (stage in ('discovered','qualified','outreach','closed')),
-  framework_match     text
-                        check (framework_match in (
-                          'brand_positioning','client_acquisition',
-                          'growth_infrastructure','scaling_roadmap','venture_development'
-                        )),
-  framework_score     numeric(3,1),
+  framework_match     text check (framework_match in ('website','ads','consulting')),
+  framework_score     numeric(3,1),  -- opportunity_score: max of the three sub-scores
   framework_reasoning text,
+  service_secondary   text check (service_secondary in ('website','ads','consulting')),
+  website_score       numeric(3,1),
+  ads_score           numeric(3,1),
+  consulting_score    numeric(3,1),
   rating              numeric(2,1),
   review_count        integer,
   source              text default 'google_places',
@@ -140,3 +140,15 @@ insert into organizations (name) values ('R&R Collective');
 -- alter table leads add column if not exists created_by uuid references auth.users(id);
 -- alter table leads add column if not exists created_by_email text;
 -- alter table leads add column if not exists created_by_name text;
+
+-- ── ICP scoring overhaul migration ───────────────────────────
+-- Swap framework_match constraint from 5 R&R frameworks → 3 services,
+-- null out old values so the new constraint can be applied cleanly,
+-- then add the three sub-score columns and service_secondary.
+-- alter table leads drop constraint if exists leads_framework_match_check;
+-- update leads set framework_match = null where framework_match not in ('website','ads','consulting');
+-- alter table leads add constraint leads_framework_match_check check (framework_match in ('website','ads','consulting'));
+-- alter table leads add column if not exists service_secondary text check (service_secondary in ('website','ads','consulting'));
+-- alter table leads add column if not exists website_score    numeric(3,1);
+-- alter table leads add column if not exists ads_score        numeric(3,1);
+-- alter table leads add column if not exists consulting_score numeric(3,1);

@@ -12,17 +12,19 @@ import type { PlacesResult } from './api/places/route';
 type SortKey = 'score' | 'rating' | 'reviews' | 'name';
 
 interface ScoreResult {
-  framework: string;
-  score: number;
+  service_primary: string;
+  service_secondary: string;
+  website_score: number;
+  ads_score: number;
+  consulting_score: number;
+  opportunity_score: number;
   reasoning: string;
 }
 
-const FW: Record<string, { label: string; short: string; color: string }> = {
-  brand_positioning:     { label: 'Brand Positioning',     short: 'Brand',       color: '#d4af37' },
-  client_acquisition:    { label: 'Client Acquisition',    short: 'Acquisition', color: '#3A8B6A' },
-  growth_infrastructure: { label: 'Growth Infrastructure', short: 'Growth',      color: '#7A5CAE' },
-  scaling_roadmap:       { label: 'Scaling Roadmap',       short: 'Scaling',     color: '#4A7EC4' },
-  venture_development:   { label: 'Venture Development',   short: 'Venture',     color: '#AA5E7C' },
+const SERVICE: Record<string, { label: string; short: string; color: string }> = {
+  website:    { label: 'Website',    short: 'WEB', color: '#4A7EC4' },
+  ads:        { label: 'Ads',        short: 'ADS', color: '#d4af37' },
+  consulting: { label: 'Consulting', short: 'CON', color: '#3A8B6A' },
 };
 
 function safeUrl(url: string | null | undefined): string | undefined {
@@ -35,9 +37,11 @@ function safeUrl(url: string | null | undefined): string | undefined {
 }
 
 const NICHES = [
-  'e-commerce brand', 'lifestyle brand', 'media company',
-  'professional services', 'fitness studio', 'restaurant',
-  'boutique hotel', 'real estate agency', 'marketing agency', 'SaaS startup',
+  'HVAC contractor', 'plumber', 'electrician', 'roofing contractor',
+  'general contractor', 'landscaping company', 'pest control',
+  'law firm', 'CPA accountant', 'financial advisor', 'insurance agency',
+  'real estate team', 'dental office', 'med spa', 'chiropractor',
+  'physical therapy', 'veterinary clinic', 'interior designer',
 ];
 
 function DataQualityBar({ results }: { results: PlacesResult[] }) {
@@ -82,19 +86,28 @@ function Meter({ label, value }: { label: string; value: number }) {
   );
 }
 
-function FwBadge({ fw, score }: { fw: string; score: number }) {
-  const meta = FW[fw];
-  if (!meta) return null;
+function ServiceGap({ score }: { score: ScoreResult }) {
+  const rows: Array<{ key: string; val: number }> = [
+    { key: 'website',    val: score.website_score },
+    { key: 'ads',        val: score.ads_score },
+    { key: 'consulting', val: score.consulting_score },
+  ].sort((a, b) => b.val - a.val);
+
   return (
-    <div className="fw-cell">
-      <span
-        className="fw-badge"
-        style={{ color: meta.color, background: `${meta.color}12`, borderColor: `${meta.color}30` }}
-      >
-        <span className="fw-dot" style={{ background: meta.color }} />
-        {meta.short}
-      </span>
-      <span className="fw-score" style={{ color: meta.color }}>{score.toFixed(1)}</span>
+    <div className="svc-gap">
+      {rows.map(({ key, val }) => {
+        const s = SERVICE[key];
+        const isPrimary = key === score.service_primary;
+        return (
+          <div key={key} className="svc-row" style={{ opacity: isPrimary ? 1 : 0.55 }}>
+            <span className="svc-label" style={{ color: isPrimary ? s.color : 'var(--t2)' }}>{s.short}</span>
+            <span className="svc-track">
+              <span className="svc-fill" style={{ width: `${val * 10}%`, background: s.color, opacity: isPrimary ? 1 : 0.6 }} />
+            </span>
+            <span className="svc-score" style={{ color: isPrimary ? s.color : 'var(--t2)' }}>{val.toFixed(1)}</span>
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -125,7 +138,7 @@ function ResultRow({
       </td>
       <td className="td-fw">
         {score
-          ? <FwBadge fw={score.framework} score={score.score} />
+          ? <ServiceGap score={score} />
           : <span className="scoring-dots">{scoring ? '···' : '—'}</span>}
       </td>
       <td className="td-reasoning">
@@ -309,9 +322,13 @@ export default function DiscoveryPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...r,
-          framework_match: score?.framework ?? null,
-          framework_score: score?.score ?? null,
+          framework_match: score?.service_primary ?? null,
+          opportunity_score: score?.opportunity_score ?? null,
           framework_reasoning: score?.reasoning ?? null,
+          service_secondary: score?.service_secondary ?? null,
+          website_score: score?.website_score ?? null,
+          ads_score: score?.ads_score ?? null,
+          consulting_score: score?.consulting_score ?? null,
         }),
       });
       if (res.ok || res.status === 409) {
@@ -324,7 +341,7 @@ export default function DiscoveryPage() {
   }
 
   const sorted = results ? [...results].sort((a, b) => {
-    if (sort === 'score')   return (scores[b.place_id]?.score ?? -1) - (scores[a.place_id]?.score ?? -1);
+    if (sort === 'score')   return (scores[b.place_id]?.opportunity_score ?? -1) - (scores[a.place_id]?.opportunity_score ?? -1);
     if (sort === 'rating')  return (b.rating ?? 0) - (a.rating ?? 0);
     if (sort === 'reviews') return (b.user_ratings_total ?? 0) - (a.user_ratings_total ?? 0);
     return a.name.localeCompare(b.name);
@@ -528,7 +545,13 @@ export default function DiscoveryPage() {
         .name-link:hover { color: var(--gold-dim); }
         .address { font-size: 10px; color: var(--t2); font-family: var(--font-mono); display: block; line-height: 1.4; }
 
-        .td-fw { width: 160px; }
+        .td-fw { width: 180px; }
+        .svc-gap { display: flex; flex-direction: column; gap: 4px; }
+        .svc-row { display: flex; align-items: center; gap: 6px; transition: opacity 0.15s; }
+        .svc-label { font-size: 8px; font-family: var(--font-mono); letter-spacing: 0.1em; width: 28px; flex-shrink: 0; }
+        .svc-track { flex: 1; height: 2px; background: var(--bg3); overflow: hidden; }
+        .svc-fill  { height: 100%; transition: width 0.6s ease; }
+        .svc-score { font-size: 9px; font-family: var(--font-mono); width: 24px; text-align: right; flex-shrink: 0; letter-spacing: 0.02em; }
         .td-reasoning { max-width: 280px; }
         .reasoning-text {
           font-size: 11px;
@@ -645,7 +668,7 @@ export default function DiscoveryPage() {
       <main className="main">
         <div className="hero">
           <h1>Lead <em>Discovery</em></h1>
-          <p>Search a niche and city. Claude Haiku scores every result against R&amp;R&apos;s 5 frameworks — hit Save to add a lead to your pipeline.</p>
+          <p>Search a niche and city. Claude Haiku scores every result across three service gaps — Website, Ads, and Consulting — so you know exactly what to pitch before you pick up the phone.</p>
         </div>
 
         <form className="search-form" onSubmit={handleSearch}>
@@ -656,7 +679,7 @@ export default function DiscoveryPage() {
               list="niche-suggestions"
               value={niche}
               onChange={e => setNiche(e.target.value)}
-              placeholder="e.g. lifestyle brand"
+              placeholder="e.g. HVAC contractor"
               required
             />
             <datalist id="niche-suggestions">
@@ -669,7 +692,7 @@ export default function DiscoveryPage() {
               id="city-input"
               value={city}
               onChange={e => setCity(e.target.value)}
-              placeholder="e.g. Austin, TX"
+              placeholder="e.g. Dallas, TX"
               required
             />
           </div>
@@ -678,7 +701,7 @@ export default function DiscoveryPage() {
           </button>
         </form>
 
-        <p className="search-hint">Results appear immediately. Framework scores load in ~3s as Claude Haiku analyses each business.</p>
+        <p className="search-hint">Results appear immediately. Gap scores load in ~3s — WEB / ADS / CON, sorted by biggest opportunity.</p>
 
         {error && (
           <div className="error-msg">
@@ -743,7 +766,7 @@ export default function DiscoveryPage() {
                     )}
                     <th>#</th>
                     <th>Business</th>
-                    <th>Framework · Score</th>
+                    <th>Service Gap</th>
                     <th>AI Reasoning</th>
                     <th>Website</th>
                     <th>Rating</th>

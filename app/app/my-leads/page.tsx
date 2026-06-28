@@ -23,6 +23,10 @@ interface Lead {
   framework_match: string | null;
   framework_score: number | null;
   framework_reasoning: string | null;
+  service_secondary: string | null;
+  website_score: number | null;
+  ads_score: number | null;
+  consulting_score: number | null;
   rating: number | null;
   review_count: number | null;
   notes: string | null;
@@ -51,12 +55,10 @@ const STAGE_META: Record<Stage, { label: string; color: string }> = {
   closed:     { label: 'Closed',     color: '#3A8B6A' },
 };
 
-const FW: Record<string, { label: string; short: string; color: string }> = {
-  brand_positioning:     { label: 'Brand Positioning',     short: 'Brand',       color: '#d4af37' },
-  client_acquisition:    { label: 'Client Acquisition',    short: 'Acquisition', color: '#3A8B6A' },
-  growth_infrastructure: { label: 'Growth Infrastructure', short: 'Growth',      color: '#7A5CAE' },
-  scaling_roadmap:       { label: 'Scaling Roadmap',       short: 'Scaling',     color: '#4A7EC4' },
-  venture_development:   { label: 'Venture Development',   short: 'Venture',     color: '#AA5E7C' },
+const SERVICE: Record<string, { label: string; short: string; color: string }> = {
+  website:    { label: 'Website',    short: 'WEB', color: '#4A7EC4' },
+  ads:        { label: 'Ads',        short: 'ADS', color: '#d4af37' },
+  consulting: { label: 'Consulting', short: 'CON', color: '#3A8B6A' },
 };
 
 function EmailField({ lead, onFound }: { lead: Lead; onFound: (id: string, email: string) => void }) {
@@ -161,15 +163,24 @@ function Card({
   onToggle: () => void;
   currentUserId: string | null;
 }) {
-  const fw = lead.framework_match ? FW[lead.framework_match] : null;
+  const primarySvc = lead.framework_match ? SERVICE[lead.framework_match] : null;
   const stageIdx = STAGES.indexOf(lead.stage);
   const nextStage = stageIdx < STAGES.length - 1 ? STAGES[stageIdx + 1] : null;
   const isMe = lead.created_by === currentUserId;
 
+  const subScores: Array<{ key: string; val: number }> | null =
+    lead.website_score != null || lead.ads_score != null || lead.consulting_score != null
+      ? [
+          { key: 'website',    val: lead.website_score    ?? 0 },
+          { key: 'ads',        val: lead.ads_score        ?? 0 },
+          { key: 'consulting', val: lead.consulting_score ?? 0 },
+        ].sort((a, b) => b.val - a.val)
+      : null;
+
   return (
     <div
       className={`card${selected ? ' card-selected' : ''}`}
-      style={{ borderTop: `1px solid ${fw?.color ?? 'var(--b0)'}` }}
+      style={{ borderTop: `1px solid ${primarySvc?.color ?? 'var(--b0)'}` }}
       onClick={selectMode ? onToggle : undefined}
     >
       {selectMode && (
@@ -198,16 +209,28 @@ function Card({
         </span>
       )}
 
-      {fw && lead.framework_score !== null && (
-        <div className="fw-cell" style={{ marginTop: 2 }}>
-          <span
-            className="fw-badge"
-            style={{ color: fw.color, background: `${fw.color}12`, borderColor: `${fw.color}28` }}
-          >
-            <span className="fw-dot" style={{ background: fw.color }} />
-            {fw.short}
-          </span>
-          <span className="fw-score" style={{ color: fw.color }}>{lead.framework_score.toFixed(1)}</span>
+      {primarySvc && (
+        <span className="svc-primary-badge" style={{ color: primarySvc.color, background: `${primarySvc.color}12`, borderColor: `${primarySvc.color}28` }}>
+          <span className="svc-dot" style={{ background: primarySvc.color }} />
+          {primarySvc.label}
+        </span>
+      )}
+
+      {subScores && (
+        <div className="svc-gap-card">
+          {subScores.map(({ key, val }) => {
+            const s = SERVICE[key];
+            const isPrimary = key === lead.framework_match;
+            return (
+              <div key={key} className="svc-row-card" style={{ opacity: isPrimary ? 1 : 0.5 }}>
+                <span className="svc-label-card" style={{ color: isPrimary ? s.color : 'var(--t2)' }}>{s.short}</span>
+                <span className="svc-track-card">
+                  <span className="svc-fill-card" style={{ width: `${val * 10}%`, background: s.color }} />
+                </span>
+                <span className="svc-score-card" style={{ color: isPrimary ? s.color : 'var(--t2)' }}>{val.toFixed(1)}</span>
+              </div>
+            );
+          })}
         </div>
       )}
 
@@ -564,6 +587,20 @@ export default function MyLeadsPage() {
           text-decoration: underline; text-underline-offset: 2px;
         }
         .empty-board-cta:hover { color: var(--gold); }
+
+        .svc-primary-badge {
+          font-size: 9px; font-family: var(--font-mono); letter-spacing: 0.1em;
+          text-transform: uppercase; border: 1px solid;
+          padding: 2px 8px; align-self: flex-start;
+          display: flex; align-items: center; gap: 5px;
+        }
+        .svc-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+        .svc-gap-card { display: flex; flex-direction: column; gap: 4px; }
+        .svc-row-card { display: flex; align-items: center; gap: 6px; transition: opacity 0.15s; }
+        .svc-label-card { font-size: 8px; font-family: var(--font-mono); letter-spacing: 0.1em; width: 26px; flex-shrink: 0; }
+        .svc-track-card { flex: 1; height: 2px; background: var(--bg3); overflow: hidden; }
+        .svc-fill-card  { height: 100%; transition: width 0.7s ease; }
+        .svc-score-card { font-size: 9px; font-family: var(--font-mono); width: 22px; text-align: right; flex-shrink: 0; }
 
         .card-contributor {
           font-size: 9px; font-family: var(--font-mono); color: var(--t2);
