@@ -7,6 +7,7 @@ import { Topbar } from './components/topbar';
 import {
   IconStar, IconArrowRight, IconCheck, IconWarning, IconGlobe,
 } from './components/icons';
+import { LeadDetailModal } from './components/LeadDetailModal';
 import type { PlacesResult } from './api/places/route';
 
 type SortKey = 'score' | 'rating' | 'reviews' | 'name';
@@ -113,11 +114,11 @@ function ServiceGap({ score }: { score: ScoreResult }) {
 }
 
 function ResultRow({
-  r, index, score, scoring, saved, saving, onSave, selectMode, selected, onToggle,
+  r, index, score, scoring, saved, saving, onSave, onViewDetails, selectMode, selected, onToggle,
 }: {
   r: PlacesResult; index: number;
   score?: ScoreResult; scoring: boolean;
-  saved: boolean; saving: boolean; onSave: () => void;
+  saved: boolean; saving: boolean; onSave: () => void; onViewDetails: () => void;
   selectMode: boolean; selected: boolean; onToggle: () => void;
 }) {
   return (
@@ -142,9 +143,16 @@ function ResultRow({
           : <span className="scoring-dots">{scoring ? '···' : '—'}</span>}
       </td>
       <td className="td-reasoning">
-        {score
-          ? <span className="reasoning-text">{score.reasoning}</span>
-          : <span className="scoring-dots muted">{scoring ? 'Analysing…' : ''}</span>}
+        {score ? (
+          <div className="reasoning-cell">
+            <span className="reasoning-text">{score.reasoning}</span>
+            <button className="reasoning-more" onClick={e => { e.stopPropagation(); onViewDetails(); }}>
+              Details →
+            </button>
+          </div>
+        ) : (
+          <span className="scoring-dots muted">{scoring ? 'Analysing…' : ''}</span>
+        )}
       </td>
       <td className="td-web">
         {safeUrl(r.website)
@@ -197,6 +205,7 @@ export default function DiscoveryPage() {
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
   const [savingId, setSavingId] = useState<string | null>(null);
   const [savedCount, setSavedCount] = useState(0);
+  const [modalLead, setModalLead] = useState<{ r: PlacesResult; score?: ScoreResult } | null>(null);
   const startRef = useRef<number>(0);
   const [elapsed, setElapsed] = useState<number | null>(null);
   const router = useRouter();
@@ -553,6 +562,7 @@ export default function DiscoveryPage() {
         .svc-fill  { height: 100%; transition: width 0.6s ease; }
         .svc-score { font-size: 9px; font-family: var(--font-mono); width: 24px; text-align: right; flex-shrink: 0; letter-spacing: 0.02em; }
         .td-reasoning { max-width: 280px; }
+        .reasoning-cell { display: flex; flex-direction: column; gap: 4px; }
         .reasoning-text {
           font-size: 11px;
           color: var(--t1);
@@ -564,6 +574,20 @@ export default function DiscoveryPage() {
           font-family: var(--font-mono);
           letter-spacing: 0.01em;
         }
+        .reasoning-more {
+          background: none;
+          border: none;
+          color: var(--gold-dim);
+          font-size: 10px;
+          font-family: var(--font-mono);
+          padding: 0;
+          cursor: pointer;
+          text-align: left;
+          letter-spacing: 0.04em;
+          opacity: 0.7;
+          transition: opacity 0.15s;
+        }
+        .reasoning-more:hover { opacity: 1; }
         .td-web { font-size: 11px; max-width: 160px; }
         .web-link {
           color: var(--blue);
@@ -784,6 +808,7 @@ export default function DiscoveryPage() {
                       saved={savedIds.has(r.place_id)}
                       saving={savingId === r.place_id}
                       onSave={() => handleSave(r)}
+                      onViewDetails={() => setModalLead({ r, score: scores[r.place_id] })}
                       selectMode={selectMode}
                       selected={selectedIds.has(r.place_id)}
                       onToggle={() => toggleSelect(r.place_id)}
@@ -822,6 +847,32 @@ export default function DiscoveryPage() {
           </div>
         )}
       </main>
+
+      {modalLead && (
+        <LeadDetailModal
+          lead={{
+            name: modalLead.r.name,
+            address: modalLead.r.address,
+            phone: modalLead.r.phone,
+            website: modalLead.r.website,
+            rating: modalLead.r.rating,
+            user_ratings_total: modalLead.r.user_ratings_total,
+            framework_match: modalLead.score?.service_primary ?? null,
+            website_score: modalLead.score?.website_score ?? null,
+            ads_score: modalLead.score?.ads_score ?? null,
+            consulting_score: modalLead.score?.consulting_score ?? null,
+            framework_reasoning: modalLead.score?.reasoning ?? null,
+            maps_url: modalLead.r.maps_url,
+          }}
+          onClose={() => setModalLead(null)}
+          onSave={savedIds.has(modalLead.r.place_id) ? undefined : () => {
+            handleSave(modalLead.r);
+            setModalLead(null);
+          }}
+          saved={savedIds.has(modalLead.r.place_id)}
+          saving={savingId === modalLead.r.place_id}
+        />
+      )}
     </>
   );
 }

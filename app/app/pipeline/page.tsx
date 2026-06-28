@@ -9,6 +9,7 @@ import {
   IconArrowRight, IconCheck, IconMail, IconCopy, IconTrash,
   IconGlobe, IconPhone,
 } from '../components/icons';
+import { LeadDetailModal } from '../components/LeadDetailModal';
 import { STAGES, type Stage } from '../../lib/stages';
 
 interface Lead {
@@ -155,12 +156,13 @@ function NoteField({ lead, onSave }: { lead: Lead; onSave: (id: string, notes: s
 }
 
 function Card({
-  lead, onAdvance, onSaveNote, onUpdate, selectMode, selected, onToggle, currentUserId,
+  lead, onAdvance, onSaveNote, onUpdate, onViewDetails, selectMode, selected, onToggle, currentUserId,
 }: {
   lead: Lead;
   onAdvance: (lead: Lead) => void;
   onSaveNote: (id: string, notes: string) => Promise<void>;
   onUpdate: (id: string, updates: Partial<Lead>) => void;
+  onViewDetails: (lead: Lead) => void;
   selectMode: boolean;
   selected: boolean;
   onToggle: () => void;
@@ -259,29 +261,33 @@ function Card({
       <EmailField lead={lead} onFound={(id, email) => onUpdate(id, { email })} />
       <NoteField lead={lead} onSave={onSaveNote} />
 
-      {nextStage ? (
-        <button className="advance-btn" onClick={() => onAdvance(lead)}>
-          <IconArrowRight size={10} />
-          {STAGE_META[nextStage].label}
-        </button>
-      ) : (
-        <span className="closed-tag">
-          <IconCheck size={9} />
-          Closed
-        </span>
-      )}
+      <div className="card-actions">
+        <button className="details-btn" onClick={() => onViewDetails(lead)}>Details</button>
+        {nextStage ? (
+          <button className="advance-btn advance-btn-inline" onClick={() => onAdvance(lead)}>
+            <IconArrowRight size={10} />
+            {STAGE_META[nextStage].label}
+          </button>
+        ) : (
+          <span className="closed-tag">
+            <IconCheck size={9} />
+            Closed
+          </span>
+        )}
+      </div>
     </div>
   );
 }
 
 function Column({
-  stage, leads, onAdvance, onSaveNote, onUpdate, selectMode, selectedIds, onToggle, currentUserId,
+  stage, leads, onAdvance, onSaveNote, onUpdate, onViewDetails, selectMode, selectedIds, onToggle, currentUserId,
 }: {
   stage: Stage;
   leads: Lead[];
   onAdvance: (lead: Lead) => void;
   onSaveNote: (id: string, notes: string) => Promise<void>;
   onUpdate: (id: string, updates: Partial<Lead>) => void;
+  onViewDetails: (lead: Lead) => void;
   selectMode: boolean;
   selectedIds: Set<string>;
   onToggle: (id: string) => void;
@@ -304,6 +310,7 @@ function Column({
             onAdvance={onAdvance}
             onSaveNote={onSaveNote}
             onUpdate={onUpdate}
+            onViewDetails={onViewDetails}
             selectMode={selectMode}
             selected={selectedIds.has(lead.id)}
             onToggle={() => onToggle(lead.id)}
@@ -325,6 +332,7 @@ export default function PipelinePage() {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [filterBy, setFilterBy] = useState<string | null>(null);
   const [rescoring, setRescoring] = useState(false);
+  const [modalLead, setModalLead] = useState<Lead | null>(null);
   const router = useRouter();
   const supabase = createClient();
 
@@ -658,6 +666,23 @@ export default function PipelinePage() {
         .enrich-btn:hover:not(:disabled) { color: var(--t1); border-color: var(--t2); border-style: solid; }
         .enrich-btn:disabled { opacity: 0.5; cursor: default; }
 
+        /* Card actions row */
+        .card-actions { display: flex; gap: 6px; align-items: stretch; }
+        .details-btn {
+          background: none;
+          border: 1px solid var(--b0);
+          color: var(--t2);
+          font-size: 10px;
+          font-family: var(--font-mono);
+          padding: 6px 10px;
+          cursor: pointer;
+          letter-spacing: 0.06em;
+          text-transform: uppercase;
+          flex-shrink: 0;
+          transition: color 0.15s, border-color 0.15s;
+        }
+        .details-btn:hover { color: var(--gold-dim); border-color: rgba(212,175,55,0.4); }
+
         /* Advance / closed */
         .advance-btn {
           width: 100%;
@@ -677,6 +702,7 @@ export default function PipelinePage() {
           text-transform: uppercase;
         }
         .advance-btn:hover { color: var(--t0); border-color: var(--t1); background: var(--bg3); }
+        .advance-btn-inline { flex: 1; padding: 6px 7px; }
         .closed-tag {
           font-size: 9px;
           font-family: var(--font-mono);
@@ -867,6 +893,7 @@ export default function PipelinePage() {
                 onAdvance={advanceLead}
                 onSaveNote={saveNote}
                 onUpdate={updateLead}
+                onViewDetails={setModalLead}
                 selectMode={selectMode}
                 selectedIds={selectedIds}
                 onToggle={toggleSelect}
@@ -875,6 +902,26 @@ export default function PipelinePage() {
             ))}
           </div>
         </>
+      )}
+
+      {modalLead && (
+        <LeadDetailModal
+          lead={{
+            name: modalLead.name,
+            address: modalLead.address,
+            phone: modalLead.phone,
+            website: modalLead.website,
+            rating: modalLead.rating,
+            review_count: modalLead.review_count,
+            framework_match: modalLead.framework_match,
+            website_score: modalLead.website_score,
+            ads_score: modalLead.ads_score,
+            consulting_score: modalLead.consulting_score,
+            framework_reasoning: modalLead.framework_reasoning,
+            place_id: modalLead.place_id,
+          }}
+          onClose={() => setModalLead(null)}
+        />
       )}
     </>
   );
