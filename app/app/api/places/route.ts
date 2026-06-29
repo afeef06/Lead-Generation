@@ -44,10 +44,12 @@ async function getPlaceDetails(placeId: string, apiKey: string): Promise<Partial
   return {};
 }
 
-async function fetchPage(url: string, apiKey: string) {
-  const res = await fetch(`${url}&key=${apiKey}`);
-  const data = await res.json() as TextSearchResponse;
-  return data;
+async function googleTextSearch(params: Record<string, string>, apiKey: string): Promise<TextSearchResponse> {
+  const url = new URL('https://maps.googleapis.com/maps/api/place/textsearch/json');
+  url.searchParams.set('key', apiKey);
+  for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v);
+  const res = await fetch(url.toString());
+  return res.json() as Promise<TextSearchResponse>;
 }
 
 export async function GET(req: NextRequest) {
@@ -62,36 +64,37 @@ export async function GET(req: NextRequest) {
   const name = searchParams.get('name')?.trim();
   const pagetoken = searchParams.get('pagetoken');
 
-  let textSearchUrl: string;
+  let searchParams2: Record<string, string>;
   let queryLabel: string;
 
   if (pagetoken) {
-    // Google page tokens need a few seconds to activate; 2s is often too short
-    await new Promise(r => setTimeout(r, 2500));
-    textSearchUrl = `https://maps.googleapis.com/maps/api/place/textsearch/json?pagetoken=${encodeURIComponent(pagetoken)}`;
+    // Google page tokens need a few seconds before they become valid
+    await new Promise(r => setTimeout(r, 3000));
+    searchParams2 = { pagetoken };
     queryLabel = searchParams.get('query') ?? '';
   } else if (name) {
     const q = city ? `${name} in ${city}` : name;
-    textSearchUrl = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(q)}`;
+    searchParams2 = { query: q };
     queryLabel = q;
   } else {
     if (!niche || !city) {
       return NextResponse.json({ error: 'Provide name, or both niche and city' }, { status: 400 });
     }
-    const query = encodeURIComponent(`${niche} in ${city}`);
-    textSearchUrl = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${query}`;
+    searchParams2 = { query: `${niche} in ${city}` };
     queryLabel = `${niche} in ${city}`;
   }
 
-  let searchData = await fetchPage(textSearchUrl, apiKey);
+  let searchData = await googleTextSearch(searchParams2, apiKey);
 
-  // pagetoken occasionally returns INVALID_REQUEST if the token isn't ready yet — retry once
+  // Retry once if the token isn't ready yet
   if (pagetoken && searchData.status === 'INVALID_REQUEST') {
+    console.error('[places] pagetoken INVALID_REQUEST on first attempt, retrying in 2s. error_message:', searchData.error_message);
     await new Promise(r => setTimeout(r, 2000));
-    searchData = await fetchPage(textSearchUrl, apiKey);
+    searchData = await googleTextSearch(searchParams2, apiKey);
   }
 
   if (searchData.status !== 'OK' && searchData.status !== 'ZERO_RESULTS') {
+    console.error('[places] Google error:', searchData.status, searchData.error_message);
     return NextResponse.json(
       { error: searchData.error_message || `Google Places error: ${searchData.status}` },
       { status: 502 }
