@@ -246,6 +246,7 @@ export default function DiscoveryPage() {
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
   const [savingId, setSavingId] = useState<string | null>(null);
   const [savedCount, setSavedCount] = useState(0);
+  const [saveError, setSaveError] = useState('');
   const [modalLead, setModalLead] = useState<{ r: PlacesResult; score?: ScoreResult } | null>(null);
   const startRef = useRef<number>(0);
   const [elapsed, setElapsed] = useState<number | null>(null);
@@ -375,6 +376,7 @@ export default function DiscoveryPage() {
   async function handleSave(r: PlacesResult) {
     const score = scores[r.place_id];
     setSavingId(r.place_id);
+    setSaveError('');
     try {
       const res = await fetch('/api/leads', {
         method: 'POST',
@@ -390,10 +392,19 @@ export default function DiscoveryPage() {
           consulting_score: score?.consulting_score ?? null,
         }),
       });
+      const data = await res.json();
       if (res.ok || res.status === 409) {
         setSavedIds(prev => new Set([...prev, r.place_id]));
         if (res.ok) setSavedCount(c => c + 1);
+      } else {
+        const msg = data?.error ?? `HTTP ${res.status}`;
+        setSaveError(msg);
+        console.error('[save]', res.status, data);
       }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Save failed';
+      setSaveError(msg);
+      console.error('[save]', err);
     } finally {
       setSavingId(null);
     }
@@ -847,6 +858,13 @@ export default function DiscoveryPage() {
           <div className="error-msg">
             <IconWarning size={13} />
             {error}
+          </div>
+        )}
+
+        {saveError && (
+          <div className="error-msg" style={{ marginTop: 12 }}>
+            <IconWarning size={13} />
+            Save failed: {saveError}
           </div>
         )}
 
