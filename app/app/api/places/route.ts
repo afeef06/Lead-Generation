@@ -12,44 +12,46 @@ export interface PlacesResult {
   maps_url: string;
 }
 
-interface GooglePlaceCandidate {
-  place_id: string;
-  name: string;
-  formatted_address: string;
-  formatted_phone_number?: string;
-  website?: string;
+interface NewPlace {
+  id: string;
+  displayName?: { text: string };
+  formattedAddress?: string;
+  nationalPhoneNumber?: string;
+  websiteUri?: string;
   rating?: number;
-  user_ratings_total?: number;
+  userRatingCount?: number;
   types?: string[];
 }
 
-interface TextSearchResponse {
-  status: string;
-  results: GooglePlaceCandidate[];
-  next_page_token?: string;
-  error_message?: string;
+interface NewPlacesResponse {
+  places?: NewPlace[];
+  nextPageToken?: string;
+  error?: { message: string; status: string };
 }
 
-interface PlaceDetailsResponse {
-  status: string;
-  result: GooglePlaceCandidate;
-}
+const FIELD_MASK = [
+  'places.id',
+  'places.displayName',
+  'places.formattedAddress',
+  'places.nationalPhoneNumber',
+  'places.websiteUri',
+  'places.rating',
+  'places.userRatingCount',
+  'places.types',
+  'nextPageToken',
+].join(',');
 
-async function getPlaceDetails(placeId: string, apiKey: string): Promise<Partial<GooglePlaceCandidate>> {
-  const fields = 'formatted_phone_number,website,rating,user_ratings_total';
-  const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=${fields}&key=${apiKey}`;
-  const res = await fetch(url);
-  const data = await res.json() as PlaceDetailsResponse;
-  if (data.status === 'OK') return data.result;
-  return {};
-}
-
-async function googleTextSearch(params: Record<string, string>, apiKey: string): Promise<TextSearchResponse> {
-  const url = new URL('https://maps.googleapis.com/maps/api/place/textsearch/json');
-  url.searchParams.set('key', apiKey);
-  for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v);
-  const res = await fetch(url.toString());
-  return res.json() as Promise<TextSearchResponse>;
+async function searchPlaces(body: Record<string, unknown>, apiKey: string): Promise<NewPlacesResponse> {
+  const res = await fetch('https://places.googleapis.com/v1/places:searchText', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Goog-Api-Key': apiKey,
+      'X-Goog-FieldMask': FIELD_MASK,
+    },
+    body: JSON.stringify(body),
+  });
+  return res.json() as Promise<NewPlacesResponse>;
 }
 
 export async function GET(req: NextRequest) {
@@ -63,72 +65,57 @@ export async function GET(req: NextRequest) {
   const city = searchParams.get('city')?.trim();
   const name = searchParams.get('name')?.trim();
   const pagetoken = searchParams.get('pagetoken');
+  const query = searchParams.get('query');
 
-  let searchParams2: Record<string, string>;
+  let textQuery: string;
   let queryLabel: string;
+  let requestBody: Record<string, unknown>;
 
   if (pagetoken) {
-    // Google page tokens need a few seconds before they become valid
-    await new Promise(r => setTimeout(r, 3000));
-    searchParams2 = { pagetoken };
-    queryLabel = searchParams.get('query') ?? '';
+    textQuery = query ?? '';
+    queryLabel = textQuery;
+    requestBody = { textQuery, pageToken: pagetoken, pageSize: 20 };
   } else if (name) {
-    const q = city ? `${name} in ${city}` : name;
-    searchParams2 = { query: q };
-    queryLabel = q;
+    textQuery = city ? `${name} in ${city}` : name;
+    queryLabel = textQuery;
+    requestBody = { textQuery, pageSize: 20 };
   } else {
     if (!niche || !city) {
       return NextResponse.json({ error: 'Provide name, or both niche and city' }, { status: 400 });
     }
-    searchParams2 = { query: `${niche} in ${city}` };
-    queryLabel = `${niche} in ${city}`;
+    textQuery = `${niche} in ${city}`;
+    queryLabel = textQuery;
+    requestBody = { textQuery, pageSize: 20 };
   }
 
-  let searchData = await googleTextSearch(searchParams2, apiKey);
+  const data = await searchPlaces(requestBody, apiKey);
 
-  // Retry once if the token isn't ready yet
-  if (pagetoken && searchData.status === 'INVALID_REQUEST') {
-    console.error('[places] pagetoken INVALID_REQUEST on first attempt, retrying in 2s. error_message:', searchData.error_message);
-    await new Promise(r => setTimeout(r, 2000));
-    searchData = await googleTextSearch(searchParams2, apiKey);
-  }
-
-  if (searchData.status !== 'OK' && searchData.status !== 'ZERO_RESULTS') {
-    console.error('[places] Google error:', searchData.status, searchData.error_message);
+  if (data.error) {
+    console.error('[places] API error:', data.error.status, data.error.message);
     return NextResponse.json(
-      {
-        error: searchData.error_message || `Google Places error: ${searchData.status}`,
-        _debug: pagetoken
-          ? { tokenLen: pagetoken.length, tokenHead: pagetoken.slice(0, 12), tokenTail: pagetoken.slice(-6), status: searchData.status, errorMessage: searchData.error_message }
-          : undefined,
-      },
+      { error: data.error.message || `Google Places error: ${data.error.status}` },
       { status: 502 }
     );
   }
 
-  const rawResults = searchData.results ?? [];
-  const top20 = rawResults.slice(0, 20);
+  const places = data.places ?? [];
 
-  const details = await Promise.all(
-    top20.map(r => getPlaceDetails(r.place_id, apiKey))
-  );
-
-  const results: PlacesResult[] = top20.map((r, i) => ({
-    place_id: r.place_id,
-    name: r.name,
-    address: r.formatted_address,
-    phone: details[i].formatted_phone_number ?? '',
-    website: details[i].website ?? '',
-    rating: details[i].rating ?? r.rating ?? null,
-    user_ratings_total: details[i].user_ratings_total ?? r.user_ratings_total ?? null,
-    types: r.types ?? [],
-    maps_url: `https://www.google.com/maps/place/?q=place_id:${r.place_id}`,
+  const results: PlacesResult[] = places.map(p => ({
+    place_id: p.id,
+    name: p.displayName?.text ?? 'Unknown',
+    address: p.formattedAddress ?? '',
+    phone: p.nationalPhoneNumber ?? '',
+    website: p.websiteUri ?? '',
+    rating: p.rating ?? null,
+    user_ratings_total: p.userRatingCount ?? null,
+    types: p.types ?? [],
+    maps_url: `https://www.google.com/maps/place/?q=place_id:${p.id}`,
   }));
 
   return NextResponse.json({
     results,
     query: queryLabel,
     total: results.length,
-    next_page_token: searchData.next_page_token ?? null,
+    next_page_token: data.nextPageToken ?? null,
   });
 }
