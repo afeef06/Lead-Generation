@@ -11,6 +11,7 @@ import { LeadDetailModal } from './components/LeadDetailModal';
 import type { PlacesResult } from './api/places/route';
 
 type SortKey = 'score' | 'rating' | 'reviews' | 'name';
+type FilterKey = 'no_website' | 'website' | 'ads' | 'consulting';
 
 interface ScoreResult {
   service_primary: string;
@@ -27,6 +28,45 @@ const SERVICE: Record<string, { label: string; short: string; color: string }> =
   ads:        { label: 'Ads',        short: 'ADS', color: '#d4af37' },
   consulting: { label: 'Consulting', short: 'CON', color: '#3A8B6A' },
 };
+
+const FILTER_DEFS: Array<{ key: FilterKey; label: string; color: string }> = [
+  { key: 'no_website', label: 'No Website',       color: 'var(--rose)' },
+  { key: 'website',    label: 'Needs Website',    color: SERVICE.website.color },
+  { key: 'ads',        label: 'Needs Ads',        color: SERVICE.ads.color },
+  { key: 'consulting', label: 'Needs Consulting', color: SERVICE.consulting.color },
+];
+
+function FilterPills({
+  results, scores, activeFilters, onToggle,
+}: {
+  results: PlacesResult[];
+  scores: Record<string, ScoreResult>;
+  activeFilters: Set<FilterKey>;
+  onToggle: (key: FilterKey) => void;
+}) {
+  return (
+    <div className="filter-row">
+      {FILTER_DEFS.map(({ key, label, color }) => {
+        const count = results.filter(r => {
+          if (key === 'no_website') return !r.website;
+          return scores[r.place_id]?.service_primary === key;
+        }).length;
+        const active = activeFilters.has(key);
+        return (
+          <button
+            key={key}
+            className={`filter-pill${active ? ' active' : ''}`}
+            style={active ? { borderColor: color, color } : undefined}
+            onClick={() => onToggle(key)}
+          >
+            {label}
+            <span className="filter-pill-count">{count}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 
 function safeUrl(url: string | null | undefined): string | undefined {
   if (!url) return undefined;
@@ -196,6 +236,7 @@ export default function DiscoveryPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [sort, setSort] = useState<SortKey>('score');
+  const [activeFilters, setActiveFilters] = useState<Set<FilterKey>>(new Set());
   const [scores, setScores] = useState<Record<string, ScoreResult>>({});
   const [scoring, setScoring] = useState(false);
   const [nextPageToken, setNextPageToken] = useState<string | null>(null);
@@ -261,6 +302,7 @@ export default function DiscoveryPage() {
     setNextPageToken(null);
     setSelectMode(false);
     setSelectedIds(new Set());
+    setActiveFilters(new Set());
     startRef.current = Date.now();
     try {
       const res = await fetch(`/api/places?niche=${encodeURIComponent(niche)}&city=${encodeURIComponent(city)}`);
@@ -311,9 +353,17 @@ export default function DiscoveryPage() {
     });
   }
 
+  function toggleFilter(key: FilterKey) {
+    setActiveFilters(prev => {
+      const next = new Set(prev);
+      if (next.has(key)) { next.delete(key); } else { next.add(key); }
+      return next;
+    });
+  }
+
   function toggleSelectAll() {
     if (!results) return;
-    setSelectedIds(selectedIds.size === results.length ? new Set() : new Set(results.map(r => r.place_id)));
+    setSelectedIds(selectedIds.size === filtered.length ? new Set() : new Set(filtered.map(r => r.place_id)));
   }
 
   function removeSelected() {
@@ -355,6 +405,15 @@ export default function DiscoveryPage() {
     if (sort === 'reviews') return (b.user_ratings_total ?? 0) - (a.user_ratings_total ?? 0);
     return a.name.localeCompare(b.name);
   }) : [];
+
+  const filtered = activeFilters.size === 0 ? sorted : sorted.filter(r => {
+    const score = scores[r.place_id];
+    for (const f of activeFilters) {
+      if (f === 'no_website' && !r.website) return true;
+      if (score?.service_primary === f) return true;
+    }
+    return false;
+  });
 
   return (
     <>
@@ -472,6 +531,63 @@ export default function DiscoveryPage() {
           cursor: pointer;
           letter-spacing: 0.04em;
         }
+
+        /* Filter pills */
+        .filter-row {
+          display: flex;
+          gap: 8px;
+          flex-wrap: wrap;
+          margin-bottom: 12px;
+        }
+        .filter-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 7px;
+          padding: 5px 12px;
+          background: var(--bg1);
+          border: 1px solid var(--b0);
+          color: var(--t2);
+          font-size: 10px;
+          font-family: var(--font-mono);
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          cursor: pointer;
+          transition: border-color 0.15s, color 0.15s, background 0.15s;
+        }
+        .filter-pill:hover { border-color: var(--t2); color: var(--t0); }
+        .filter-pill.active { background: rgba(255,255,255,0.04); }
+        .filter-pill-count {
+          font-size: 9px;
+          opacity: 0.65;
+          background: var(--bg2);
+          padding: 1px 5px;
+          border-radius: 2px;
+        }
+        .filter-active-bar {
+          font-size: 11px;
+          font-family: var(--font-mono);
+          color: var(--t2);
+          margin-bottom: 12px;
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          letter-spacing: 0.04em;
+        }
+        .filter-active-bar strong { color: var(--t0); }
+        .filter-clear-btn {
+          font-size: 9px;
+          font-family: var(--font-mono);
+          color: var(--t2);
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          background: none;
+          border: none;
+          cursor: pointer;
+          text-decoration: underline;
+          text-underline-offset: 2px;
+          padding: 0;
+        }
+        .filter-clear-btn:hover { color: var(--t0); }
 
         /* Data quality bar */
         .dq-bar {
@@ -775,6 +891,22 @@ export default function DiscoveryPage() {
               </div>
             </div>
 
+            <FilterPills
+              results={results}
+              scores={scores}
+              activeFilters={activeFilters}
+              onToggle={toggleFilter}
+            />
+
+            {activeFilters.size > 0 && (
+              <div className="filter-active-bar">
+                Showing <strong>{filtered.length}</strong> of {results.length}
+                <button className="filter-clear-btn" onClick={() => setActiveFilters(new Set())}>
+                  Clear filters
+                </button>
+              </div>
+            )}
+
             <DataQualityBar results={results} />
 
             <div className="tbl-wrap">
@@ -784,7 +916,7 @@ export default function DiscoveryPage() {
                     {selectMode && (
                       <th>
                         <button className="select-all-btn" onClick={toggleSelectAll}>
-                          {selectedIds.size === sorted.length ? 'None' : 'All'}
+                          {selectedIds.size === filtered.length ? 'None' : 'All'}
                         </button>
                       </th>
                     )}
@@ -798,7 +930,7 @@ export default function DiscoveryPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {sorted.map((r, i) => (
+                  {filtered.map((r, i) => (
                     <ResultRow
                       key={r.place_id}
                       r={r}
