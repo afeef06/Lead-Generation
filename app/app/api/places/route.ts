@@ -96,7 +96,12 @@ export async function GET(req: NextRequest) {
   if (searchData.status !== 'OK' && searchData.status !== 'ZERO_RESULTS') {
     console.error('[places] Google error:', searchData.status, searchData.error_message);
     return NextResponse.json(
-      { error: searchData.error_message || `Google Places error: ${searchData.status}` },
+      {
+        error: searchData.error_message || `Google Places error: ${searchData.status}`,
+        _debug: pagetoken
+          ? { tokenLen: pagetoken.length, tokenHead: pagetoken.slice(0, 12), tokenTail: pagetoken.slice(-6), status: searchData.status, errorMessage: searchData.error_message }
+          : undefined,
+      },
       { status: 502 }
     );
   }
