@@ -66,8 +66,8 @@ export async function GET(req: NextRequest) {
   let queryLabel: string;
 
   if (pagetoken) {
-    // Google requires a short delay before a page token becomes valid
-    await new Promise(r => setTimeout(r, 2000));
+    // Google page tokens need a few seconds to activate; 2s is often too short
+    await new Promise(r => setTimeout(r, 2500));
     textSearchUrl = `https://maps.googleapis.com/maps/api/place/textsearch/json?pagetoken=${encodeURIComponent(pagetoken)}`;
     queryLabel = searchParams.get('query') ?? '';
   } else if (name) {
@@ -83,7 +83,13 @@ export async function GET(req: NextRequest) {
     queryLabel = `${niche} in ${city}`;
   }
 
-  const searchData = await fetchPage(textSearchUrl, apiKey);
+  let searchData = await fetchPage(textSearchUrl, apiKey);
+
+  // pagetoken occasionally returns INVALID_REQUEST if the token isn't ready yet — retry once
+  if (pagetoken && searchData.status === 'INVALID_REQUEST') {
+    await new Promise(r => setTimeout(r, 2000));
+    searchData = await fetchPage(textSearchUrl, apiKey);
+  }
 
   if (searchData.status !== 'OK' && searchData.status !== 'ZERO_RESULTS') {
     return NextResponse.json(
