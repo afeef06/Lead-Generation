@@ -111,6 +111,7 @@ export function Topbar({ onSignOut, children }: TopbarProps) {
           <Link href="/my-leads" className={`topbar-link${path === '/my-leads' ? ' active' : ''}`}>My Leads</Link>
           <Link href="/find" className={`topbar-link${path === '/find' ? ' active' : ''}`}>Find</Link>
           <Link href="/pipeline" className={`topbar-link${path === '/pipeline' ? ' active' : ''}`}>Pipeline</Link>
+          <Link href="/outreach" className={`topbar-link${path === '/outreach' ? ' active' : ''}`}>Outreach</Link>
           <Link href="/conversion" className={`topbar-link${path === '/conversion' ? ' active' : ''}`}>Conversion</Link>
           <Link href="/costs" className={`topbar-link${path === '/costs' ? ' active' : ''}`}>Costs</Link>
         </nav>

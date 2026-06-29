@@ -20,7 +20,7 @@ export async function PATCH(
   if (!uo) return NextResponse.json({ error: 'No organization' }, { status: 403 });
 
   const body = await req.json();
-  const update: Record<string, string> = {};
+  const update: Record<string, unknown> = {};
 
   if (body.stage !== undefined) {
     if (!VALID_STAGES.has(body.stage)) {
@@ -29,12 +29,19 @@ export async function PATCH(
     update.stage = body.stage;
   }
 
-  if (body.notes !== undefined) {
-    update.notes = body.notes;
-  }
+  if (body.notes !== undefined) update.notes = body.notes;
+  if (body.email !== undefined) update.email = body.email;
 
-  if (body.email !== undefined) {
-    update.email = body.email;
+  if (body.outreach_attempted !== undefined) update.outreach_attempted = body.outreach_attempted;
+  if (body.outreach_answered  !== undefined) update.outreach_answered  = body.outreach_answered;
+  if (body.wants_to_move_forward !== undefined) update.wants_to_move_forward = body.wants_to_move_forward;
+
+  if (body.outreach_channel !== undefined) {
+    const VALID_CHANNELS = new Set(['none', 'phone', 'email', 'text']);
+    if (!VALID_CHANNELS.has(body.outreach_channel)) {
+      return NextResponse.json({ error: 'Invalid channel' }, { status: 400 });
+    }
+    update.outreach_channel = body.outreach_channel;
   }
 
   if (Object.keys(update).length === 0) {
