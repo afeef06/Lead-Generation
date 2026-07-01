@@ -1,3 +1,7 @@
+@AGENTS.md
+@research.md
+
+
 # R&R Lead Intelligence Platform
 
 ## Project Overview
@@ -6,7 +10,7 @@ Internal lead generation platform for R&R Collective. Replaces the current Googl
 
 ## Key Documents
 
-@research.md
+- [`research.md`](./research.md) — Full product research, competitive analysis, viability verdict, feature blueprint, tech architecture, and execution roadmap
 
 ## Product Context
 
