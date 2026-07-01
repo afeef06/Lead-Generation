@@ -23,7 +23,7 @@ const navGroups = [
   {
     label: 'Lead Intelligence',
     items: [
-      { href: '/find',       label: 'Discover',   icon: Search,     ownerOnly: false },
+      { href: '/discover',   label: 'Discover',   icon: Search,     ownerOnly: false },
       { href: '/my-leads',   label: 'My Leads',   icon: Bookmark,   ownerOnly: false },
       { href: '/outreach',   label: 'Outreach',   icon: Mail,       ownerOnly: false },
       { href: '/conversion', label: 'Conversion', icon: TrendingUp, ownerOnly: true  },
