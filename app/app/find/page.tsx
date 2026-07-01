@@ -3,7 +3,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '../../lib/supabase/client';
-import { Topbar } from '../components/topbar';
 import { IconArrowRight, IconCheck, IconWarning, IconStar, IconGlobe } from '../components/icons';
 import type { PlacesResult } from '../api/places/route';
 
@@ -136,11 +135,6 @@ export default function BusinessFinderPage() {
       else loadSavedIds();
     });
   }, [supabase, router, loadSavedIds]);
-
-  async function handleSignOut() {
-    await supabase.auth.signOut();
-    router.push('/login');
-  }
 
   async function scoreLeads(leads: PlacesResult[]) {
     setScoring(true);
@@ -378,23 +372,22 @@ export default function BusinessFinderPage() {
         .bf-empty-state p { font-size: 12px; color: var(--t2); line-height: 1.8; font-family: var(--font-mono); }
       `}</style>
 
-      <Topbar onSignOut={handleSignOut}>
-        {scoring && (
-          <span className="scoring-indicator">
-            <span className="scoring-pulse" />
-            AI scoring
-          </span>
-        )}
-        {savedCount > 0 && (
-          <span className="pipeline-count">
-            <strong>{savedCount}</strong>&nbsp;in pipeline
-          </span>
-        )}
-      </Topbar>
-
       <main className="bf-main">
         <div className="bf-hero">
-          <h1>Business <em>Finder</em></h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+            <h1 style={{ margin: 0 }}>Business <em>Finder</em></h1>
+            {scoring && (
+              <span className="scoring-indicator">
+                <span className="scoring-pulse" />
+                AI scoring
+              </span>
+            )}
+            {savedCount > 0 && (
+              <span className="pipeline-count">
+                <strong>{savedCount}</strong>&nbsp;in pipeline
+              </span>
+            )}
+          </div>
           <p>Search a business by name to find it on Google Maps. Add an optional location to narrow results. Leads are AI-scored and ready to save to your pipeline.</p>
         </div>
 
