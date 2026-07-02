@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '../../lib/supabase/client';
-import { Topbar } from '../components/topbar';
+import { LeadIntelligenceTabs } from '@/components/lead-intelligence-tabs';
 import { IconArrowRight, IconCheck } from '../components/icons';
 
 interface Lead {
@@ -62,11 +62,6 @@ export default function ConversionPage() {
         .finally(() => setLoading(false));
     });
   }, [supabase, router]);
-
-  async function handleSignOut() {
-    await supabase.auth.signOut();
-    router.push('/login');
-  }
 
   const byStage = STAGES.reduce((acc, s) => {
     acc[s] = leads.filter(l => l.stage === s).length;
@@ -383,13 +378,7 @@ export default function ConversionPage() {
         }
       `}</style>
 
-      <Topbar onSignOut={handleSignOut}>
-        {total > 0 && (
-          <span className="pipeline-count">
-            <strong>{total}</strong>&nbsp;total leads
-          </span>
-        )}
-      </Topbar>
+      <LeadIntelligenceTabs />
 
       {loading ? (
         <div className="cv-loading">Loading…</div>

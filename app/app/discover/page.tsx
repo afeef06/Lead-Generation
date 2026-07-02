@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '../../lib/supabase/client';
 import { IconStar, IconArrowRight, IconCheck, IconWarning, IconGlobe } from '../components/icons';
+import { LeadIntelligenceTabs } from '@/components/lead-intelligence-tabs';
 import { LeadDetailModal } from '../components/LeadDetailModal';
 import type { PlacesResult } from '../api/places/route';
 
@@ -782,6 +783,7 @@ export default function DiscoveryPage() {
         .empty-state p { font-size: 12px; color: var(--t2); line-height: 1.8; font-family: var(--font-mono); }
       `}</style>
 
+      <LeadIntelligenceTabs />
       <main className="main">
         <div className="hero">
           <div className="hero-meta">

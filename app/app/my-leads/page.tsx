@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '../../lib/supabase/client';
-import { Topbar } from '../components/topbar';
+import { LeadIntelligenceTabs } from '@/components/lead-intelligence-tabs';
 import { SearchModal } from '../components/SearchModal';
 import {
   IconArrowRight, IconCheck, IconMail, IconCopy, IconTrash,
@@ -350,11 +350,6 @@ export default function MyLeadsPage() {
     });
   }, [supabase, router, loadLeads]);
 
-  async function handleSignOut() {
-    await supabase.auth.signOut();
-    router.push('/login');
-  }
-
   async function advanceLead(lead: Lead) {
     const idx = STAGES.indexOf(lead.stage);
     if (idx >= STAGES.length - 1) return;
@@ -629,27 +624,7 @@ export default function MyLeadsPage() {
         .card-contributor-me { color: var(--green); background: rgba(58,139,106,0.07); border-color: rgba(58,139,106,0.22); }
       `}</style>
 
-      <Topbar onSignOut={handleSignOut}>
-        {total > 0 && (
-          <span className="pipeline-count">
-            <strong>{total}</strong>&nbsp;lead{total !== 1 ? 's' : ''}
-          </span>
-        )}
-        {total > 0 && (
-          <button
-            className={`btn-ghost${selectMode ? ' active' : ''}`}
-            onClick={toggleSelectMode}
-          >
-            {selectMode
-              ? `Cancel${selectedIds.size > 0 ? ` (${selectedIds.size})` : ''}`
-              : 'Select'}
-          </button>
-        )}
-        <button className="btn-primary" onClick={() => setShowSearchModal(true)}>
-          <IconArrowRight size={11} />
-          Add Leads
-        </button>
-      </Topbar>
+      <LeadIntelligenceTabs />
 
       {loading ? (
         <div className="pl-loading">Loading your pipeline…</div>

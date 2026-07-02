@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '../../lib/supabase/client';
-import { Topbar } from '../components/topbar';
+import { LeadIntelligenceTabs } from '@/components/lead-intelligence-tabs';
 
 interface AnthropicCost {
   scoredLeads: number;
@@ -101,11 +101,6 @@ export default function CostsPage() {
         .finally(() => setLoading(false));
     });
   }, [supabase, router]);
-
-  async function handleSignOut() {
-    await supabase.auth.signOut();
-    router.push('/login');
-  }
 
   return (
     <>
@@ -318,7 +313,7 @@ export default function CostsPage() {
         .ct-sk-card { background: var(--bg1); padding: 28px 24px; display: flex; flex-direction: column; gap: 10px; }
       `}</style>
 
-      <Topbar onSignOut={handleSignOut} />
+      <LeadIntelligenceTabs />
 
       <main className="ct-main">
         <div className="ct-hero">

@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '../../lib/supabase/client';
 import { IconArrowRight, IconCheck, IconWarning, IconStar, IconGlobe } from '../components/icons';
+import { LeadIntelligenceTabs } from '@/components/lead-intelligence-tabs';
 import type { PlacesResult } from '../api/places/route';
 
 interface ScoreResult {
@@ -372,6 +373,7 @@ export default function BusinessFinderPage() {
         .bf-empty-state p { font-size: 12px; color: var(--t2); line-height: 1.8; font-family: var(--font-mono); }
       `}</style>
 
+      <LeadIntelligenceTabs />
       <main className="bf-main">
         <div className="bf-hero">
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>

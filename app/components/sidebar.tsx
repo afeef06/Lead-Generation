@@ -1,5 +1,6 @@
 'use client'
 
+import type React from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
@@ -7,12 +8,17 @@ import {
   LayoutDashboard, Users, DollarSign, Briefcase,
   Bot, BarChart3, FileText, CheckSquare,
   Settings, GitBranch, LogOut, Target, Users2, MessageSquare, BookOpen,
-  Search, Bookmark, Mail, TrendingUp, Cpu,
+  Search,
 } from 'lucide-react'
 import { createBrowserClient } from '@supabase/ssr'
 import { useRole } from '@/lib/hooks/use-role'
 
-const navGroups = [
+const LEAD_INTEL_PATHS = ['/discover', '/my-leads', '/find', '/outreach', '/conversion', '/costs']
+
+type NavItem = { href: string; label: string; icon: React.ElementType; ownerOnly: boolean; activePaths?: string[] }
+type NavGroup = { label: string; items: NavItem[] }
+
+const navGroups: NavGroup[] = [
   {
     label: 'Overview',
     items: [
@@ -21,13 +27,9 @@ const navGroups = [
     ],
   },
   {
-    label: 'Lead Intelligence',
+    label: 'Intelligence',
     items: [
-      { href: '/discover',   label: 'Discover',   icon: Search,     ownerOnly: false },
-      { href: '/my-leads',   label: 'My Leads',   icon: Bookmark,   ownerOnly: false },
-      { href: '/outreach',   label: 'Outreach',   icon: Mail,       ownerOnly: false },
-      { href: '/conversion', label: 'Conversion', icon: TrendingUp, ownerOnly: true  },
-      { href: '/costs',      label: 'API Costs',  icon: Cpu,        ownerOnly: true  },
+      { href: '/discover', label: 'Lead Intelligence', icon: Search, ownerOnly: false, activePaths: LEAD_INTEL_PATHS },
     ],
   },
   {
@@ -106,8 +108,10 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
           <div key={label}>
             <p className="text-lo text-[9px] font-semibold uppercase tracking-[0.22em] px-3 mb-2">{label}</p>
             <div className="space-y-0.5">
-              {visible.map(({ href, label: itemLabel, icon: Icon }) => {
-                const active = pathname === href || pathname.startsWith(href + '/')
+              {visible.map(({ href, label: itemLabel, icon: Icon, activePaths }) => {
+                const active = activePaths
+                  ? activePaths.some((p: string) => pathname === p)
+                  : pathname === href || pathname.startsWith(href + '/')
                 return (
                   <Link
                     key={href}

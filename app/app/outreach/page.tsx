@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '../../lib/supabase/client';
-import { Topbar } from '../components/topbar';
+import { LeadIntelligenceTabs } from '@/components/lead-intelligence-tabs';
 import { LeadDetailModal } from '../components/LeadDetailModal';
 import { IconWarning } from '../components/icons';
 import { type Stage } from '../../lib/stages';
@@ -137,11 +137,6 @@ export default function OutreachPage() {
     }
   }
 
-  async function handleSignOut() {
-    await supabase.auth.signOut();
-    router.replace('/login');
-  }
-
   const contacted = leads.filter(l => l.outreach_attempted).length;
   const responded = leads.filter(l => l.outreach_answered).length;
   const moving    = leads.filter(l => l.wants_to_move_forward).length;
@@ -264,7 +259,7 @@ export default function OutreachPage() {
         .ot-empty a:hover { text-decoration: underline; }
       `}</style>
 
-      <Topbar onSignOut={handleSignOut} />
+      <LeadIntelligenceTabs />
 
       <main className="ot-main">
         <div className="ot-header">
