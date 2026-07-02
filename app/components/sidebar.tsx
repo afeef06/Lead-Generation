@@ -13,7 +13,7 @@ import {
 import { createBrowserClient } from '@supabase/ssr'
 import { useRole } from '@/lib/hooks/use-role'
 
-const LEAD_INTEL_PATHS = ['/discover', '/my-leads', '/find', '/outreach', '/conversion', '/costs']
+const LEAD_INTEL_PATHS = ['/discover', '/my-leads', '/find', '/pipeline', '/outreach', '/conversion', '/costs']
 
 type NavItem = { href: string; label: string; icon: React.ElementType; ownerOnly: boolean; activePaths?: string[] }
 type NavGroup = { label: string; items: NavItem[] }

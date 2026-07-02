@@ -5,12 +5,13 @@ import { usePathname } from 'next/navigation'
 import { useRole } from '@/lib/hooks/use-role'
 
 const TABS = [
-  { href: '/discover', label: 'Discover',        ownerOnly: false },
-  { href: '/my-leads', label: 'My Leads',        ownerOnly: false },
-  { href: '/find',     label: 'Business Finder', ownerOnly: false },
-  { href: '/outreach', label: 'Outreach',        ownerOnly: false },
-  { href: '/conversion', label: 'Conversion',    ownerOnly: true  },
-  { href: '/costs',    label: 'API Costs',       ownerOnly: true  },
+  { href: '/discover',   label: 'Discover',        ownerOnly: false },
+  { href: '/my-leads',   label: 'My Leads',        ownerOnly: false },
+  { href: '/find',       label: 'Business Finder', ownerOnly: false },
+  { href: '/pipeline',   label: 'Pipeline',        ownerOnly: false },
+  { href: '/outreach',   label: 'Outreach',        ownerOnly: false },
+  { href: '/conversion', label: 'Conversion',      ownerOnly: true  },
+  { href: '/costs',      label: 'API Costs',       ownerOnly: true  },
 ]
 
 export function LeadIntelligenceTabs() {
