@@ -18,3 +18,10 @@ export async function getOrgClient() {
   }
   return { supabase, org_id: org_id as string, role: (orgData?.role ?? 'employee') as 'owner' | 'employee', error: null }
 }
+
+export function requireOwner(role: 'owner' | 'employee' | null) {
+  if (role !== 'owner') {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
+  return null
+}

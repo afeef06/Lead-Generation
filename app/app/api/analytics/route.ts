@@ -1,12 +1,14 @@
 import { NextResponse } from 'next/server'
-import { getOrgClient } from '@/lib/supabase/org'
+import { getOrgClient, requireOwner } from '@/lib/supabase/org'
 import { format, subMonths, startOfMonth, endOfMonth } from 'date-fns'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET() {
-  const { supabase, org_id, error: authError } = await getOrgClient()
+  const { supabase, org_id, role, error: authError } = await getOrgClient()
   if (authError) return authError
+  const roleError = requireOwner(role)
+  if (roleError) return roleError
 
   const [{ data: transactions }, { data: clients }, { data: projects }] = await Promise.all([
     supabase!.from('transactions').select('*').eq('organization_id', org_id).order('date', { ascending: true }),

@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getOrgClient } from '@/lib/supabase/org'
+import { getOrgClient, requireOwner } from '@/lib/supabase/org'
 
 export const dynamic = 'force-dynamic'
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const { supabase, org_id, error: authError } = await getOrgClient()
+  const { supabase, org_id, role, error: authError } = await getOrgClient()
   if (authError) return authError
+  const roleError = requireOwner(role)
+  if (roleError) return roleError
 
   const body = await req.json()
 
@@ -24,8 +26,10 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
 export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const { supabase, org_id, error: authError } = await getOrgClient()
+  const { supabase, org_id, role, error: authError } = await getOrgClient()
   if (authError) return authError
+  const roleError = requireOwner(role)
+  if (roleError) return roleError
 
   const { error } = await supabase!
     .from('employees')

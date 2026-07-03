@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getOrgClient } from '@/lib/supabase/org'
+import { getOrgClient, requireOwner } from '@/lib/supabase/org'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET() {
-  const { supabase, org_id, error: authError } = await getOrgClient()
+  const { supabase, org_id, role, error: authError } = await getOrgClient()
   if (authError) return authError
+  const roleError = requireOwner(role)
+  if (roleError) return roleError
 
   const { data, error } = await supabase!
     .from('transactions')
@@ -25,8 +27,10 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const { supabase, org_id, error: authError } = await getOrgClient()
+  const { supabase, org_id, role, error: authError } = await getOrgClient()
   if (authError) return authError
+  const roleError = requireOwner(role)
+  if (roleError) return roleError
 
   const body = await req.json()
 

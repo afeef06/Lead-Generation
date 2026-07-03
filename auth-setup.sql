@@ -1,6 +1,12 @@
 -- ============================================================
 -- R&R Auth Setup & Role-Based Access Control
--- RUN THIS AFTER creating all 3 auth accounts in Supabase dashboard
+-- RUN ORDER: schema-merge.sql MUST run first — it creates
+-- crm_leads/clients/projects/transactions/invoices/employees/
+-- tasks/messages and their initial org-only policies. This
+-- script drops those org-only policies and replaces them with
+-- the role-aware ones below, so running it before schema-merge.sql
+-- will fail (tables/policies won't exist yet).
+-- Also run this AFTER creating all 3 auth accounts in Supabase dashboard.
 -- ============================================================
 -- Accounts needed (Authentication → Users → Add user):
 --   rohan.rahman.2307@gmail.com   → owner
@@ -180,8 +186,13 @@ CREATE POLICY "employees_owner" ON employees FOR ALL
     WHERE user_id = auth.uid() AND role = 'owner' AND organization_id = employees.organization_id
   ));
 
-CREATE POLICY "employees_self_select" ON employees FOR SELECT
-  USING (user_id = auth.uid());
+-- Employees need the full active roster for assign-to dropdowns
+-- (clients/projects pages) and messaging targets (messages page),
+-- not just their own record.
+CREATE POLICY "employees_org_select" ON employees FOR SELECT
+  USING (organization_id IN (
+    SELECT organization_id FROM user_organizations WHERE user_id = auth.uid()
+  ));
 
 -- ── TASKS ────────────────────────────────────────────────────
 -- Owner: full access. Employees: see + update tasks assigned to them
