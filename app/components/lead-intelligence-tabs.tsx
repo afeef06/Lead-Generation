@@ -21,7 +21,7 @@ export function LeadIntelligenceTabs() {
   const visible = TABS.filter(t => isOwner || !t.ownerOnly)
 
   return (
-    <div className="border-b border-[#1A1A1A] px-6 md:px-8 flex gap-1 overflow-x-auto">
+    <div className="border-b border-border px-6 md:px-8 flex gap-1 overflow-x-auto">
       {visible.map(({ href, label }) => {
         const active = pathname === href
         return (

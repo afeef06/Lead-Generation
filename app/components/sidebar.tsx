@@ -84,12 +84,12 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   }
 
   return (
-    <aside className={`fixed left-0 top-0 h-full w-60 bg-[#080808] border-r border-[#1A1A1A] flex flex-col z-50 transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
+    <aside className={`fixed left-0 top-0 h-full w-60 bg-sidebar border-r border-sidebar-border flex flex-col z-50 transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
 
       {/* Logo */}
-      <div className="px-4 py-5 border-b border-[#1A1A1A]">
+      <div className="px-4 py-5 border-b border-sidebar-border">
         <div className="flex items-center gap-3 px-2">
-          <div className="w-8 h-8 rounded-xl overflow-hidden flex-shrink-0">
+          <div className="w-8 h-8 rounded-xl overflow-hidden flex-shrink-0 ring-1 ring-inset ring-white/10 shadow-[0_0_16px_-4px_var(--accent-glow)]">
             <Image src="/rr-logo.png" alt="R&R Collective" width={32} height={32} className="w-full h-full object-cover" />
           </div>
           <div>
@@ -117,10 +117,10 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
                     key={href}
                     href={href}
                     onClick={onClose}
-                    className={`relative flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium transition-all duration-150 group ${
+                    className={`relative flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium transition-all duration-150 group cursor-pointer ${
                       active
-                        ? 'bg-[#1C1C1C] text-hi'
-                        : 'text-lo hover:text-mid hover:bg-[#141414]'
+                        ? 'bg-white/[0.06] text-hi ring-1 ring-inset ring-white/[0.06]'
+                        : 'text-lo hover:text-mid hover:bg-white/[0.04]'
                     }`}
                   >
                     {active && (
@@ -140,7 +140,7 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
       </nav>
 
       {/* Footer */}
-      <div className="px-4 py-4 border-t border-[#1A1A1A] space-y-2">
+      <div className="px-4 py-4 border-t border-sidebar-border space-y-2">
         {/* System status */}
         <div className="flex items-center gap-2.5 px-3">
           <span className="relative flex h-1.5 w-1.5 flex-shrink-0">
@@ -153,7 +153,7 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
         {/* Logout */}
         <button
           onClick={handleLogout}
-          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-lo hover:text-mid hover:bg-[#141414] transition-all duration-150 group"
+          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-lo hover:text-mid hover:bg-white/[0.04] transition-all duration-150 group cursor-pointer"
         >
           <LogOut className="h-3.5 w-3.5 flex-shrink-0 text-lo group-hover:text-mid transition-colors" />
           <span>Sign Out</span>

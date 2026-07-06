@@ -53,16 +53,16 @@ function safeUrl(url: string | null | undefined): string | undefined {
 }
 
 const STAGE_META: Record<Stage, { label: string; color: string }> = {
-  discovered: { label: 'Discovered', color: '#4d4635' },
-  qualified:  { label: 'Qualified',  color: '#4A7EC4' },
-  outreach:   { label: 'Outreach',   color: '#d4af37' },
-  closed:     { label: 'Closed',     color: '#3A8B6A' },
+  discovered: { label: 'Discovered', color: '#6B7382' },
+  qualified:  { label: 'Qualified',  color: '#3B82F6' },
+  outreach:   { label: 'Outreach',   color: '#22D3EE' },
+  closed:     { label: 'Closed',     color: '#10B981' },
 };
 
 const SERVICE: Record<string, { label: string; short: string; color: string }> = {
-  website:    { label: 'Website',    short: 'WEB', color: '#4A7EC4' },
-  ads:        { label: 'Ads',        short: 'ADS', color: '#d4af37' },
-  consulting: { label: 'Consulting', short: 'CON', color: '#3A8B6A' },
+  website:    { label: 'Website',    short: 'WEB', color: '#3B82F6' },
+  ads:        { label: 'Ads',        short: 'ADS', color: '#A855F7' },
+  consulting: { label: 'Consulting', short: 'CON', color: '#10B981' },
 };
 
 function EmailField({ lead, onFound }: { lead: Lead; onFound: (id: string, email: string) => void }) {
@@ -497,7 +497,7 @@ export default function PipelinePage() {
           letter-spacing: 0.04em;
         }
 
-        /* Card — gold top-border per Stitch spec */
+        /* Card — accent top-border colored per service type */
         .card {
           background: var(--bg2);
           border: 1px solid var(--b0);
@@ -511,9 +511,9 @@ export default function PipelinePage() {
           cursor: default;
         }
         .card:hover { background: var(--bg3); }
-        .card-selected { background: rgba(212,175,55,0.04) !important; outline: 1px solid rgba(212,175,55,0.25); }
+        .card-selected { background: rgba(59,130,246,0.04) !important; outline: 1px solid rgba(59,130,246,0.25); }
         .card-check { display: flex; justify-content: flex-end; margin-bottom: -2px; }
-        .card-check input { accent-color: var(--gold-dim); width: 12px; height: 12px; cursor: pointer; }
+        .card-check input { accent-color: var(--accent-dim); width: 12px; height: 12px; cursor: pointer; }
 
         .card-top { display: flex; flex-direction: column; gap: 3px; }
         .card-name {
@@ -526,7 +526,7 @@ export default function PipelinePage() {
           font-family: var(--font-mono);
           letter-spacing: 0.01em;
         }
-        .card-name:hover { color: var(--gold-dim); }
+        .card-name:hover { color: var(--accent-dim); }
         .card-addr {
           font-size: 9px;
           font-family: var(--font-mono);
@@ -676,7 +676,7 @@ export default function PipelinePage() {
           flex-shrink: 0;
           transition: color 0.15s, border-color 0.15s;
         }
-        .details-btn:hover { color: var(--gold-dim); border-color: rgba(212,175,55,0.4); }
+        .details-btn:hover { color: var(--accent-dim); border-color: rgba(59,130,246,0.4); }
 
         /* Advance / closed */
         .advance-btn {
@@ -723,7 +723,7 @@ export default function PipelinePage() {
           gap: 14px;
           background: var(--bg2);
           border: 1px solid var(--b0);
-          border-top: 1px solid rgba(212,175,55,0.2);
+          border-top: 1px solid rgba(59,130,246,0.2);
           padding: 12px 20px;
           box-shadow: 0 16px 48px rgba(0,0,0,0.6);
           z-index: 50;
@@ -735,7 +735,7 @@ export default function PipelinePage() {
           color: var(--t1);
           letter-spacing: 0.04em;
         }
-        .delete-bar-count strong { color: var(--gold-dim); font-weight: 500; }
+        .delete-bar-count strong { color: var(--accent-dim); font-weight: 500; }
 
         /* Loading / empty */
         .pl-loading {
@@ -764,7 +764,7 @@ export default function PipelinePage() {
           font-style: italic;
         }
         .empty-board p { font-size: 12px; color: var(--t2); font-family: var(--font-mono); letter-spacing: 0.04em; }
-        .empty-board a { color: var(--gold-dim); text-decoration: none; }
+        .empty-board a { color: var(--accent-dim); text-decoration: none; }
         .empty-board a:hover { text-decoration: underline; }
 
         /* Filter bar */
@@ -785,7 +785,7 @@ export default function PipelinePage() {
           transition: color 0.15s, border-color 0.15s, background 0.15s;
         }
         .filter-chip:hover { color: var(--t1); border-color: var(--t2); }
-        .filter-chip.active { color: var(--gold-dim); border-color: rgba(212,175,55,0.45); background: rgba(212,175,55,0.06); }
+        .filter-chip.active { color: var(--accent-dim); border-color: rgba(59,130,246,0.45); background: rgba(59,130,246,0.06); }
         .filter-chip.is-me.active { color: var(--green); border-color: rgba(58,139,106,0.45); background: rgba(58,139,106,0.06); }
 
         /* Service primary badge */

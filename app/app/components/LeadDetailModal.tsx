@@ -4,9 +4,9 @@ import { useEffect } from 'react';
 import { IconGlobe, IconPhone, IconStar, IconCheck } from './icons';
 
 const SERVICE: Record<string, { label: string; short: string; color: string }> = {
-  website:    { label: 'Website',    short: 'WEB', color: '#4A7EC4' },
-  ads:        { label: 'Ads',        short: 'ADS', color: '#d4af37' },
-  consulting: { label: 'Consulting', short: 'CON', color: '#3A8B6A' },
+  website:    { label: 'Website',    short: 'WEB', color: '#3B82F6' },
+  ads:        { label: 'Ads',        short: 'ADS', color: '#A855F7' },
+  consulting: { label: 'Consulting', short: 'CON', color: '#10B981' },
 };
 
 export interface LeadDetailData {
@@ -83,7 +83,7 @@ export function LeadDetailModal({ lead, onClose, onSave, saving, saved }: Props)
         .ldm-panel {
           background: var(--bg1);
           border: 1px solid var(--b0);
-          border-top: 1px solid rgba(212,175,55,0.25);
+          border-top: 1px solid rgba(59,130,246,0.25);
           width: 100%;
           max-width: 520px;
           max-height: 90vh;
@@ -111,7 +111,7 @@ export function LeadDetailModal({ lead, onClose, onSave, saving, saved }: Props)
           letter-spacing: -0.01em;
         }
         .ldm-name a { color: inherit; text-decoration: none; transition: color 0.12s; }
-        .ldm-name a:hover { color: var(--gold-dim); }
+        .ldm-name a:hover { color: var(--accent-dim); }
         .ldm-address {
           font-size: 11px;
           font-family: var(--font-mono);
@@ -156,7 +156,7 @@ export function LeadDetailModal({ lead, onClose, onSave, saving, saved }: Props)
         .ldm-meta-item a { color: var(--blue); text-decoration: none; transition: color 0.12s; }
         .ldm-meta-item a:hover { color: var(--t0); }
         .ldm-reviews { color: var(--t2); }
-        .ldm-rating-val { color: var(--gold-dim); font-weight: 500; }
+        .ldm-rating-val { color: var(--accent-dim); font-weight: 500; }
 
         .ldm-section {
           padding: 16px 22px;
@@ -270,7 +270,7 @@ export function LeadDetailModal({ lead, onClose, onSave, saving, saved }: Props)
               )}
               {lead.rating != null && (
                 <span className="ldm-meta-item">
-                  <IconStar size={11} className="icon-gold" />
+                  <IconStar size={11} className="icon-accent" />
                   <span className="ldm-rating-val">{lead.rating.toFixed(1)}</span>
                   {reviewCount != null && (
                     <span className="ldm-reviews">({reviewCount.toLocaleString()} reviews)</span>

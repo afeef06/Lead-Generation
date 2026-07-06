@@ -40,10 +40,10 @@ interface Lead {
 type OutreachField = 'outreach_attempted' | 'outreach_answered' | 'outreach_channel' | 'wants_to_move_forward';
 
 const STAGE_COLOR: Record<Stage, string> = {
-  discovered: '#4d4635',
-  qualified:  '#4A7EC4',
-  outreach:   '#d4af37',
-  closed:     '#3A8B6A',
+  discovered: '#6B7382',
+  qualified:  '#3B82F6',
+  outreach:   '#22D3EE',
+  closed:     '#10B981',
 };
 
 const STAGE_LABEL: Record<Stage, string> = {
@@ -54,7 +54,7 @@ const STAGE_LABEL: Record<Stage, string> = {
 };
 
 const SVC_COLOR: Record<string, string> = {
-  website: '#4A7EC4', ads: '#d4af37', consulting: '#3A8B6A',
+  website: '#3B82F6', ads: '#A855F7', consulting: '#10B981',
 };
 const SVC_SHORT: Record<string, string> = {
   website: 'WEB', ads: 'ADS', consulting: 'CON',
@@ -151,7 +151,7 @@ export default function OutreachPage() {
           font-family: var(--font-d); font-size: 36px; font-weight: 500;
           color: var(--t0); line-height: 1; letter-spacing: -0.01em;
         }
-        .ot-header h1 em { color: var(--gold-dim); font-style: italic; }
+        .ot-header h1 em { color: var(--accent-dim); font-style: italic; }
         .ot-refresh-btn {
           font-size: 9px; font-family: var(--font-mono); color: var(--t2);
           text-transform: uppercase; letter-spacing: 0.1em;
@@ -177,7 +177,7 @@ export default function OutreachPage() {
           font-family: var(--font-d); font-size: 28px; font-weight: 500;
           color: var(--t0); line-height: 1; display: block; margin-bottom: 4px;
         }
-        .ot-stat-val.gold { color: var(--gold-dim); }
+        .ot-stat-val.accent { color: var(--accent-dim); }
         .ot-stat-lbl {
           font-size: 9px; font-family: var(--font-mono); color: var(--t2);
           text-transform: uppercase; letter-spacing: 0.12em;
@@ -206,7 +206,7 @@ export default function OutreachPage() {
           text-align: left; text-decoration: underline; text-underline-offset: 2px;
           text-decoration-color: var(--b0); transition: color 0.15s;
         }
-        .lead-btn:hover { color: var(--gold-dim); text-decoration-color: var(--gold-dim); }
+        .lead-btn:hover { color: var(--accent-dim); text-decoration-color: var(--accent-dim); }
         .lead-addr { font-size: 9px; color: var(--t2); margin-top: 2px; line-height: 1.4; }
 
         .td-svc { width: 76px; }
@@ -234,7 +234,7 @@ export default function OutreachPage() {
           width: 4px; height: 8px; border: 1.5px solid #fff;
           border-top: none; border-left: none; transform: rotate(45deg);
         }
-        .ot-cb.fwd:checked { background: var(--gold-dim); border-color: var(--gold-dim); }
+        .ot-cb.fwd:checked { background: var(--accent-dim); border-color: var(--accent-dim); }
 
         .td-ch { width: 90px; }
         .ch-select {
@@ -245,7 +245,7 @@ export default function OutreachPage() {
           transition: border-color 0.15s, color 0.15s;
         }
         .ch-select:hover { border-bottom-color: var(--t2); color: var(--t0); }
-        .ch-select:focus { border-bottom-color: var(--gold-dim); color: var(--t0); }
+        .ch-select:focus { border-bottom-color: var(--accent-dim); color: var(--t0); }
 
         .ot-patch-err {
           font-size: 10px; font-family: var(--font-mono); color: var(--error);
@@ -255,7 +255,7 @@ export default function OutreachPage() {
           text-align: center; padding: 64px 20px; font-size: 12px;
           color: var(--t2); font-family: var(--font-mono); letter-spacing: 0.04em;
         }
-        .ot-empty a { color: var(--gold-dim); text-decoration: none; }
+        .ot-empty a { color: var(--accent-dim); text-decoration: none; }
         .ot-empty a:hover { text-decoration: underline; }
       `}</style>
 
@@ -284,7 +284,7 @@ export default function OutreachPage() {
             <span className="ot-stat-lbl">Responded</span>
           </div>
           <div className="ot-stat">
-            <span className={`ot-stat-val${moving > 0 ? ' gold' : ''}`}>{moving}</span>
+            <span className={`ot-stat-val${moving > 0 ? ' accent' : ''}`}>{moving}</span>
             <span className="ot-stat-lbl">Moving Forward</span>
           </div>
         </div>

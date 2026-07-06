@@ -50,16 +50,16 @@ const STAGES = ['discovered', 'qualified', 'outreach', 'closed'] as const;
 type Stage = typeof STAGES[number];
 
 const STAGE_META: Record<Stage, { label: string; color: string }> = {
-  discovered: { label: 'Discovered', color: '#4d4635' },
-  qualified:  { label: 'Qualified',  color: '#4A7EC4' },
-  outreach:   { label: 'Outreach',   color: '#d4af37' },
-  closed:     { label: 'Closed',     color: '#3A8B6A' },
+  discovered: { label: 'Discovered', color: '#6B7382' },
+  qualified:  { label: 'Qualified',  color: '#3B82F6' },
+  outreach:   { label: 'Outreach',   color: '#22D3EE' },
+  closed:     { label: 'Closed',     color: '#10B981' },
 };
 
 const SERVICE: Record<string, { label: string; short: string; color: string }> = {
-  website:    { label: 'Website',    short: 'WEB', color: '#4A7EC4' },
-  ads:        { label: 'Ads',        short: 'ADS', color: '#d4af37' },
-  consulting: { label: 'Consulting', short: 'CON', color: '#3A8B6A' },
+  website:    { label: 'Website',    short: 'WEB', color: '#3B82F6' },
+  ads:        { label: 'Ads',        short: 'ADS', color: '#A855F7' },
+  consulting: { label: 'Consulting', short: 'CON', color: '#10B981' },
 };
 
 function EmailField({ lead, onFound }: { lead: Lead; onFound: (id: string, email: string) => void }) {
@@ -460,9 +460,9 @@ export default function MyLeadsPage() {
           transition: background 0.1s; cursor: default;
         }
         .card:hover { background: var(--bg3); }
-        .card-selected { background: rgba(212,175,55,0.04) !important; outline: 1px solid rgba(212,175,55,0.25); }
+        .card-selected { background: rgba(59,130,246,0.04) !important; outline: 1px solid rgba(59,130,246,0.25); }
         .card-check { display: flex; justify-content: flex-end; margin-bottom: -2px; }
-        .card-check input { accent-color: var(--gold-dim); width: 12px; height: 12px; cursor: pointer; }
+        .card-check input { accent-color: var(--accent-dim); width: 12px; height: 12px; cursor: pointer; }
 
         .card-top { display: flex; flex-direction: column; gap: 3px; }
         .card-name {
@@ -470,7 +470,7 @@ export default function MyLeadsPage() {
           text-decoration: none; line-height: 1.35; transition: color 0.12s;
           font-family: var(--font-mono); letter-spacing: 0.01em;
         }
-        .card-name:hover { color: var(--gold-dim); }
+        .card-name:hover { color: var(--accent-dim); }
         .card-addr {
           font-size: 9px; font-family: var(--font-mono); color: var(--t2);
           line-height: 1.4; letter-spacing: 0.04em;
@@ -548,7 +548,7 @@ export default function MyLeadsPage() {
           cursor: pointer; letter-spacing: 0.06em; text-transform: uppercase;
           flex-shrink: 0; transition: color 0.15s, border-color 0.15s;
         }
-        .details-btn:hover { color: var(--gold-dim); border-color: rgba(212,175,55,0.4); }
+        .details-btn:hover { color: var(--accent-dim); border-color: rgba(59,130,246,0.4); }
 
         .advance-btn {
           width: 100%; background: none; border: 1px solid var(--b0);
@@ -571,11 +571,11 @@ export default function MyLeadsPage() {
           position: fixed; bottom: 24px; left: 50%;
           transform: translateX(-50%); display: flex; align-items: center;
           gap: 14px; background: var(--bg2); border: 1px solid var(--b0);
-          border-top: 1px solid rgba(212,175,55,0.2); padding: 12px 20px;
+          border-top: 1px solid rgba(59,130,246,0.2); padding: 12px 20px;
           box-shadow: 0 16px 48px rgba(0,0,0,0.6); z-index: 50; white-space: nowrap;
         }
         .delete-bar-count { font-size: 12px; font-family: var(--font-mono); color: var(--t1); letter-spacing: 0.04em; }
-        .delete-bar-count strong { color: var(--gold-dim); font-weight: 500; }
+        .delete-bar-count strong { color: var(--accent-dim); font-weight: 500; }
 
         .pl-loading {
           display: flex; align-items: center; justify-content: center;
@@ -591,15 +591,15 @@ export default function MyLeadsPage() {
           color: var(--t1); font-style: italic;
         }
         .empty-board p { font-size: 12px; color: var(--t2); font-family: var(--font-mono); letter-spacing: 0.04em; }
-        .empty-board a { color: var(--gold-dim); text-decoration: none; }
+        .empty-board a { color: var(--accent-dim); text-decoration: none; }
         .empty-board a:hover { text-decoration: underline; }
         .empty-board-cta {
-          background: none; border: none; color: var(--gold-dim);
+          background: none; border: none; color: var(--accent-dim);
           font-family: var(--font-mono); font-size: 12px;
           cursor: pointer; padding: 0; letter-spacing: 0.04em;
           text-decoration: underline; text-underline-offset: 2px;
         }
-        .empty-board-cta:hover { color: var(--gold); }
+        .empty-board-cta:hover { color: var(--accent-glow); }
 
         .svc-primary-badge {
           font-size: 9px; font-family: var(--font-mono); letter-spacing: 0.1em;

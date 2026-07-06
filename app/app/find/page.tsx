@@ -14,11 +14,11 @@ interface ScoreResult {
 }
 
 const FW: Record<string, { label: string; short: string; color: string }> = {
-  brand_positioning:     { label: 'Brand Positioning',     short: 'Brand',       color: '#d4af37' },
-  client_acquisition:    { label: 'Client Acquisition',    short: 'Acquisition', color: '#3A8B6A' },
-  growth_infrastructure: { label: 'Growth Infrastructure', short: 'Growth',      color: '#7A5CAE' },
-  scaling_roadmap:       { label: 'Scaling Roadmap',       short: 'Scaling',     color: '#4A7EC4' },
-  venture_development:   { label: 'Venture Development',   short: 'Venture',     color: '#AA5E7C' },
+  brand_positioning:     { label: 'Brand Positioning',     short: 'Brand',       color: '#22D3EE' },
+  client_acquisition:    { label: 'Client Acquisition',    short: 'Acquisition', color: '#10B981' },
+  growth_infrastructure: { label: 'Growth Infrastructure', short: 'Growth',      color: '#A855F7' },
+  scaling_roadmap:       { label: 'Scaling Roadmap',       short: 'Scaling',     color: '#3B82F6' },
+  venture_development:   { label: 'Venture Development',   short: 'Venture',     color: '#FB7185' },
 };
 
 function safeUrl(url: string | null | undefined): string | undefined {
@@ -85,7 +85,7 @@ function ResultRow({
         {r.rating !== null
           ? (
             <span className="bf-rating">
-              <IconStar size={11} className="icon-gold" />
+              <IconStar size={11} className="icon-accent" />
               {r.rating.toFixed(1)}
               <span className="bf-reviews">({r.user_ratings_total?.toLocaleString()})</span>
             </span>
@@ -219,7 +219,7 @@ export default function BusinessFinderPage() {
           margin-bottom: 12px;
           letter-spacing: -0.01em;
         }
-        .bf-hero h1 em { color: var(--gold-dim); font-style: italic; }
+        .bf-hero h1 em { color: var(--accent-dim); font-style: italic; }
         .bf-hero p { font-size: 12px; color: var(--t1); max-width: 520px; line-height: 1.7; letter-spacing: 0.02em; }
 
         .bf-form {
@@ -250,7 +250,7 @@ export default function BusinessFinderPage() {
           letter-spacing: 0.02em;
         }
         .bf-field input::placeholder { color: var(--t2); }
-        .bf-field input:focus { border-bottom-color: var(--gold-dim); }
+        .bf-field input:focus { border-bottom-color: var(--accent-dim); }
         .bf-optional {
           font-size: 9px;
           color: var(--t2);
@@ -278,7 +278,7 @@ export default function BusinessFinderPage() {
           font-family: var(--font-d);
           font-size: 17px;
           font-weight: 500;
-          color: var(--gold-dim);
+          color: var(--accent-dim);
           font-style: italic;
         }
         .bf-count-tag {
@@ -327,7 +327,7 @@ export default function BusinessFinderPage() {
           font-family: var(--font-mono);
           letter-spacing: 0.01em;
         }
-        .bf-name-link:hover { color: var(--gold-dim); }
+        .bf-name-link:hover { color: var(--accent-dim); }
         .bf-address { font-size: 10px; color: var(--t2); font-family: var(--font-mono); display: block; line-height: 1.4; }
         .bf-td-fw { width: 160px; }
         .bf-td-reasoning { max-width: 280px; }

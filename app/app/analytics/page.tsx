@@ -7,18 +7,18 @@ import {
   RadarChart, PolarGrid, PolarAngleAxis, Radar, Legend,
 } from 'recharts'
 
-const C_SIGNAL = '#909090'
-const C_UP     = '#2A8C68'
-const C_DOWN   = '#9B4545'
-const C_SKY    = '#707070'
-const C_VIOLET = '#6E5A9E'
-const C_AMBER  = '#9E7A30'
-const PALETTE  = [C_SIGNAL, C_UP, C_AMBER, C_VIOLET, C_DOWN]
+const C_SIGNAL = '#7A8699'
+const C_UP     = '#10B981'
+const C_DOWN   = '#F43F5E'
+const C_SKY    = '#3B82F6'
+const C_VIOLET = '#A855F7'
+const C_CYAN   = '#22D3EE'
+const PALETTE  = [C_SIGNAL, C_UP, C_CYAN, C_VIOLET, C_DOWN]
 
 const fmt = (n: number) =>
   n.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })
 
-const tipStyle = { background: '#141414', border: '1px solid #1E1E1E', borderRadius: 12, fontSize: 11, color: '#888888' }
+const tipStyle = { background: '#0B0E13', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, fontSize: 11, color: '#8A93A3' }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const DarkTip = ({ active, payload, label }: any) => {

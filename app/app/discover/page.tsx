@@ -22,9 +22,9 @@ interface ScoreResult {
 }
 
 const SERVICE: Record<string, { label: string; short: string; color: string }> = {
-  website:    { label: 'Website',    short: 'WEB', color: '#4A7EC4' },
-  ads:        { label: 'Ads',        short: 'ADS', color: '#d4af37' },
-  consulting: { label: 'Consulting', short: 'CON', color: '#3A8B6A' },
+  website:    { label: 'Website',    short: 'WEB', color: '#3B82F6' },
+  ads:        { label: 'Ads',        short: 'ADS', color: '#A855F7' },
+  consulting: { label: 'Consulting', short: 'CON', color: '#10B981' },
 };
 
 const FILTER_DEFS: Array<{ key: FilterKey; label: string; color: string }> = [
@@ -103,7 +103,7 @@ function DataQualityBar({ results }: { results: PlacesResult[] }) {
       <Meter label="Rating"  value={pct(withRating)} />
       <span
         className="dq-verdict"
-        style={{ color: verdict.ok === true ? 'var(--green)' : verdict.ok === null ? 'var(--gold-dim)' : 'var(--rose)' }}
+        style={{ color: verdict.ok === true ? 'var(--green)' : verdict.ok === null ? 'var(--accent-dim)' : 'var(--rose)' }}
       >
         {verdict.ok === false ? <IconWarning size={11} /> : <IconCheck size={11} />}
         {verdict.text}
@@ -113,7 +113,7 @@ function DataQualityBar({ results }: { results: PlacesResult[] }) {
 }
 
 function Meter({ label, value }: { label: string; value: number }) {
-  const color = value >= 70 ? 'var(--green)' : value >= 40 ? 'var(--gold-dim)' : 'var(--rose)';
+  const color = value >= 70 ? 'var(--green)' : value >= 40 ? 'var(--accent-dim)' : 'var(--rose)';
   return (
     <span className="meter">
       <span className="meter-label">{label}</span>
@@ -206,7 +206,7 @@ function ResultRow({
         {r.rating !== null
           ? (
             <span className="rating">
-              <IconStar size={11} className="icon-gold" />
+              <IconStar size={11} className="icon-accent" />
               {r.rating.toFixed(1)}
               <span className="reviews">({r.user_ratings_total?.toLocaleString()})</span>
             </span>
@@ -434,7 +434,7 @@ export default function DiscoveryPage() {
           margin-bottom: 12px;
           letter-spacing: -0.01em;
         }
-        .hero h1 em { color: var(--gold-dim); font-style: italic; }
+        .hero h1 em { color: var(--accent-dim); font-style: italic; }
         .hero p { font-size: 12px; color: var(--t1); max-width: 520px; line-height: 1.7; letter-spacing: 0.02em; }
         .hero-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
 
@@ -466,7 +466,7 @@ export default function DiscoveryPage() {
           letter-spacing: 0.02em;
         }
         .field-wrap input::placeholder { color: var(--t2); }
-        .field-wrap input:focus { border-bottom-color: var(--gold-dim); }
+        .field-wrap input:focus { border-bottom-color: var(--accent-dim); }
         .search-hint {
           font-size: 11px;
           color: var(--t2);
@@ -487,7 +487,7 @@ export default function DiscoveryPage() {
           font-family: var(--font-d);
           font-size: 17px;
           font-weight: 500;
-          color: var(--gold-dim);
+          color: var(--accent-dim);
           font-style: italic;
         }
         .count-tag {
@@ -593,7 +593,7 @@ export default function DiscoveryPage() {
           flex-wrap: wrap;
           background: var(--bg1);
           border: 1px solid var(--b0);
-          border-top: 1px solid rgba(212,175,55,0.2);
+          border-top: 1px solid rgba(59,130,246,0.2);
           padding: 12px 20px;
           margin-bottom: 20px;
         }
@@ -645,10 +645,10 @@ export default function DiscoveryPage() {
         .result-row:last-child { border-bottom: none; }
         .result-row:hover { background: var(--bg2); }
         td { padding: 10px 14px; vertical-align: middle; }
-        .row-selected { background: rgba(212,175,55,0.04) !important; }
+        .row-selected { background: rgba(59,130,246,0.04) !important; }
 
         .td-check { width: 36px; padding-right: 0; }
-        .td-check input { accent-color: var(--gold-dim); width: 13px; height: 13px; cursor: pointer; }
+        .td-check input { accent-color: var(--accent-dim); width: 13px; height: 13px; cursor: pointer; }
         .td-num { font-size: 10px; font-family: var(--font-mono); color: var(--t2); width: 30px; }
         .td-name { min-width: 180px; }
         .name-link {
@@ -662,7 +662,7 @@ export default function DiscoveryPage() {
           font-family: var(--font-mono);
           letter-spacing: 0.01em;
         }
-        .name-link:hover { color: var(--gold-dim); }
+        .name-link:hover { color: var(--accent-dim); }
         .address { font-size: 10px; color: var(--t2); font-family: var(--font-mono); display: block; line-height: 1.4; }
 
         .td-fw { width: 180px; }
@@ -688,7 +688,7 @@ export default function DiscoveryPage() {
         .reasoning-more {
           background: none;
           border: none;
-          color: var(--gold-dim);
+          color: var(--accent-dim);
           font-size: 10px;
           font-family: var(--font-mono);
           padding: 0;
@@ -743,7 +743,7 @@ export default function DiscoveryPage() {
           border-top: 1px solid var(--b0);
         }
         .remove-bar-count { font-size: 11px; font-family: var(--font-mono); color: var(--t1); }
-        .remove-bar-count strong { color: var(--gold-dim); font-weight: 500; }
+        .remove-bar-count strong { color: var(--accent-dim); font-weight: 500; }
 
         .find-more-row { display: flex; justify-content: center; margin-top: 24px; }
         .find-more-wrap { text-align: center; }

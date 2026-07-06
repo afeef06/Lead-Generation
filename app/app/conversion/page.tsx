@@ -27,18 +27,18 @@ const STAGE_LABELS: Record<Stage, string> = {
 };
 
 const STAGE_COLORS: Record<Stage, string> = {
-  discovered: '#4d4635',
-  qualified:  '#4A7EC4',
-  outreach:   '#d4af37',
-  closed:     '#3A8B6A',
+  discovered: '#6B7382',
+  qualified:  '#3B82F6',
+  outreach:   '#22D3EE',
+  closed:     '#10B981',
 };
 
 const FW: Record<string, { label: string; short: string; color: string }> = {
-  brand_positioning:     { label: 'Brand Positioning',     short: 'Brand',       color: '#d4af37' },
-  client_acquisition:    { label: 'Client Acquisition',    short: 'Acquisition', color: '#3A8B6A' },
-  growth_infrastructure: { label: 'Growth Infrastructure', short: 'Growth',      color: '#7A5CAE' },
-  scaling_roadmap:       { label: 'Scaling Roadmap',       short: 'Scaling',     color: '#4A7EC4' },
-  venture_development:   { label: 'Venture Development',   short: 'Venture',     color: '#AA5E7C' },
+  brand_positioning:     { label: 'Brand Positioning',     short: 'Brand',       color: '#22D3EE' },
+  client_acquisition:    { label: 'Client Acquisition',    short: 'Acquisition', color: '#10B981' },
+  growth_infrastructure: { label: 'Growth Infrastructure', short: 'Growth',      color: '#A855F7' },
+  scaling_roadmap:       { label: 'Scaling Roadmap',       short: 'Scaling',     color: '#3B82F6' },
+  venture_development:   { label: 'Venture Development',   short: 'Venture',     color: '#FB7185' },
 };
 
 function rate(a: number, b: number) {
@@ -111,19 +111,19 @@ export default function ConversionPage() {
       label: 'Qualified Rate',
       value: `${rate(byStage.qualified + byStage.outreach + byStage.closed, total)}%`,
       sub: `${byStage.qualified + byStage.outreach + byStage.closed} of ${total}`,
-      color: '#4A7EC4',
+      color: '#3B82F6',
     },
     {
       label: 'In Outreach',
       value: byStage.outreach.toString(),
       sub: `${rate(byStage.outreach, total)}% of pipeline`,
-      color: '#d4af37',
+      color: '#22D3EE',
     },
     {
       label: 'Closed Won',
       value: byStage.closed.toString(),
       sub: `${rate(byStage.closed, total)}% close rate`,
-      color: '#3A8B6A',
+      color: '#10B981',
     },
   ];
 
@@ -147,7 +147,7 @@ export default function ConversionPage() {
           margin-bottom: 12px;
           letter-spacing: -0.01em;
         }
-        .cv-hero h1 em { color: var(--gold-dim); font-style: italic; }
+        .cv-hero h1 em { color: var(--accent-dim); font-style: italic; }
         .cv-hero p {
           font-size: 12px;
           color: var(--t1);
@@ -362,7 +362,7 @@ export default function ConversionPage() {
           letter-spacing: 0.04em;
           line-height: 1.7;
         }
-        .cv-empty a { color: var(--gold-dim); text-decoration: none; }
+        .cv-empty a { color: var(--accent-dim); text-decoration: none; }
         .cv-empty a:hover { text-decoration: underline; }
 
         .cv-loading {
@@ -520,7 +520,7 @@ export default function ConversionPage() {
                             <IconArrowRight size={10} />
                             <span style={{ color: STAGE_COLORS[to] }}>{STAGE_LABELS[to]}</span>
                           </div>
-                          <div style={{ fontFamily: 'var(--font-d)', fontSize: 40, fontWeight: 500, color: r >= 50 ? 'var(--green)' : r >= 25 ? 'var(--gold-dim)' : 'var(--t1)', lineHeight: 1, marginBottom: 8 }}>
+                          <div style={{ fontFamily: 'var(--font-d)', fontSize: 40, fontWeight: 500, color: r >= 50 ? 'var(--green)' : r >= 25 ? 'var(--accent-dim)' : 'var(--t1)', lineHeight: 1, marginBottom: 8 }}>
                             {r}%
                           </div>
                           <div style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--t2)', letterSpacing: '0.04em' }}>

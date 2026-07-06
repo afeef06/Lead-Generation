@@ -11,11 +11,11 @@ interface ScoreResult {
 }
 
 const FW: Record<string, { label: string; short: string; color: string }> = {
-  brand_positioning:     { label: 'Brand Positioning',     short: 'Brand',       color: '#d4af37' },
-  client_acquisition:    { label: 'Client Acquisition',    short: 'Acquisition', color: '#3A8B6A' },
-  growth_infrastructure: { label: 'Growth Infrastructure', short: 'Growth',      color: '#7A5CAE' },
-  scaling_roadmap:       { label: 'Scaling Roadmap',       short: 'Scaling',     color: '#4A7EC4' },
-  venture_development:   { label: 'Venture Development',   short: 'Venture',     color: '#AA5E7C' },
+  brand_positioning:     { label: 'Brand Positioning',     short: 'Brand',       color: '#22D3EE' },
+  client_acquisition:    { label: 'Client Acquisition',    short: 'Acquisition', color: '#10B981' },
+  growth_infrastructure: { label: 'Growth Infrastructure', short: 'Growth',      color: '#A855F7' },
+  scaling_roadmap:       { label: 'Scaling Roadmap',       short: 'Scaling',     color: '#3B82F6' },
+  venture_development:   { label: 'Venture Development',   short: 'Venture',     color: '#FB7185' },
 };
 
 type SearchModalProps = {
@@ -107,7 +107,7 @@ export function SearchModal({ onClose, onSaved }: SearchModalProps) {
         .sm-panel {
           background: var(--bg1);
           border: 1px solid var(--b0);
-          border-top: 1px solid rgba(212,175,55,0.3);
+          border-top: 1px solid rgba(59,130,246,0.3);
           width: 100%; max-width: 860px;
           padding: 32px 36px;
           position: relative; flex-shrink: 0;
@@ -144,7 +144,7 @@ export function SearchModal({ onClose, onSaved }: SearchModalProps) {
           letter-spacing: 0.02em;
         }
         .sm-field input::placeholder { color: var(--t2); }
-        .sm-field input:focus { border-bottom-color: var(--gold-dim); }
+        .sm-field input:focus { border-bottom-color: var(--accent-dim); }
         .sm-scoring {
           display: flex; align-items: center; gap: 8px; margin-bottom: 14px;
         }

@@ -47,8 +47,8 @@ export default function LoginPage() {
           position: absolute;
           inset: 0;
           background-image:
-            linear-gradient(rgba(212,175,55,0.025) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(212,175,55,0.025) 1px, transparent 1px);
+            linear-gradient(rgba(59,130,246,0.025) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(59,130,246,0.025) 1px, transparent 1px);
           background-size: 48px 48px;
           pointer-events: none;
         }
@@ -61,7 +61,7 @@ export default function LoginPage() {
           transform: translate(-50%, -50%);
           width: 560px;
           height: 560px;
-          background: radial-gradient(circle, rgba(212,175,55,0.05) 0%, transparent 70%);
+          background: radial-gradient(circle, rgba(59,130,246,0.05) 0%, transparent 70%);
           pointer-events: none;
         }
         .login-card {
@@ -69,16 +69,16 @@ export default function LoginPage() {
           z-index: 1;
           width: 100%;
           max-width: 420px;
-          background: rgba(31, 27, 19, 0.8);
-          border: 1px solid rgba(212,175,55,0.15);
-          border-top: 1px solid rgba(212,175,55,0.3);
+          background: rgba(10, 12, 16, 0.8);
+          border: 1px solid rgba(59,130,246,0.15);
+          border-top: 1px solid rgba(59,130,246,0.3);
           backdrop-filter: blur(24px);
           padding: 52px 48px 44px;
         }
         .login-eyebrow {
           font-size: 9px;
           font-family: var(--font-mono);
-          color: var(--gold-dim);
+          color: var(--accent-dim);
           letter-spacing: 0.22em;
           text-transform: uppercase;
           margin-bottom: 14px;
@@ -90,7 +90,7 @@ export default function LoginPage() {
           content: '';
           width: 18px;
           height: 1px;
-          background: var(--gold-dim);
+          background: var(--accent-dim);
           flex-shrink: 0;
         }
         .login-wordmark {
@@ -103,7 +103,7 @@ export default function LoginPage() {
           letter-spacing: -0.01em;
         }
         .login-wordmark em {
-          color: var(--gold-dim);
+          color: var(--accent-dim);
           font-style: italic;
         }
         .login-sub {
@@ -116,7 +116,7 @@ export default function LoginPage() {
         }
         .login-divider {
           height: 1px;
-          background: linear-gradient(90deg, rgba(212,175,55,0.35) 0%, rgba(212,175,55,0.04) 100%);
+          background: linear-gradient(90deg, rgba(59,130,246,0.35) 0%, rgba(59,130,246,0.04) 100%);
           margin-bottom: 36px;
         }
         .login-field {
@@ -147,7 +147,7 @@ export default function LoginPage() {
           letter-spacing: 0.02em;
         }
         .login-input::placeholder { color: var(--t2); }
-        .login-input:focus { border-bottom-color: var(--gold-dim); }
+        .login-input:focus { border-bottom-color: var(--accent-dim); }
         .login-input.has-toggle { padding-right: 32px; }
         .pw-toggle {
           position: absolute;
@@ -167,8 +167,8 @@ export default function LoginPage() {
         .login-btn {
           width: 100%;
           margin-top: 8px;
-          background: var(--gold-dim);
-          color: var(--on-gold);
+          background: var(--accent-dim);
+          color: var(--on-accent);
           border: none;
           padding: 15px 24px;
           font-size: 11px;
@@ -183,7 +183,7 @@ export default function LoginPage() {
           gap: 10px;
           transition: background 0.15s;
         }
-        .login-btn:hover:not(:disabled) { background: var(--gold); }
+        .login-btn:hover:not(:disabled) { background: var(--accent-glow); }
         .login-btn:disabled { opacity: 0.45; cursor: default; }
         .login-error {
           margin-top: 16px;

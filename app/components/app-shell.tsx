@@ -21,15 +21,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {!noSidebar && (
         <>
           {/* Mobile top bar */}
-          <header className="md:hidden fixed top-0 inset-x-0 h-14 z-50 bg-[#080808] border-b border-[#1A1A1A] flex items-center px-4 gap-3">
+          <header className="md:hidden fixed top-0 inset-x-0 h-14 z-50 bg-sidebar border-b border-sidebar-border flex items-center px-4 gap-3">
             <button
               onClick={() => setOpen(true)}
               aria-label="Open menu"
-              className="p-1.5 -ml-1.5 rounded-lg text-lo hover:text-mid hover:bg-[#141414] transition-colors"
+              className="p-1.5 -ml-1.5 rounded-lg text-lo hover:text-mid hover:bg-white/[0.06] transition-colors cursor-pointer"
             >
               <Menu className="h-5 w-5" />
             </button>
-            <Image src="/rr-logo.png" alt="R&R Collective" width={24} height={24} className="rounded-lg" />
+            <div className="w-6 h-6 rounded-lg overflow-hidden ring-1 ring-white/10 flex-shrink-0">
+              <Image src="/rr-logo.png" alt="R&R Collective" width={24} height={24} className="w-full h-full object-cover" />
+            </div>
             <span className="text-hi text-sm font-semibold tracking-tight">R&R Collective</span>
           </header>
 
@@ -46,7 +48,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       )}
 
       <main
-        className={`min-h-dvh overflow-y-auto bg-[#0A0A0A] ${
+        className={`min-h-dvh overflow-y-auto bg-background ${
           noSidebar ? '' : 'md:ml-60 pt-14 md:pt-0'
         }`}
       >

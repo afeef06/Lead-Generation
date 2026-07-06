@@ -45,7 +45,7 @@ function usd(n: number, decimals = 2) {
   return '$' + n.toFixed(decimals);
 }
 
-function UsageBar({ used, total, label, color = 'var(--gold-dim)' }: {
+function UsageBar({ used, total, label, color = 'var(--accent-dim)' }: {
   used: number; total: number; label: string; color?: string;
 }) {
   const pct = total > 0 ? Math.min(100, (used / total) * 100) : 0;
@@ -121,7 +121,7 @@ export default function CostsPage() {
           margin-bottom: 12px;
           letter-spacing: -0.01em;
         }
-        .ct-hero h1 em { color: var(--gold-dim); font-style: italic; }
+        .ct-hero h1 em { color: var(--accent-dim); font-style: italic; }
         .ct-hero p { font-size: 12px; color: var(--t1); line-height: 1.7; letter-spacing: 0.02em; font-family: var(--font-mono); }
 
         .ct-disclaimer {
@@ -130,7 +130,7 @@ export default function CostsPage() {
           gap: 10px;
           background: var(--bg2);
           border: 1px solid var(--b0);
-          border-left: 3px solid var(--gold-dim);
+          border-left: 3px solid var(--accent-dim);
           padding: 12px 16px;
           margin-bottom: 40px;
           font-size: 11px;
@@ -139,7 +139,7 @@ export default function CostsPage() {
           line-height: 1.6;
           letter-spacing: 0.02em;
         }
-        .ct-disclaimer-icon { color: var(--gold-dim); font-size: 13px; flex-shrink: 0; margin-top: 1px; }
+        .ct-disclaimer-icon { color: var(--accent-dim); font-size: 13px; flex-shrink: 0; margin-top: 1px; }
 
         /* KPI grid — 3 col */
         .ct-kpi-grid {
@@ -158,9 +158,9 @@ export default function CostsPage() {
           gap: 6px;
           border-top: 2px solid transparent;
         }
-        .ct-kpi-card.kpi-anthropic { border-top-color: #AA5E7C; }
-        .ct-kpi-card.kpi-google    { border-top-color: #4A7EC4; }
-        .ct-kpi-card.kpi-hunter    { border-top-color: #3A8B6A; }
+        .ct-kpi-card.kpi-anthropic { border-top-color: #FB7185; }
+        .ct-kpi-card.kpi-google    { border-top-color: #3B82F6; }
+        .ct-kpi-card.kpi-hunter    { border-top-color: #10B981; }
         .ct-kpi-label {
           font-size: 9px;
           font-family: var(--font-mono);
@@ -397,13 +397,13 @@ export default function CostsPage() {
                 label="Google Places — $200/month credit"
                 used={costs.google.creditUsed}
                 total={costs.google.creditTotal}
-                color="#4A7EC4"
+                color="#3B82F6"
               />
               <UsageBar
                 label={`Hunter.io — ${costs.hunter.freeTotal} free searches/month`}
                 used={costs.hunter.freeUsed}
                 total={costs.hunter.freeTotal}
-                color="#3A8B6A"
+                color="#10B981"
               />
             </div>
 
@@ -517,7 +517,7 @@ export default function CostsPage() {
               <div className="ct-detail-row" style={{ borderTop: '1px solid var(--b0)', marginTop: 0 }}>
                 <span className="ct-detail-label" style={{ color: 'var(--t0)', fontWeight: 500 }}>Total</span>
                 <span className="ct-detail-spacer" />
-                <span className="ct-detail-value" style={{ fontSize: 18, color: 'var(--gold-dim)' }}>{usd(costs.totals.overall, 4)}</span>
+                <span className="ct-detail-value" style={{ fontSize: 18, color: 'var(--accent-dim)' }}>{usd(costs.totals.overall, 4)}</span>
               </div>
             </div>
 
