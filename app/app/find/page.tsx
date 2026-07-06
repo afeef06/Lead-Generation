@@ -14,11 +14,11 @@ interface ScoreResult {
 }
 
 const FW: Record<string, { label: string; short: string; color: string }> = {
-  brand_positioning:     { label: 'Brand Positioning',     short: 'Brand',       color: '#22D3EE' },
+  brand_positioning:     { label: 'Brand Positioning',     short: 'Brand',       color: '#A50000' },
   client_acquisition:    { label: 'Client Acquisition',    short: 'Acquisition', color: '#10B981' },
-  growth_infrastructure: { label: 'Growth Infrastructure', short: 'Growth',      color: '#A855F7' },
-  scaling_roadmap:       { label: 'Scaling Roadmap',       short: 'Scaling',     color: '#3B82F6' },
-  venture_development:   { label: 'Venture Development',   short: 'Venture',     color: '#FB7185' },
+  growth_infrastructure: { label: 'Growth Infrastructure', short: 'Growth',      color: '#7C3AED' },
+  scaling_roadmap:       { label: 'Scaling Roadmap',       short: 'Scaling',     color: '#8B0000' },
+  venture_development:   { label: 'Venture Development',   short: 'Venture',     color: '#B85450' },
 };
 
 function safeUrl(url: string | null | undefined): string | undefined {

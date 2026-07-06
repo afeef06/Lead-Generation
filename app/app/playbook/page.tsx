@@ -39,10 +39,10 @@ const RETAINERS: PriceRow[] = [
 ]
 
 const NICHE_NOTES: NicheNote[] = [
-  { niche: 'Personal Injury Law Firms',      color: '#3B82F6', note: 'Highest budgets. One-time $3,000–$8,000+, retainers $1,000–$2,000+/mo. Pitch speed-to-lead AI (they lose cases to faster competitors). Always aim for full AI automation.' },
-  { niche: 'Med Spas & Aesthetic Clinics',   color: '#A855F7', note: 'Strong budgets. One-time $2,000–$5,000, retainers $800–$1,500/mo. Focus on booking automation + rebooking campaigns. Owners are ROI-driven.' },
+  { niche: 'Personal Injury Law Firms',      color: '#8B0000', note: 'Highest budgets. One-time $3,000–$8,000+, retainers $1,000–$2,000+/mo. Pitch speed-to-lead AI (they lose cases to faster competitors). Always aim for full AI automation.' },
+  { niche: 'Med Spas & Aesthetic Clinics',   color: '#7C3AED', note: 'Strong budgets. One-time $2,000–$5,000, retainers $800–$1,500/mo. Focus on booking automation + rebooking campaigns. Owners are ROI-driven.' },
   { niche: 'Dental & Orthodontic Practices', color: '#10B981', note: 'Reliable buyers. One-time $1,500–$3,500, retainers $400–$900/mo. Lead with appointment reminders + patient reactivation. Front desk pain is the hook.' },
-  { niche: 'General Contractors',            color: '#5A7A50', note: 'Project mindset. One-time $1,500–$3,000. Harder to sell retainers — focus on website + lead follow-up automation. Show ROI in jobs closed.' },
+  { niche: 'General Contractors',            color: '#6B5850', note: 'Project mindset. One-time $1,500–$3,000. Harder to sell retainers — focus on website + lead follow-up automation. Show ROI in jobs closed.' },
   { niche: 'Home Services',                  color: '#C07030', note: 'Price-sensitive. Start at $800–$1,500 to get in the door, then upsell. Frame it as cost per extra job: "If we get you 2 extra roofing jobs, this pays for itself."' },
 ]
 
@@ -59,7 +59,7 @@ const SALES_GOALS: GoalSet[] = [
     ],
   },
   {
-    period: 'Weekly', color: '#22D3EE', bg: '#082027', border: '#22D3EE',
+    period: 'Weekly', color: '#A50000', bg: '#1A0808', border: '#A50000',
     items: [
       'Book 3+ discovery calls or meetings',
       'Add 25+ new leads to the pipeline',
@@ -69,7 +69,7 @@ const SALES_GOALS: GoalSet[] = [
     ],
   },
   {
-    period: 'Monthly', color: '#3B82F6', bg: '#0E1A2A', border: '#3B82F6',
+    period: 'Monthly', color: '#8B0000', bg: '#170A0A', border: '#8B0000',
     items: [
       'Close 2+ signed clients',
       'Build $10,000+ in active pipeline value',
@@ -128,12 +128,12 @@ const SALES_SCRIPTS: Script[] = [
   },
   {
     title: 'Cold DM (Instagram / Facebook)',
-    color: '#22D3EE',
+    color: '#A50000',
     script: `Hey [Name] 👋 I came across [Business] and really liked what you're doing.\n\nWe help [niche] businesses automate their follow-ups, lead gen, and client management using AI — so you're not doing it all manually.\n\nWould you be open to a quick 15-min call to see if it's a fit? No pressure at all.`,
   },
   {
     title: 'Cold Email',
-    color: '#3B82F6',
+    color: '#8B0000',
     script: `Subject: Quick question about [Business Name]\n\nHi [Name],\n\nI help [niche] businesses save time and close more clients using AI automation — instant lead responses, automated follow-ups, and booking systems that run 24/7.\n\nMost clients see results within the first 30 days.\n\nWould you be open to a quick 15-minute call this week?\n\n[Your Name]`,
   },
   {
@@ -166,7 +166,7 @@ const WEB_GOALS: GoalSet[] = [
     ],
   },
   {
-    period: 'Weekly', color: '#22D3EE', bg: '#082027', border: '#22D3EE',
+    period: 'Weekly', color: '#A50000', bg: '#1A0808', border: '#A50000',
     items: [
       'Identify 15+ businesses with no website or a broken/outdated one',
       'Prepare 2+ written website audit summaries for hot leads',
@@ -176,7 +176,7 @@ const WEB_GOALS: GoalSet[] = [
     ],
   },
   {
-    period: 'Monthly', color: '#3B82F6', bg: '#0E1A2A', border: '#3B82F6',
+    period: 'Monthly', color: '#8B0000', bg: '#170A0A', border: '#8B0000',
     items: [
       'Close 1+ new website or dashboard project',
       'Deliver 1+ completed project on time and on spec',
@@ -229,12 +229,12 @@ const WEB_PROCESS: StepItem[] = [
 const WEB_SCRIPTS: Script[] = [
   {
     title: 'Cold DM — Website Audit Approach',
-    color: '#22D3EE',
+    color: '#A50000',
     script: `Hey [Name] 👋 I was just checking out [Business]'s website and noticed a few things that might be hurting your leads — things like [no online booking / slow load time / not mobile-friendly / no clear call to action].\n\nWe build modern websites and AI-powered client management systems for [niche] businesses that actually convert visitors into paying clients.\n\nWould you be open to a free 10-min audit call where I walk you through exactly what I'd change?`,
   },
   {
     title: 'Cold Email — Website Audit',
-    color: '#3B82F6',
+    color: '#8B0000',
     script: `Subject: I checked out [Business Name]'s website\n\nHi [Name],\n\nI took a look at [Business]'s website and noticed it might be leaving money on the table — [specific observation: no online booking, not mobile-friendly, slow load time, no clear CTA].\n\nWe build fast, modern websites and client management systems specifically for [niche] businesses. Most clients see more online inquiries within the first 30 days.\n\nWould you be open to a free 10-minute call where I share exactly what I'd change for [Business]?\n\n[Your Name]`,
   },
   {
@@ -249,7 +249,7 @@ const WEB_SCRIPTS: Script[] = [
   },
   {
     title: 'Objection: "We Already Have a Website"',
-    color: '#A855F7',
+    color: '#7C3AED',
     script: `"Totally — I actually looked at it before reaching out. [Specific thing you found]. The question isn't whether you have a website, it's whether it's actively working for you.\n\nA lot of [niche] businesses are surprised when we show them how many leads their current site is losing. Worth a 10-minute look?"`,
   },
 ]
@@ -268,21 +268,21 @@ const NICHES = [
     pain: 'Manual booking, no automated rebooking or retention system',
     hook: '"We automate your entire client journey — from first inquiry to rebooking — so your staff can focus on treatments, not admin work."',
     find: 'Instagram, Google Maps, RealSelf, Allergan/Galderma partner lists',
-    color: '#A855F7',
+    color: '#7C3AED',
   },
   {
     num: '03', name: 'General Contractors & Remodelers', sub: 'Kitchen · Bath · Additions · Full Home Remodels',
     pain: 'Slow lead response, no follow-up system, losing jobs to faster competitors',
     hook: '"We build AI systems that respond to new leads instantly and follow up automatically so you never lose a job to slow response again."',
     find: 'Houzz, Angi, Google Maps, LinkedIn, local Facebook groups',
-    color: '#5A7A50',
+    color: '#6B5850',
   },
   {
     num: '04', name: 'Personal Injury Law Firms', sub: 'Auto Accidents · Slip & Fall · Workers Comp',
     pain: 'Potential clients going to competitors due to slow intake and follow-up',
     hook: '"We set up AI intake systems that respond to injury inquiries within seconds and follow up until they\'re ready to sign."',
     find: 'Google Ads leads, Avvo, Martindale-Hubbell, LinkedIn, local bar directories',
-    color: '#3B82F6',
+    color: '#8B0000',
   },
   {
     num: '05', name: 'Dental & Orthodontic Practices', sub: 'General Dentistry · Invisalign · Implants · Cosmetic',
@@ -319,7 +319,7 @@ function PlaybookRole({
             onClick={() => setSub(key)}
             className={`flex items-center gap-2 px-4 py-2.5 text-xs font-medium transition-colors border-b-2 -mb-px ${
               sub === key
-                ? 'text-[#C8C8C8] border-[#3B82F6]'
+                ? 'text-[#C8C8C8] border-[#8B0000]'
                 : 'text-[#404040] border-transparent hover:text-[#707070]'
             }`}
           >
@@ -353,14 +353,14 @@ function PlaybookRole({
           {process.map(({ num, title, body, tips }) => (
             <div key={num} className="bg-[#0D0D0D] border border-[#1A1A1A] rounded-xl p-4">
               <div className="flex items-start gap-3 mb-2">
-                <span className="w-6 h-6 rounded-lg bg-[#1A1A1A] border border-[#2A2A2A] flex items-center justify-center text-[10px] font-bold text-[#3B82F6] flex-shrink-0 mt-0.5">{num}</span>
+                <span className="w-6 h-6 rounded-lg bg-[#1A1A1A] border border-[#2A2A2A] flex items-center justify-center text-[10px] font-bold text-[#8B0000] flex-shrink-0 mt-0.5">{num}</span>
                 <p className="text-[#E8E8E8] text-sm font-semibold leading-tight">{title}</p>
               </div>
               <p className="text-[13px] text-[#909090] leading-relaxed whitespace-pre-line pl-9">{body}</p>
               {tips && tips.length > 0 && (
                 <div className="mt-3 pl-9 space-y-1.5">
                   {tips.map((tip, i) => (
-                    <p key={i} className="text-xs text-[#3B82F6] flex items-start gap-1.5">
+                    <p key={i} className="text-xs text-[#8B0000] flex items-start gap-1.5">
                       <span className="mt-0.5 flex-shrink-0">→</span>{tip}
                     </p>
                   ))}
@@ -432,10 +432,10 @@ export default function PlaybookPage() {
           {/* Quick summary cards */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[
-              { label: 'Entry Point',      value: '$400',       sub: 'AI Strategy Session', color: '#22D3EE',  Icon: DollarSign  },
-              { label: 'Avg Project',      value: '$2,000',     sub: 'One-time builds',     color: '#3B82F6',  Icon: TrendingUp  },
+              { label: 'Entry Point',      value: '$400',       sub: 'AI Strategy Session', color: '#A50000',  Icon: DollarSign  },
+              { label: 'Avg Project',      value: '$2,000',     sub: 'One-time builds',     color: '#8B0000',  Icon: TrendingUp  },
               { label: 'Best Retainer',    value: '$2,000/mo',  sub: 'Full-service package', color: '#10B981', Icon: BookOpen    },
-              { label: 'Top Niche',        value: 'Law Firms',  sub: '$8,000+ potential',   color: '#A855F7',  Icon: Users       },
+              { label: 'Top Niche',        value: 'Law Firms',  sub: '$8,000+ potential',   color: '#7C3AED',  Icon: Users       },
             ].map(({ label, value, sub, color, Icon }) => (
               <div key={label} className="bg-[#0D0D0D] border border-[#1A1A1A] rounded-2xl p-4">
                 <Icon className="h-4 w-4 mb-2" style={{ color }} />
@@ -449,8 +449,8 @@ export default function PlaybookPage() {
           {/* One-time */}
           <div>
             <div className="flex items-center gap-2.5 mb-3">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#22D3EE]" />
-              <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-[#22D3EE]">One-Time Projects</p>
+              <span className="w-1.5 h-1.5 rounded-full bg-[#A50000]" />
+              <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-[#A50000]">One-Time Projects</p>
             </div>
             <div className="bg-[#0D0D0D] border border-[#1A1A1A] rounded-2xl overflow-hidden">
               {ONE_TIME.map(({ service, price, note }, i) => (
@@ -464,7 +464,7 @@ export default function PlaybookPage() {
                     <p className="text-[13px] text-[#C8C8C8] leading-snug">{service}</p>
                     {note && <p className="text-[11px] text-[#454545] mt-0.5">{note}</p>}
                   </div>
-                  <span className="text-[#22D3EE] text-sm font-semibold tabular-nums whitespace-nowrap flex-shrink-0">{price}</span>
+                  <span className="text-[#A50000] text-sm font-semibold tabular-nums whitespace-nowrap flex-shrink-0">{price}</span>
                 </div>
               ))}
             </div>
@@ -497,8 +497,8 @@ export default function PlaybookPage() {
           {/* What each niche pays */}
           <div>
             <div className="flex items-center gap-2.5 mb-3">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#3B82F6]" />
-              <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-[#3B82F6]">What Each Niche Typically Pays</p>
+              <span className="w-1.5 h-1.5 rounded-full bg-[#8B0000]" />
+              <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-[#8B0000]">What Each Niche Typically Pays</p>
             </div>
             <div className="space-y-2">
               {NICHE_NOTES.map(({ niche, note, color }) => (

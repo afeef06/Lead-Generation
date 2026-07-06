@@ -4,8 +4,8 @@ import { useEffect } from 'react';
 import { IconGlobe, IconPhone, IconStar, IconCheck } from './icons';
 
 const SERVICE: Record<string, { label: string; short: string; color: string }> = {
-  website:    { label: 'Website',    short: 'WEB', color: '#3B82F6' },
-  ads:        { label: 'Ads',        short: 'ADS', color: '#A855F7' },
+  website:    { label: 'Website',    short: 'WEB', color: '#A50000' },
+  ads:        { label: 'Ads',        short: 'ADS', color: '#7C3AED' },
   consulting: { label: 'Consulting', short: 'CON', color: '#10B981' },
 };
 
@@ -71,7 +71,7 @@ export function LeadDetailModal({ lead, onClose, onSave, saving, saved }: Props)
       <style>{`
         .ldm-backdrop {
           position: fixed; inset: 0; z-index: 200;
-          background: rgba(10,8,5,0.72);
+          background: rgba(5,3,3,0.72);
           backdrop-filter: blur(4px);
           display: flex; align-items: center; justify-content: center;
           padding: 24px;
@@ -83,7 +83,7 @@ export function LeadDetailModal({ lead, onClose, onSave, saving, saved }: Props)
         .ldm-panel {
           background: var(--bg1);
           border: 1px solid var(--b0);
-          border-top: 1px solid rgba(59,130,246,0.25);
+          border-top: 1px solid rgba(165,0,0,0.25);
           width: 100%;
           max-width: 520px;
           max-height: 90vh;

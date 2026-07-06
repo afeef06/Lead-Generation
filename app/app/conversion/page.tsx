@@ -27,18 +27,18 @@ const STAGE_LABELS: Record<Stage, string> = {
 };
 
 const STAGE_COLORS: Record<Stage, string> = {
-  discovered: '#6B7382',
-  qualified:  '#3B82F6',
-  outreach:   '#22D3EE',
+  discovered: '#4A3838',
+  qualified:  '#8B0000',
+  outreach:   '#A50000',
   closed:     '#10B981',
 };
 
 const FW: Record<string, { label: string; short: string; color: string }> = {
-  brand_positioning:     { label: 'Brand Positioning',     short: 'Brand',       color: '#22D3EE' },
+  brand_positioning:     { label: 'Brand Positioning',     short: 'Brand',       color: '#A50000' },
   client_acquisition:    { label: 'Client Acquisition',    short: 'Acquisition', color: '#10B981' },
-  growth_infrastructure: { label: 'Growth Infrastructure', short: 'Growth',      color: '#A855F7' },
-  scaling_roadmap:       { label: 'Scaling Roadmap',       short: 'Scaling',     color: '#3B82F6' },
-  venture_development:   { label: 'Venture Development',   short: 'Venture',     color: '#FB7185' },
+  growth_infrastructure: { label: 'Growth Infrastructure', short: 'Growth',      color: '#7C3AED' },
+  scaling_roadmap:       { label: 'Scaling Roadmap',       short: 'Scaling',     color: '#8B0000' },
+  venture_development:   { label: 'Venture Development',   short: 'Venture',     color: '#B85450' },
 };
 
 function rate(a: number, b: number) {
@@ -111,13 +111,13 @@ export default function ConversionPage() {
       label: 'Qualified Rate',
       value: `${rate(byStage.qualified + byStage.outreach + byStage.closed, total)}%`,
       sub: `${byStage.qualified + byStage.outreach + byStage.closed} of ${total}`,
-      color: '#3B82F6',
+      color: '#8B0000',
     },
     {
       label: 'In Outreach',
       value: byStage.outreach.toString(),
       sub: `${rate(byStage.outreach, total)}% of pipeline`,
-      color: '#22D3EE',
+      color: '#A50000',
     },
     {
       label: 'Closed Won',

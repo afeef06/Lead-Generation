@@ -53,15 +53,15 @@ function safeUrl(url: string | null | undefined): string | undefined {
 }
 
 const STAGE_META: Record<Stage, { label: string; color: string }> = {
-  discovered: { label: 'Discovered', color: '#6B7382' },
-  qualified:  { label: 'Qualified',  color: '#3B82F6' },
-  outreach:   { label: 'Outreach',   color: '#22D3EE' },
+  discovered: { label: 'Discovered', color: '#4A3838' },
+  qualified:  { label: 'Qualified',  color: '#8B0000' },
+  outreach:   { label: 'Outreach',   color: '#A50000' },
   closed:     { label: 'Closed',     color: '#10B981' },
 };
 
 const SERVICE: Record<string, { label: string; short: string; color: string }> = {
-  website:    { label: 'Website',    short: 'WEB', color: '#3B82F6' },
-  ads:        { label: 'Ads',        short: 'ADS', color: '#A855F7' },
+  website:    { label: 'Website',    short: 'WEB', color: '#A50000' },
+  ads:        { label: 'Ads',        short: 'ADS', color: '#7C3AED' },
   consulting: { label: 'Consulting', short: 'CON', color: '#10B981' },
 };
 
@@ -511,7 +511,7 @@ export default function PipelinePage() {
           cursor: default;
         }
         .card:hover { background: var(--bg3); }
-        .card-selected { background: rgba(59,130,246,0.04) !important; outline: 1px solid rgba(59,130,246,0.25); }
+        .card-selected { background: rgba(165,0,0,0.04) !important; outline: 1px solid rgba(165,0,0,0.25); }
         .card-check { display: flex; justify-content: flex-end; margin-bottom: -2px; }
         .card-check input { accent-color: var(--accent-dim); width: 12px; height: 12px; cursor: pointer; }
 
@@ -676,7 +676,7 @@ export default function PipelinePage() {
           flex-shrink: 0;
           transition: color 0.15s, border-color 0.15s;
         }
-        .details-btn:hover { color: var(--accent-dim); border-color: rgba(59,130,246,0.4); }
+        .details-btn:hover { color: var(--accent-dim); border-color: rgba(165,0,0,0.4); }
 
         /* Advance / closed */
         .advance-btn {
@@ -723,7 +723,7 @@ export default function PipelinePage() {
           gap: 14px;
           background: var(--bg2);
           border: 1px solid var(--b0);
-          border-top: 1px solid rgba(59,130,246,0.2);
+          border-top: 1px solid rgba(165,0,0,0.2);
           padding: 12px 20px;
           box-shadow: 0 16px 48px rgba(0,0,0,0.6);
           z-index: 50;
@@ -785,7 +785,7 @@ export default function PipelinePage() {
           transition: color 0.15s, border-color 0.15s, background 0.15s;
         }
         .filter-chip:hover { color: var(--t1); border-color: var(--t2); }
-        .filter-chip.active { color: var(--accent-dim); border-color: rgba(59,130,246,0.45); background: rgba(59,130,246,0.06); }
+        .filter-chip.active { color: var(--accent-dim); border-color: rgba(165,0,0,0.45); background: rgba(165,0,0,0.06); }
         .filter-chip.is-me.active { color: var(--green); border-color: rgba(58,139,106,0.45); background: rgba(58,139,106,0.06); }
 
         /* Service primary badge */

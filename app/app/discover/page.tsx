@@ -22,8 +22,8 @@ interface ScoreResult {
 }
 
 const SERVICE: Record<string, { label: string; short: string; color: string }> = {
-  website:    { label: 'Website',    short: 'WEB', color: '#3B82F6' },
-  ads:        { label: 'Ads',        short: 'ADS', color: '#A855F7' },
+  website:    { label: 'Website',    short: 'WEB', color: '#A50000' },
+  ads:        { label: 'Ads',        short: 'ADS', color: '#7C3AED' },
   consulting: { label: 'Consulting', short: 'CON', color: '#10B981' },
 };
 
@@ -593,7 +593,7 @@ export default function DiscoveryPage() {
           flex-wrap: wrap;
           background: var(--bg1);
           border: 1px solid var(--b0);
-          border-top: 1px solid rgba(59,130,246,0.2);
+          border-top: 1px solid rgba(165,0,0,0.2);
           padding: 12px 20px;
           margin-bottom: 20px;
         }
@@ -645,7 +645,7 @@ export default function DiscoveryPage() {
         .result-row:last-child { border-bottom: none; }
         .result-row:hover { background: var(--bg2); }
         td { padding: 10px 14px; vertical-align: middle; }
-        .row-selected { background: rgba(59,130,246,0.04) !important; }
+        .row-selected { background: rgba(165,0,0,0.04) !important; }
 
         .td-check { width: 36px; padding-right: 0; }
         .td-check input { accent-color: var(--accent-dim); width: 13px; height: 13px; cursor: pointer; }

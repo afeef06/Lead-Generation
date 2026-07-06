@@ -11,11 +11,11 @@ interface ScoreResult {
 }
 
 const FW: Record<string, { label: string; short: string; color: string }> = {
-  brand_positioning:     { label: 'Brand Positioning',     short: 'Brand',       color: '#22D3EE' },
+  brand_positioning:     { label: 'Brand Positioning',     short: 'Brand',       color: '#A50000' },
   client_acquisition:    { label: 'Client Acquisition',    short: 'Acquisition', color: '#10B981' },
-  growth_infrastructure: { label: 'Growth Infrastructure', short: 'Growth',      color: '#A855F7' },
-  scaling_roadmap:       { label: 'Scaling Roadmap',       short: 'Scaling',     color: '#3B82F6' },
-  venture_development:   { label: 'Venture Development',   short: 'Venture',     color: '#FB7185' },
+  growth_infrastructure: { label: 'Growth Infrastructure', short: 'Growth',      color: '#7C3AED' },
+  scaling_roadmap:       { label: 'Scaling Roadmap',       short: 'Scaling',     color: '#8B0000' },
+  venture_development:   { label: 'Venture Development',   short: 'Venture',     color: '#B85450' },
 };
 
 type SearchModalProps = {
@@ -99,7 +99,7 @@ export function SearchModal({ onClose, onSaved }: SearchModalProps) {
       <style>{`
         .sm-backdrop {
           position: fixed; inset: 0; z-index: 100;
-          background: rgba(22, 19, 11, 0.88);
+          background: rgba(5, 3, 3, 0.88);
           backdrop-filter: blur(8px);
           display: flex; align-items: flex-start; justify-content: center;
           padding: 48px 24px; overflow-y: auto;
@@ -107,7 +107,7 @@ export function SearchModal({ onClose, onSaved }: SearchModalProps) {
         .sm-panel {
           background: var(--bg1);
           border: 1px solid var(--b0);
-          border-top: 1px solid rgba(59,130,246,0.3);
+          border-top: 1px solid rgba(165,0,0,0.3);
           width: 100%; max-width: 860px;
           padding: 32px 36px;
           position: relative; flex-shrink: 0;

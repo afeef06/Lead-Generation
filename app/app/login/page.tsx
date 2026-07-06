@@ -47,8 +47,8 @@ export default function LoginPage() {
           position: absolute;
           inset: 0;
           background-image:
-            linear-gradient(rgba(59,130,246,0.025) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(59,130,246,0.025) 1px, transparent 1px);
+            linear-gradient(rgba(165,0,0,0.025) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(165,0,0,0.025) 1px, transparent 1px);
           background-size: 48px 48px;
           pointer-events: none;
         }
@@ -61,7 +61,7 @@ export default function LoginPage() {
           transform: translate(-50%, -50%);
           width: 560px;
           height: 560px;
-          background: radial-gradient(circle, rgba(59,130,246,0.05) 0%, transparent 70%);
+          background: radial-gradient(circle, rgba(165,0,0,0.05) 0%, transparent 70%);
           pointer-events: none;
         }
         .login-card {
@@ -69,9 +69,9 @@ export default function LoginPage() {
           z-index: 1;
           width: 100%;
           max-width: 420px;
-          background: rgba(10, 12, 16, 0.8);
-          border: 1px solid rgba(59,130,246,0.15);
-          border-top: 1px solid rgba(59,130,246,0.3);
+          background: rgba(10, 6, 6, 0.8);
+          border: 1px solid rgba(165,0,0,0.15);
+          border-top: 1px solid rgba(165,0,0,0.3);
           backdrop-filter: blur(24px);
           padding: 52px 48px 44px;
         }
@@ -116,7 +116,7 @@ export default function LoginPage() {
         }
         .login-divider {
           height: 1px;
-          background: linear-gradient(90deg, rgba(59,130,246,0.35) 0%, rgba(59,130,246,0.04) 100%);
+          background: linear-gradient(90deg, rgba(165,0,0,0.35) 0%, rgba(165,0,0,0.04) 100%);
           margin-bottom: 36px;
         }
         .login-field {
@@ -187,8 +187,8 @@ export default function LoginPage() {
         .login-btn:disabled { opacity: 0.45; cursor: default; }
         .login-error {
           margin-top: 16px;
-          background: rgba(255,180,171,0.05);
-          border-left: 2px solid rgba(255,180,171,0.45);
+          background: rgba(248,113,113,0.05);
+          border-left: 2px solid rgba(248,113,113,0.45);
           color: var(--error);
           padding: 10px 14px;
           font-size: 11px;

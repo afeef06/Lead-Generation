@@ -40,9 +40,9 @@ interface Lead {
 type OutreachField = 'outreach_attempted' | 'outreach_answered' | 'outreach_channel' | 'wants_to_move_forward';
 
 const STAGE_COLOR: Record<Stage, string> = {
-  discovered: '#6B7382',
-  qualified:  '#3B82F6',
-  outreach:   '#22D3EE',
+  discovered: '#4A3838',
+  qualified:  '#8B0000',
+  outreach:   '#A50000',
   closed:     '#10B981',
 };
 
@@ -54,7 +54,7 @@ const STAGE_LABEL: Record<Stage, string> = {
 };
 
 const SVC_COLOR: Record<string, string> = {
-  website: '#3B82F6', ads: '#A855F7', consulting: '#10B981',
+  website: '#A50000', ads: '#7C3AED', consulting: '#10B981',
 };
 const SVC_SHORT: Record<string, string> = {
   website: 'WEB', ads: 'ADS', consulting: 'CON',

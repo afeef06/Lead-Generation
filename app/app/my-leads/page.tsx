@@ -50,15 +50,15 @@ const STAGES = ['discovered', 'qualified', 'outreach', 'closed'] as const;
 type Stage = typeof STAGES[number];
 
 const STAGE_META: Record<Stage, { label: string; color: string }> = {
-  discovered: { label: 'Discovered', color: '#6B7382' },
-  qualified:  { label: 'Qualified',  color: '#3B82F6' },
-  outreach:   { label: 'Outreach',   color: '#22D3EE' },
+  discovered: { label: 'Discovered', color: '#4A3838' },
+  qualified:  { label: 'Qualified',  color: '#8B0000' },
+  outreach:   { label: 'Outreach',   color: '#A50000' },
   closed:     { label: 'Closed',     color: '#10B981' },
 };
 
 const SERVICE: Record<string, { label: string; short: string; color: string }> = {
-  website:    { label: 'Website',    short: 'WEB', color: '#3B82F6' },
-  ads:        { label: 'Ads',        short: 'ADS', color: '#A855F7' },
+  website:    { label: 'Website',    short: 'WEB', color: '#A50000' },
+  ads:        { label: 'Ads',        short: 'ADS', color: '#7C3AED' },
   consulting: { label: 'Consulting', short: 'CON', color: '#10B981' },
 };
 
@@ -460,7 +460,7 @@ export default function MyLeadsPage() {
           transition: background 0.1s; cursor: default;
         }
         .card:hover { background: var(--bg3); }
-        .card-selected { background: rgba(59,130,246,0.04) !important; outline: 1px solid rgba(59,130,246,0.25); }
+        .card-selected { background: rgba(165,0,0,0.04) !important; outline: 1px solid rgba(165,0,0,0.25); }
         .card-check { display: flex; justify-content: flex-end; margin-bottom: -2px; }
         .card-check input { accent-color: var(--accent-dim); width: 12px; height: 12px; cursor: pointer; }
 
@@ -548,7 +548,7 @@ export default function MyLeadsPage() {
           cursor: pointer; letter-spacing: 0.06em; text-transform: uppercase;
           flex-shrink: 0; transition: color 0.15s, border-color 0.15s;
         }
-        .details-btn:hover { color: var(--accent-dim); border-color: rgba(59,130,246,0.4); }
+        .details-btn:hover { color: var(--accent-dim); border-color: rgba(165,0,0,0.4); }
 
         .advance-btn {
           width: 100%; background: none; border: 1px solid var(--b0);
@@ -571,7 +571,7 @@ export default function MyLeadsPage() {
           position: fixed; bottom: 24px; left: 50%;
           transform: translateX(-50%); display: flex; align-items: center;
           gap: 14px; background: var(--bg2); border: 1px solid var(--b0);
-          border-top: 1px solid rgba(59,130,246,0.2); padding: 12px 20px;
+          border-top: 1px solid rgba(165,0,0,0.2); padding: 12px 20px;
           box-shadow: 0 16px 48px rgba(0,0,0,0.6); z-index: 50; white-space: nowrap;
         }
         .delete-bar-count { font-size: 12px; font-family: var(--font-mono); color: var(--t1); letter-spacing: 0.04em; }

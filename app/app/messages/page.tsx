@@ -212,10 +212,10 @@ export default function MessagesPage() {
                   <div className={`max-w-[80%] md:max-w-[60%] px-4 py-2.5 rounded-2xl ${
                     msg.sender === 'admin'
                       ? 'bg-[#1A1A1A] border border-[#2A2A2A] text-[#BEBEBE] rounded-tr-sm'
-                      : 'bg-[#0E1A2A] border border-[#5A7A9E]/20 text-[#B0C0D0] rounded-tl-sm'
+                      : 'bg-[#170A0A] border border-[#A50000]/20 text-[#D8C8C6] rounded-tl-sm'
                   }`}>
                     {msg.sender === 'employee' && (
-                      <p className="text-[#5A7A9E] text-[9px] font-semibold uppercase tracking-wider mb-1">{selected.name}</p>
+                      <p className="text-[#A50000] text-[9px] font-semibold uppercase tracking-wider mb-1">{selected.name}</p>
                     )}
                     <p className="text-xs leading-relaxed whitespace-pre-wrap">{msg.content}</p>
                     <p className="text-[9px] text-[#404040] mt-1.5 text-right">{fmtTime(msg.created_at)}</p>

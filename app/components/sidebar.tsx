@@ -124,7 +124,7 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
                     }`}
                   >
                     {active && (
-                      <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 bg-signal rounded-r-full" />
+                      <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 bg-signal rounded-r-full shadow-[0_0_8px_0_var(--color-signal)]" />
                     )}
                     <Icon className={`h-3.5 w-3.5 flex-shrink-0 transition-colors ${
                       active ? 'text-signal' : 'text-lo group-hover:text-mid'

@@ -158,8 +158,8 @@ export default function CostsPage() {
           gap: 6px;
           border-top: 2px solid transparent;
         }
-        .ct-kpi-card.kpi-anthropic { border-top-color: #FB7185; }
-        .ct-kpi-card.kpi-google    { border-top-color: #3B82F6; }
+        .ct-kpi-card.kpi-anthropic { border-top-color: #7C3AED; }
+        .ct-kpi-card.kpi-google    { border-top-color: #A50000; }
         .ct-kpi-card.kpi-hunter    { border-top-color: #10B981; }
         .ct-kpi-label {
           font-size: 9px;
@@ -397,7 +397,7 @@ export default function CostsPage() {
                 label="Google Places — $200/month credit"
                 used={costs.google.creditUsed}
                 total={costs.google.creditTotal}
-                color="#3B82F6"
+                color="#A50000"
               />
               <UsageBar
                 label={`Hunter.io — ${costs.hunter.freeTotal} free searches/month`}
