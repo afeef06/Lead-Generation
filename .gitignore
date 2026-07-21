@@ -7,3 +7,9 @@
 
 # macOS
 .DS_Store
+
+# Legacy Business Hub data export (sensitive client/financial CSVs)
+Old_Business_hub/
+
+# graphify generated output
+graphify-out/
