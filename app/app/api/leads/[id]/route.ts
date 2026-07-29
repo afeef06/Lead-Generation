@@ -35,6 +35,7 @@ export async function PATCH(
   if (body.outreach_attempted !== undefined) update.outreach_attempted = body.outreach_attempted;
   if (body.outreach_answered  !== undefined) update.outreach_answered  = body.outreach_answered;
   if (body.wants_to_move_forward !== undefined) update.wants_to_move_forward = body.wants_to_move_forward;
+  if (body.needs_callback !== undefined) update.needs_callback = body.needs_callback;
 
   if (body.outreach_channel !== undefined) {
     const VALID_CHANNELS = new Set(['none', 'phone', 'email', 'text']);

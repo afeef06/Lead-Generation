@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '../../lib/supabase/client';
 import { LeadIntelligenceTabs } from '@/components/lead-intelligence-tabs';
 import { LeadDetailModal } from '../components/LeadDetailModal';
-import { IconWarning } from '../components/icons';
+import { IconWarning, IconCheck } from '../components/icons';
 import { type Stage } from '../../lib/stages';
 
 interface Lead {
@@ -35,9 +35,16 @@ interface Lead {
   outreach_answered: boolean;
   outreach_channel: 'none' | 'phone' | 'email' | 'text';
   wants_to_move_forward: boolean;
+  needs_callback: boolean;
 }
 
-type OutreachField = 'outreach_attempted' | 'outreach_answered' | 'outreach_channel' | 'wants_to_move_forward';
+type OutreachField =
+  | 'outreach_attempted'
+  | 'outreach_answered'
+  | 'outreach_channel'
+  | 'wants_to_move_forward'
+  | 'needs_callback'
+  | 'notes';
 
 const STAGE_COLOR: Record<Stage, string> = {
   discovered: '#4A3838',
@@ -69,6 +76,42 @@ function formatDate(iso: string): string {
   if (diffDays === 1) return 'Yesterday';
   if (diffDays < 7) return `${diffDays}d ago`;
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function NoteField({ lead, onSave }: { lead: Lead; onSave: (lead: Lead, value: string) => Promise<void> }) {
+  const [value, setValue] = useState(lead.notes ?? '');
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  async function handleBlur() {
+    if (value === (lead.notes ?? '')) return;
+    setSaving(true);
+    await onSave(lead, value);
+    setSaving(false);
+    setSaved(true);
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => setSaved(false), 2000);
+  }
+
+  return (
+    <div className="ot-note-wrap">
+      <textarea
+        className="ot-note-input"
+        value={value}
+        onChange={e => setValue(e.target.value)}
+        onBlur={handleBlur}
+        placeholder="Add a note…"
+        rows={2}
+        aria-label={`Notes for ${lead.name}`}
+      />
+      {(saving || saved) && (
+        <span className="ot-note-status">
+          {saving ? '…' : <><IconCheck size={9} />Saved</>}
+        </span>
+      )}
+    </div>
+  );
 }
 
 export default function OutreachPage() {
@@ -137,9 +180,12 @@ export default function OutreachPage() {
     }
   }
 
+  const saveNotes = (lead: Lead, value: string) => patch(lead, 'notes', value);
+
   const contacted = leads.filter(l => l.outreach_attempted).length;
   const responded = leads.filter(l => l.outreach_answered).length;
   const moving    = leads.filter(l => l.wants_to_move_forward).length;
+  const callbacks = leads.filter(l => l.needs_callback).length;
 
   return (
     <>
@@ -184,7 +230,7 @@ export default function OutreachPage() {
         }
 
         .ot-wrap { border: 1px solid var(--b0); overflow-x: auto; }
-        .ot-table { width: 100%; border-collapse: collapse; min-width: 900px; }
+        .ot-table { width: 100%; border-collapse: collapse; min-width: 1180px; }
         .ot-table thead { background: var(--bg2); border-bottom: 1px solid var(--b0); }
         .ot-table thead th {
           padding: 8px 12px; font-size: 9px; font-family: var(--font-mono);
@@ -235,6 +281,25 @@ export default function OutreachPage() {
           border-top: none; border-left: none; transform: rotate(45deg);
         }
         .ot-cb.fwd:checked { background: var(--accent-dim); border-color: var(--accent-dim); }
+        .ot-cb.cb:checked { background: var(--fw-growth); border-color: var(--fw-growth); }
+
+        .td-note { min-width: 170px; max-width: 240px; }
+        .ot-note-wrap { position: relative; }
+        .ot-note-input {
+          width: 100%; background: var(--bg2); border: none;
+          border-bottom: 1px solid var(--b0); color: var(--t1);
+          font-size: 10px; font-family: var(--font-mono); letter-spacing: 0.02em;
+          padding: 6px 7px; resize: none; outline: none; line-height: 1.5;
+          transition: border-color 0.15s, color 0.15s;
+        }
+        .ot-note-input::placeholder { color: var(--t2); }
+        .ot-note-input:focus { border-bottom-color: var(--accent-dim); color: var(--t0); }
+        .ot-note-status {
+          position: absolute; bottom: 5px; right: 6px;
+          font-size: 9px; font-family: var(--font-mono); color: var(--green);
+          display: flex; align-items: center; gap: 3px;
+          pointer-events: none; letter-spacing: 0.04em;
+        }
 
         .td-ch { width: 90px; }
         .ch-select {
@@ -287,6 +352,10 @@ export default function OutreachPage() {
             <span className={`ot-stat-val${moving > 0 ? ' accent' : ''}`}>{moving}</span>
             <span className="ot-stat-lbl">Moving Forward</span>
           </div>
+          <div className="ot-stat">
+            <span className={`ot-stat-val${callbacks > 0 ? ' accent' : ''}`}>{callbacks}</span>
+            <span className="ot-stat-lbl">Call Backs</span>
+          </div>
         </div>
 
         {patchError && (
@@ -315,8 +384,10 @@ export default function OutreachPage() {
                   <th>Added</th>
                   <th className="th-c">Contacted</th>
                   <th className="th-c">Responded</th>
+                  <th className="th-c">Call Back</th>
                   <th>Channel</th>
                   <th className="th-c">Moving Forward</th>
+                  <th>Notes</th>
                 </tr>
               </thead>
               <tbody>
@@ -374,6 +445,15 @@ export default function OutreachPage() {
                         aria-label={`${lead.name} responded`}
                       />
                     </td>
+                    <td className="td-c">
+                      <input
+                        type="checkbox"
+                        className="ot-cb cb"
+                        checked={lead.needs_callback}
+                        onChange={() => patch(lead, 'needs_callback', !lead.needs_callback)}
+                        aria-label={`Call back ${lead.name}`}
+                      />
+                    </td>
                     <td className="td-ch">
                       <select
                         className="ch-select"
@@ -395,6 +475,9 @@ export default function OutreachPage() {
                         onChange={() => patch(lead, 'wants_to_move_forward', !lead.wants_to_move_forward)}
                         aria-label={`${lead.name} moving forward`}
                       />
+                    </td>
+                    <td className="td-note">
+                      <NoteField lead={lead} onSave={saveNotes} />
                     </td>
                   </tr>
                 ))}

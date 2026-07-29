@@ -280,7 +280,7 @@ function Card({
 }
 
 function Column({
-  stage, leads, onAdvance, onSaveNote, onUpdate, onViewDetails, selectMode, selectedIds, onToggle, currentUserId,
+  stage, leads, onAdvance, onSaveNote, onUpdate, onViewDetails, selectMode, selectedIds, onToggle, onSelectAllInStage, currentUserId,
 }: {
   stage: Stage;
   leads: Lead[];
@@ -291,15 +291,26 @@ function Column({
   selectMode: boolean;
   selectedIds: Set<string>;
   onToggle: (id: string) => void;
+  onSelectAllInStage: (ids: string[]) => void;
   currentUserId: string | null;
 }) {
   const meta = STAGE_META[stage];
+  const allSelected = leads.length > 0 && leads.every(l => selectedIds.has(l.id));
   return (
     <div className="column">
       <div className="col-header">
         <span className="col-indicator" style={{ background: meta.color }} />
         <span className="col-name">{meta.label}</span>
         <span className="col-count">{leads.length}</span>
+        {selectMode && leads.length > 0 && (
+          <button
+            type="button"
+            className="select-all-btn"
+            onClick={() => onSelectAllInStage(leads.map(l => l.id))}
+          >
+            {allSelected ? 'None' : 'All'}
+          </button>
+        )}
       </div>
       <div className="cards">
         {leads.length === 0 && <div className="col-empty">No leads</div>}
@@ -412,15 +423,35 @@ export default function PipelinePage() {
     });
   }
 
+  function toggleSelectAllInStage(ids: string[]) {
+    setSelectedIds(prev => {
+      const allSelected = ids.every(id => prev.has(id));
+      const next = new Set(prev);
+      if (allSelected) {
+        ids.forEach(id => next.delete(id));
+      } else {
+        ids.forEach(id => next.add(id));
+      }
+      return next;
+    });
+  }
+
   async function deleteSelected() {
     if (!window.confirm(`Delete ${selectedIds.size} lead${selectedIds.size !== 1 ? 's' : ''}? This cannot be undone.`)) return;
     setDeleting(true);
     const ids = [...selectedIds];
-    await Promise.all(ids.map(id => fetch(`/api/leads/${id}`, { method: 'DELETE' })));
-    setLeads(prev => prev.filter(l => !selectedIds.has(l.id)));
+    const results = await Promise.all(ids.map(async id => {
+      const res = await fetch(`/api/leads/${id}`, { method: 'DELETE' });
+      return { id, ok: res.ok };
+    }));
+    const deletedIds = new Set(results.filter(r => r.ok).map(r => r.id));
+    setLeads(prev => prev.filter(l => !deletedIds.has(l.id)));
     setSelectedIds(new Set());
     setSelectMode(false);
     setDeleting(false);
+    if (deletedIds.size < ids.length) {
+      window.alert(`${ids.length - deletedIds.size} lead${ids.length - deletedIds.size !== 1 ? 's' : ''} could not be deleted. Please try again.`);
+    }
   }
 
   const displayedLeads = filterBy ? leads.filter(l => l.created_by === filterBy) : leads;
@@ -481,6 +512,20 @@ export default function PipelinePage() {
           color: var(--t2);
           letter-spacing: 0.04em;
         }
+        .select-all-btn {
+          font-size: 10px;
+          font-family: var(--font-mono);
+          color: var(--t2);
+          background: none;
+          border: none;
+          padding: 0;
+          cursor: pointer;
+          text-decoration: underline;
+          text-underline-offset: 2px;
+          letter-spacing: 0.06em;
+          flex-shrink: 0;
+        }
+        .select-all-btn:hover { color: var(--t1); }
         .cards {
           padding: 8px;
           display: flex;
@@ -822,31 +867,40 @@ export default function PipelinePage() {
       ) : total === 0 ? (
         <div className="empty-board">
           <div className="headline">Pipeline is empty</div>
-          <p>Save leads from <Link href="/">Discovery</Link> to start tracking them here.</p>
+          <p>Save leads from <Link href="/discover">Discovery</Link> to start tracking them here.</p>
         </div>
       ) : (
         <>
-          {members.length > 1 && (
-            <div className="filter-bar">
-              <span className="filter-label">View</span>
-              <button
-                className={`filter-chip${filterBy === null ? ' active' : ''}`}
-                onClick={() => setFilterBy(null)}
-              >
-                All ({leads.length})
-              </button>
-              {members.map(m => (
+          <div className="filter-bar">
+            {members.length > 1 && (
+              <>
+                <span className="filter-label">View</span>
                 <button
-                  key={m.id}
-                  className={`filter-chip${filterBy === m.id ? ' active' : ''}${m.id === currentUserId ? ' is-me' : ''}`}
-                  onClick={() => setFilterBy(filterBy === m.id ? null : m.id)}
+                  className={`filter-chip${filterBy === null ? ' active' : ''}`}
+                  onClick={() => setFilterBy(null)}
                 >
-                  {m.id === currentUserId ? 'Me' : (m.name ?? m.email.split('@')[0])}
-                  {' '}({leads.filter(l => l.created_by === m.id).length})
+                  All ({leads.length})
                 </button>
-              ))}
-            </div>
-          )}
+                {members.map(m => (
+                  <button
+                    key={m.id}
+                    className={`filter-chip${filterBy === m.id ? ' active' : ''}${m.id === currentUserId ? ' is-me' : ''}`}
+                    onClick={() => setFilterBy(filterBy === m.id ? null : m.id)}
+                  >
+                    {m.id === currentUserId ? 'Me' : (m.name ?? m.email.split('@')[0])}
+                    {' '}({leads.filter(l => l.created_by === m.id).length})
+                  </button>
+                ))}
+              </>
+            )}
+            <button
+              className={`btn-ghost${selectMode ? ' active' : ''}`}
+              style={{ marginLeft: 'auto' }}
+              onClick={toggleSelectMode}
+            >
+              {selectMode ? 'Cancel' : 'Select'}
+            </button>
+          </div>
           {selectMode && selectedIds.size > 0 && (
             <div className="delete-bar">
               <span className="delete-bar-count">
@@ -871,6 +925,7 @@ export default function PipelinePage() {
                 selectMode={selectMode}
                 selectedIds={selectedIds}
                 onToggle={toggleSelect}
+                onSelectAllInStage={toggleSelectAllInStage}
                 currentUserId={currentUserId}
               />
             ))}

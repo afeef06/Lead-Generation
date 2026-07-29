@@ -40,6 +40,12 @@ create table leads (
   review_count        integer,
   source              text default 'google_places',
   notes               text,
+  needs_callback      boolean not null default false,
+  outreach_attempted    boolean not null default false,
+  outreach_answered     boolean not null default false,
+  outreach_channel      text not null default 'none'
+                          check (outreach_channel in ('none','phone','email','text')),
+  wants_to_move_forward boolean not null default false,
   created_by          uuid references auth.users(id),
   created_by_email    text,
   created_by_name     text,
@@ -109,6 +115,12 @@ create policy "users_update_leads"
     select organization_id from user_organizations where user_id = auth.uid()
   ));
 
+create policy "users_delete_leads"
+  on leads for delete
+  using (organization_id in (
+    select organization_id from user_organizations where user_id = auth.uid()
+  ));
+
 create policy "users_select_outreach"
   on outreach_logs for select
   using (organization_id in (
@@ -141,6 +153,15 @@ insert into organizations (name) values ('R&R Collective');
 -- alter table leads add column if not exists created_by_email text;
 -- alter table leads add column if not exists created_by_name text;
 
+-- ── Lead deletion migration ──────────────────────────────────
+-- Run this in Supabase SQL Editor if the leads table already exists
+-- without a DELETE policy (deletes will otherwise silently affect 0 rows):
+-- create policy "users_delete_leads"
+--   on leads for delete
+--   using (organization_id in (
+--     select organization_id from user_organizations where user_id = auth.uid()
+--   ));
+
 -- ── ICP scoring overhaul migration ───────────────────────────
 -- Swap framework_match constraint from 5 R&R frameworks → 3 services,
 -- null out old values so the new constraint can be applied cleanly,
@@ -152,3 +173,16 @@ insert into organizations (name) values ('R&R Collective');
 -- alter table leads add column if not exists website_score    numeric(3,1);
 -- alter table leads add column if not exists ads_score        numeric(3,1);
 -- alter table leads add column if not exists consulting_score numeric(3,1);
+
+-- ── Outreach tracker migration ───────────────────────────────
+-- Run this in Supabase SQL Editor if the leads table predates the
+-- Outreach tab's Contacted/Responded/Channel/Moving Forward columns:
+-- alter table leads add column if not exists outreach_attempted    boolean not null default false;
+-- alter table leads add column if not exists outreach_answered     boolean not null default false;
+-- alter table leads add column if not exists outreach_channel      text not null default 'none' check (outreach_channel in ('none','phone','email','text'));
+-- alter table leads add column if not exists wants_to_move_forward boolean not null default false;
+
+-- ── Call back tracking migration ─────────────────────────────
+-- Run this in Supabase SQL Editor to add the "Call back" toggle
+-- used on the Outreach tab:
+-- alter table leads add column if not exists needs_callback boolean not null default false;

@@ -392,11 +392,18 @@ export default function MyLeadsPage() {
     if (!window.confirm(`Delete ${selectedIds.size} lead${selectedIds.size !== 1 ? 's' : ''}? This cannot be undone.`)) return;
     setDeleting(true);
     const ids = [...selectedIds];
-    await Promise.all(ids.map(id => fetch(`/api/leads/${id}`, { method: 'DELETE' })));
-    setLeads(prev => prev.filter(l => !selectedIds.has(l.id)));
+    const results = await Promise.all(ids.map(async id => {
+      const res = await fetch(`/api/leads/${id}`, { method: 'DELETE' });
+      return { id, ok: res.ok };
+    }));
+    const deletedIds = new Set(results.filter(r => r.ok).map(r => r.id));
+    setLeads(prev => prev.filter(l => !deletedIds.has(l.id)));
     setSelectedIds(new Set());
     setSelectMode(false);
     setDeleting(false);
+    if (deletedIds.size < ids.length) {
+      window.alert(`${ids.length - deletedIds.size} lead${ids.length - deletedIds.size !== 1 ? 's' : ''} could not be deleted. Please try again.`);
+    }
   }
 
   const byStage = STAGES.reduce((acc, s) => {
@@ -567,6 +574,12 @@ export default function MyLeadsPage() {
           justify-content: center; gap: 5px;
         }
 
+        .filter-bar {
+          display: flex; align-items: center; gap: 8px;
+          padding: 10px 40px; border-bottom: 1px solid var(--b0);
+          background: var(--bg0); flex-wrap: wrap;
+        }
+
         .delete-bar {
           position: fixed; bottom: 24px; left: 50%;
           transform: translateX(-50%); display: flex; align-items: center;
@@ -634,11 +647,20 @@ export default function MyLeadsPage() {
           <p>
             <button className="empty-board-cta" onClick={() => setShowSearchModal(true)}>Add Leads</button>
             {' '}to search Google Maps and score your first prospects, or save from{' '}
-            <Link href="/">Discovery</Link>.
+            <Link href="/discover">Discovery</Link>.
           </p>
         </div>
       ) : (
         <>
+          <div className="filter-bar">
+            <button
+              className={`btn-ghost${selectMode ? ' active' : ''}`}
+              style={{ marginLeft: 'auto' }}
+              onClick={toggleSelectMode}
+            >
+              {selectMode ? 'Cancel' : 'Select'}
+            </button>
+          </div>
           {selectMode && selectedIds.size > 0 && (
             <div className="delete-bar">
               <span className="delete-bar-count">
