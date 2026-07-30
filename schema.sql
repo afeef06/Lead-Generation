@@ -67,6 +67,17 @@ create table outreach_logs (
   clicked_at      timestamptz
 );
 
+-- Tracks leads that were deleted from the pipeline, keyed by place_id, so
+-- discovery search can flag a re-surfaced result as "previously added".
+create table deleted_leads (
+  id              uuid primary key default gen_random_uuid(),
+  organization_id uuid references organizations(id) on delete cascade not null,
+  place_id        text not null,
+  name            text,
+  deleted_at      timestamptz default now(),
+  unique (organization_id, place_id)
+);
+
 -- updated_at trigger
 create or replace function update_updated_at()
 returns trigger language plpgsql as $$
@@ -86,6 +97,7 @@ alter table organizations    enable row level security;
 alter table user_organizations enable row level security;
 alter table leads            enable row level security;
 alter table outreach_logs    enable row level security;
+alter table deleted_leads    enable row level security;
 
 create policy "users_read_own_org"
   on organizations for select
@@ -123,6 +135,24 @@ create policy "users_delete_leads"
 
 create policy "users_select_outreach"
   on outreach_logs for select
+  using (organization_id in (
+    select organization_id from user_organizations where user_id = auth.uid()
+  ));
+
+create policy "users_select_deleted_leads"
+  on deleted_leads for select
+  using (organization_id in (
+    select organization_id from user_organizations where user_id = auth.uid()
+  ));
+
+create policy "users_insert_deleted_leads"
+  on deleted_leads for insert
+  with check (organization_id in (
+    select organization_id from user_organizations where user_id = auth.uid()
+  ));
+
+create policy "users_update_deleted_leads"
+  on deleted_leads for update
   using (organization_id in (
     select organization_id from user_organizations where user_id = auth.uid()
   ));
