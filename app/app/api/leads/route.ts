@@ -20,7 +20,15 @@ export async function GET() {
     .eq('organization_id', uo.organization_id)
     .not('place_id', 'is', null);
 
-  return NextResponse.json({ place_ids: leads?.map(l => l.place_id) ?? [] });
+  const { data: deletedLeads } = await supabase
+    .from('deleted_leads')
+    .select('place_id')
+    .eq('organization_id', uo.organization_id);
+
+  return NextResponse.json({
+    place_ids: leads?.map(l => l.place_id) ?? [],
+    deleted_place_ids: deletedLeads?.map(l => l.place_id) ?? [],
+  });
 }
 
 export async function POST(req: NextRequest) {

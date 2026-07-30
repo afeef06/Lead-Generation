@@ -11,6 +11,7 @@ import {
   IconGlobe, IconPhone,
 } from '../components/icons';
 import { LeadDetailModal } from '../components/LeadDetailModal';
+import { isNewLead } from '../../lib/new-lead';
 
 interface Lead {
   id: string;
@@ -205,10 +206,17 @@ function Card({
         )}
       </div>
 
-      {(lead.created_by_name || lead.created_by_email) && (
-        <span className={`card-contributor${isMe ? ' card-contributor-me' : ''}`}>
-          {isMe ? 'Me' : (lead.created_by_name ?? lead.created_by_email?.split('@')[0])}
-        </span>
+      {((lead.created_by_name || lead.created_by_email) || isNewLead(lead.created_at)) && (
+        <div className="card-badges-row">
+          {(lead.created_by_name || lead.created_by_email) && (
+            <span className={`card-contributor${isMe ? ' card-contributor-me' : ''}`}>
+              {isMe ? 'Me' : (lead.created_by_name ?? lead.created_by_email?.split('@')[0])}
+            </span>
+          )}
+          {isNewLead(lead.created_at) && (
+            <span className="card-new-badge">New</span>
+          )}
+        </div>
       )}
 
       {primarySvc && (
@@ -635,6 +643,15 @@ export default function MyLeadsPage() {
           padding: 1px 6px; align-self: flex-start;
         }
         .card-contributor-me { color: var(--green); background: rgba(58,139,106,0.07); border-color: rgba(58,139,106,0.22); }
+
+        /* Badges row (contributor + new-lead) */
+        .card-badges-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .card-new-badge {
+          font-size: 9px; font-family: var(--font-mono); color: #FB923C;
+          letter-spacing: 0.08em; text-transform: uppercase;
+          background: rgba(251,146,60,0.10); border: 1px solid rgba(251,146,60,0.32);
+          padding: 1px 6px; align-self: flex-start;
+        }
       `}</style>
 
       <LeadIntelligenceTabs />

@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '../../lib/supabase/client';
-import { IconArrowRight, IconCheck, IconWarning, IconStar, IconGlobe } from '../components/icons';
+import { IconArrowRight, IconCheck, IconWarning, IconStar, IconGlobe, IconEye } from '../components/icons';
 import { LeadIntelligenceTabs } from '@/components/lead-intelligence-tabs';
 import type { PlacesResult } from '../api/places/route';
 
@@ -48,11 +48,11 @@ function FwBadge({ fw, score }: { fw: string; score: number }) {
 }
 
 function ResultRow({
-  r, index, score, scoring, saved, saving, onSave,
+  r, index, score, scoring, saved, previouslyAdded, saving, onSave,
 }: {
   r: PlacesResult; index: number;
   score?: ScoreResult; scoring: boolean;
-  saved: boolean; saving: boolean; onSave: () => void;
+  saved: boolean; previouslyAdded: boolean; saving: boolean; onSave: () => void;
 }) {
   return (
     <tr className="bf-result-row" style={{ animationDelay: `${index * 25}ms` }}>
@@ -93,13 +93,16 @@ function ResultRow({
           : <span className="bf-empty">—</span>}
       </td>
       <td className="bf-td-save">
-        {saved
-          ? <span className="save-done"><IconCheck size={11} />Saved</span>
-          : (
+        {saved ? (
+          <span className="save-done"><IconCheck size={11} />Saved</span>
+        ) : (
+          <div className="bf-save-cell">
+            {previouslyAdded && <span className="previously-added"><IconEye size={11} />Previously Added</span>}
             <button className="btn-save" onClick={onSave} disabled={saving}>
               {saving ? '…' : <><IconArrowRight size={10} />Save</>}
             </button>
-          )}
+          </div>
+        )}
       </td>
     </tr>
   );
@@ -115,6 +118,7 @@ export default function BusinessFinderPage() {
   const [scores, setScores] = useState<Record<string, ScoreResult>>({});
   const [scoring, setScoring] = useState(false);
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
+  const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
   const [savingId, setSavingId] = useState<string | null>(null);
   const [savedCount, setSavedCount] = useState(0);
   const router = useRouter();
@@ -127,6 +131,7 @@ export default function BusinessFinderPage() {
       const ids = new Set<string>(data.place_ids);
       setSavedIds(ids);
       setSavedCount(ids.size);
+      setDeletedIds(new Set<string>(data.deleted_place_ids ?? []));
     }
   }, []);
 
@@ -361,6 +366,7 @@ export default function BusinessFinderPage() {
         .bf-rating { color: var(--t0); display: flex; align-items: center; gap: 5px; }
         .bf-reviews { color: var(--t2); font-size: 10px; }
         .bf-td-save { white-space: nowrap; }
+        .bf-save-cell { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; }
 
         .bf-empty-state { text-align: center; padding: 80px 32px; }
         .bf-empty-state .bf-headline {
@@ -477,6 +483,7 @@ export default function BusinessFinderPage() {
                         score={scores[r.place_id]}
                         scoring={scoring}
                         saved={savedIds.has(r.place_id)}
+                        previouslyAdded={deletedIds.has(r.place_id)}
                         saving={savingId === r.place_id}
                         onSave={() => handleSave(r)}
                       />

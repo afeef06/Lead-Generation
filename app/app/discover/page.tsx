@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '../../lib/supabase/client';
-import { IconStar, IconArrowRight, IconCheck, IconWarning, IconGlobe } from '../components/icons';
+import { IconStar, IconArrowRight, IconCheck, IconWarning, IconGlobe, IconEye } from '../components/icons';
 import { LeadIntelligenceTabs } from '@/components/lead-intelligence-tabs';
 import { LeadDetailModal } from '../components/LeadDetailModal';
 import type { PlacesResult } from '../api/places/route';
@@ -152,11 +152,11 @@ function ServiceGap({ score }: { score: ScoreResult }) {
 }
 
 function ResultRow({
-  r, index, score, scoring, saved, saving, onSave, onViewDetails, selectMode, selected, onToggle,
+  r, index, score, scoring, saved, previouslyAdded, saving, onSave, onViewDetails, selectMode, selected, onToggle,
 }: {
   r: PlacesResult; index: number;
   score?: ScoreResult; scoring: boolean;
-  saved: boolean; saving: boolean; onSave: () => void; onViewDetails: () => void;
+  saved: boolean; previouslyAdded: boolean; saving: boolean; onSave: () => void; onViewDetails: () => void;
   selectMode: boolean; selected: boolean; onToggle: () => void;
 }) {
   return (
@@ -214,13 +214,16 @@ function ResultRow({
           : <span className="empty">—</span>}
       </td>
       <td className="td-save">
-        {saved
-          ? <span className="save-done"><IconCheck size={11} />Saved</span>
-          : (
+        {saved ? (
+          <span className="save-done"><IconCheck size={11} />Saved</span>
+        ) : (
+          <div className="save-cell">
+            {previouslyAdded && <span className="previously-added"><IconEye size={11} />Previously Added</span>}
             <button className="btn-save" onClick={onSave} disabled={saving}>
               {saving ? '…' : <><IconArrowRight size={10} />Save</>}
             </button>
-          )}
+          </div>
+        )}
       </td>
     </tr>
   );
@@ -242,6 +245,7 @@ export default function DiscoveryPage() {
   const [selectMode, setSelectMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
+  const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
   const [savingId, setSavingId] = useState<string | null>(null);
   const [savedCount, setSavedCount] = useState(0);
   const [saveError, setSaveError] = useState('');
@@ -258,6 +262,7 @@ export default function DiscoveryPage() {
       const ids = new Set<string>(data.place_ids);
       setSavedIds(ids);
       setSavedCount(ids.size);
+      setDeletedIds(new Set<string>(data.deleted_place_ids ?? []));
     }
   }, []);
 
@@ -719,6 +724,7 @@ export default function DiscoveryPage() {
         .rating { color: var(--t0); display: flex; align-items: center; gap: 5px; }
         .reviews { color: var(--t2); font-size: 10px; }
         .td-save { white-space: nowrap; }
+        .save-cell { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; }
         .muted { color: var(--t2); }
 
         .select-all-btn {
@@ -937,6 +943,7 @@ export default function DiscoveryPage() {
                       score={scores[r.place_id]}
                       scoring={scoring}
                       saved={savedIds.has(r.place_id)}
+                      previouslyAdded={deletedIds.has(r.place_id)}
                       saving={savingId === r.place_id}
                       onSave={() => handleSave(r)}
                       onViewDetails={() => setModalLead({ r, score: scores[r.place_id] })}

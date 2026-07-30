@@ -79,11 +79,28 @@ export async function DELETE(
 
   if (!uo) return NextResponse.json({ error: 'No organization' }, { status: 403 });
 
+  const { data: lead } = await supabase
+    .from('leads')
+    .select('place_id, name')
+    .eq('id', id)
+    .eq('organization_id', uo.organization_id)
+    .single();
+
   const { error } = await supabase
     .from('leads')
     .delete()
     .eq('id', id)
     .eq('organization_id', uo.organization_id);
+
+  if (!error && lead?.place_id) {
+    const { error: logError } = await supabase
+      .from('deleted_leads')
+      .upsert(
+        { organization_id: uo.organization_id, place_id: lead.place_id, name: lead.name, deleted_at: new Date().toISOString() },
+        { onConflict: 'organization_id,place_id' }
+      );
+    if (logError) console.warn('Failed to log deleted lead:', logError.message);
+  }
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 

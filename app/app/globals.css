@@ -185,6 +185,7 @@
 .btn-save:hover:not(:disabled) { background: rgba(165,0,0,0.16); border-color: rgba(165,0,0,0.55); }
 .btn-save:disabled { opacity: 0.4; cursor: default; }
 .save-done { font-size: 9px; font-family: monospace; color: var(--green); display: inline-flex; align-items: center; gap: 5px; letter-spacing: 0.06em; text-transform: uppercase; }
+.previously-added { font-size: 9px; font-family: monospace; color: #C9962C; display: inline-flex; align-items: center; gap: 5px; letter-spacing: 0.06em; text-transform: uppercase; }
 
 .scoring-indicator { font-size: 10px; font-family: monospace; color: var(--t2); display: flex; align-items: center; gap: 7px; letter-spacing: 0.1em; text-transform: uppercase; }
 .scoring-pulse { width: 8px; height: 8px; background: var(--accent-glow); flex-shrink: 0; animation: pulse 1.4s ease-in-out infinite; }

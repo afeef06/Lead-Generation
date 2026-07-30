@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { IconArrowRight, IconCheck, IconWarning } from './icons';
+import { useState, useEffect, useCallback } from 'react';
+import { IconArrowRight, IconCheck, IconWarning, IconEye } from './icons';
 import type { PlacesResult } from '../api/places/route';
 
 interface ScoreResult {
@@ -32,7 +32,21 @@ export function SearchModal({ onClose, onSaved }: SearchModalProps) {
   const [scores, setScores] = useState<Record<string, ScoreResult>>({});
   const [scoring, setScoring] = useState(false);
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
+  const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
   const [savingId, setSavingId] = useState<string | null>(null);
+
+  const loadSavedIds = useCallback(async () => {
+    const res = await fetch('/api/leads');
+    if (res.ok) {
+      const data = await res.json();
+      setSavedIds(new Set<string>(data.place_ids ?? []));
+      setDeletedIds(new Set<string>(data.deleted_place_ids ?? []));
+    }
+  }, []);
+
+  useEffect(() => {
+    Promise.resolve().then(loadSavedIds);
+  }, [loadSavedIds]);
 
   async function scoreLeads(leads: PlacesResult[]) {
     setScoring(true);
@@ -172,6 +186,7 @@ export function SearchModal({ onClose, onSaved }: SearchModalProps) {
           flex-shrink: 0; min-width: 28px; text-align: right;
         }
         .sm-placeholder { font-size: 11px; font-family: var(--font-mono); color: var(--t2); flex-shrink: 0; }
+        .sm-save-cell { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
       `}</style>
 
       <div
@@ -230,6 +245,7 @@ export function SearchModal({ onClose, onSaved }: SearchModalProps) {
                 const score = scores[r.place_id];
                 const fw = score ? FW[score.framework] : null;
                 const saved = savedIds.has(r.place_id);
+                const previouslyAdded = deletedIds.has(r.place_id);
                 const saving = savingId === r.place_id;
                 return (
                   <div key={r.place_id} className="sm-result-row">
@@ -251,13 +267,16 @@ export function SearchModal({ onClose, onSaved }: SearchModalProps) {
                         <span className="sm-placeholder">{scoring ? '···' : '—'}</span>
                       )}
                     </div>
-                    {saved
-                      ? <span className="save-done"><IconCheck size={11} />Saved</span>
-                      : (
+                    {saved ? (
+                      <span className="save-done"><IconCheck size={11} />Saved</span>
+                    ) : (
+                      <div className="sm-save-cell">
+                        {previouslyAdded && <span className="previously-added"><IconEye size={11} />Previously Added</span>}
                         <button className="btn-save" onClick={() => handleSave(r)} disabled={saving}>
                           {saving ? '…' : <><IconArrowRight size={10} />Save</>}
                         </button>
-                      )}
+                      </div>
+                    )}
                   </div>
                 );
               })}

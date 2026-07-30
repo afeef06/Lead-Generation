@@ -186,3 +186,28 @@ insert into organizations (name) values ('R&R Collective');
 -- Run this in Supabase SQL Editor to add the "Call back" toggle
 -- used on the Outreach tab:
 -- alter table leads add column if not exists needs_callback boolean not null default false;
+
+-- ── "Previously Added" deleted-leads tracking migration ──────
+-- Run this in Supabase SQL Editor to enable "previously added" tracking for deleted leads
+-- create table if not exists deleted_leads (
+--   id              uuid primary key default gen_random_uuid(),
+--   organization_id uuid references organizations(id) on delete cascade not null,
+--   place_id        text not null,
+--   name            text,
+--   deleted_at      timestamptz default now(),
+--   unique (organization_id, place_id)
+-- );
+--
+-- alter table deleted_leads enable row level security;
+--
+-- create policy "users_select_deleted_leads"
+--   on deleted_leads for select
+--   using (organization_id in (select organization_id from user_organizations where user_id = auth.uid()));
+--
+-- create policy "users_insert_deleted_leads"
+--   on deleted_leads for insert
+--   with check (organization_id in (select organization_id from user_organizations where user_id = auth.uid()));
+--
+-- create policy "users_update_deleted_leads"
+--   on deleted_leads for update
+--   using (organization_id in (select organization_id from user_organizations where user_id = auth.uid()));
