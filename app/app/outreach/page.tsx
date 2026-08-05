@@ -6,7 +6,7 @@ import { createClient } from '../../lib/supabase/client';
 import { LeadIntelligenceTabs } from '@/components/lead-intelligence-tabs';
 import { LeadDetailModal } from '../components/LeadDetailModal';
 import { IconWarning, IconCheck } from '../components/icons';
-import { type Stage } from '../../lib/stages';
+import { STAGES, type Stage } from '../../lib/stages';
 
 interface Lead {
   id: string;
@@ -41,7 +41,7 @@ interface Lead {
 type OutreachField =
   | 'outreach_attempted'
   | 'outreach_answered'
-  | 'outreach_channel'
+  | 'stage'
   | 'wants_to_move_forward'
   | 'needs_callback'
   | 'notes';
@@ -301,16 +301,16 @@ export default function OutreachPage() {
           pointer-events: none; letter-spacing: 0.04em;
         }
 
-        .td-ch { width: 90px; }
-        .ch-select {
+        .td-move { width: 100px; }
+        .move-select {
           background: transparent; border: none;
           border-bottom: 1px solid var(--b0); color: var(--t1);
           font-size: 10px; font-family: var(--font-mono); letter-spacing: 0.06em;
           padding: 2px 2px; cursor: pointer; outline: none;
           transition: border-color 0.15s, color 0.15s;
         }
-        .ch-select:hover { border-bottom-color: var(--t2); color: var(--t0); }
-        .ch-select:focus { border-bottom-color: var(--accent-dim); color: var(--t0); }
+        .move-select:hover { border-bottom-color: var(--t2); color: var(--t0); }
+        .move-select:focus { border-bottom-color: var(--accent-dim); color: var(--t0); }
 
         .ot-patch-err {
           font-size: 10px; font-family: var(--font-mono); color: var(--error);
@@ -385,7 +385,7 @@ export default function OutreachPage() {
                   <th className="th-c">Contacted</th>
                   <th className="th-c">Responded</th>
                   <th className="th-c">Call Back</th>
-                  <th>Channel</th>
+                  <th>Move To</th>
                   <th className="th-c">Moving Forward</th>
                   <th>Notes</th>
                 </tr>
@@ -454,17 +454,16 @@ export default function OutreachPage() {
                         aria-label={`Call back ${lead.name}`}
                       />
                     </td>
-                    <td className="td-ch">
+                    <td className="td-move">
                       <select
-                        className="ch-select"
-                        value={lead.outreach_channel}
-                        onChange={e => patch(lead, 'outreach_channel', e.target.value)}
-                        aria-label={`Channel for ${lead.name}`}
+                        className="move-select"
+                        value={lead.stage}
+                        onChange={e => patch(lead, 'stage', e.target.value)}
+                        aria-label={`Move ${lead.name} to stage`}
                       >
-                        <option value="none">--</option>
-                        <option value="phone">Phone</option>
-                        <option value="email">Email</option>
-                        <option value="text">Text</option>
+                        {STAGES.map(stage => (
+                          <option key={stage} value={stage}>{STAGE_LABEL[stage]}</option>
+                        ))}
                       </select>
                     </td>
                     <td className="td-c">
